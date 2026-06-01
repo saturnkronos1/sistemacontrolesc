@@ -326,11 +326,13 @@ app/
 │   │   ├── Materias.php              ✅ (sin búsqueda)
 │   │   ├── Usuarios.php              ✅ (con foto perfil + roles)
 │   │   ├── Grupos.php                ✅ (con filtros + docente FK)
-│   │   └── Docentes.php              ✅ (siempre rol Docente)
-│   ├── Alumnos/                      🔲 (no implementado)
-│   ├── Calificaciones/               🔲 (no implementado)
-│   ├── Asistencia/                   🔲 (no implementado)
-│   └── ... (resto pendiente)
+│   │   ├── Docentes.php              ✅ (siempre rol Docente)
+│   │   ├── Alumnos.php               ✅ (CRUD con Persona, estatus, grupo)
+│   │   ├── Calificaciones.php        ✅ (captura por grupo/materia/periodo)
+│   │   ├── Asistencia.php            ✅ (pase de lista diario)
+│   │   ├── Boleta.php                ✅ (vista previa + PDF DomPDF)
+│   │   └── Reinscripciones.php       ✅ (cambio de ciclo escolar)
+│   └── ... (Resto: Reportes, Tutor pendientes)
 ├── Models/
 │   ├── Grado.php                     ✅ 13 modelos de dominio
 │   ├── CicloEscolar.php              ✅
@@ -365,9 +367,15 @@ resources/
 │   │   │   ├── materias.blade.php           ✅
 │   │   │   ├── usuarios.blade.php           ✅
 │   │   │   ├── grupos.blade.php             ✅
-│   │   │   └── docentes.blade.php           ✅
-│   │   └── ... (resto pendiente)
-│   └── pdf/                          🔲 (boleta.blade.php pendiente)
+│   │   │   ├── docentes.blade.php           ✅
+│   │   │   ├── alumnos.blade.php            ✅
+│   │   │   ├── calificaciones.blade.php     ✅
+│   │   │   ├── asistencia.blade.php         ✅
+│   │   │   ├── boleta.blade.php             ✅
+│   │   │   └── reinscripciones.blade.php    ✅
+│   │   └── ... (pendiente)
+│   └── pdf/
+│       └── boleta.blade.php          ✅ (template PDF DomPDF)
 
 database/
 ├── migrations/
@@ -631,22 +639,19 @@ TODOS los tests en `tests/Feature/` tienen RefreshDatabase automático.
 | Archivo | Tests | Estado |
 |---------|-------|--------|
 | `tests/Feature/Auth/RoleAccessTest.php` | 11 tests: permisos por rol y acceso a rutas | ✅ Todos verdes |
-| `tests/Feature/Catalogos/CatalogosTest.php` | 31 tests: CRUD de catálogos + grupos + docentes | ✅ Todos verdes |
+| `tests/Feature/Catalogos/CatalogosTest.php` | 46 tests: CRUD + grupos + docentes + alumnos + calificaciones + asistencia + boleta + reinscripciones | ✅ Todos verdes |
 
-**Tests de catálogos (31 tests):**
+**Tests de catálogos (46 tests):**
 
-- Guest redirect (5 tests: ciclos, materias, periodos, usuarios, grupos, docentes)
-- Page loading (6 tests: cada página carga OK)
-- CRUD operations (crear, editar, eliminar para usuarios, etc.)
-- Data display (ver datos en tabla, filtros, ordenamiento)
-- Superadmin access (verifica todas las rutas)
+- **Catálogos base (6):** Guest redirect (5) + page loads + data display + CRUD
+- **Grupos + Docentes (6):** Guest redirect, page load, list display, filtro por rol
+- **Alumnos (4):** Guest redirect, page load, list display, filtro estatus, superadmin access
+- **Calificaciones (7):** Guest redirect, page load, grupos en select, filtro por docente, carga materias, carga notas existentes, guardar + log
+- **Asistencia (7):** Guest redirect, page load, filtro por docente, carga alumnos, guardar estatus, justificante con motivo, superadmin access
+- **Boleta (5):** Guest redirect, page load, grupos en select, carga alumnos, carga calificaciones
+- **Reinscripciones (4):** Guest redirect, page load, carga alumnos, reinscribir a nuevo grupo
 
 **Tests pendientes para fases futuras:**
-- Alumnos
-- Calificaciones
-- Asistencia
-- Boleta
-- Reinscripciones
 - Reportes
 - Tutor
 
@@ -720,26 +725,100 @@ TODOS los tests en `tests/Feature/` tienen RefreshDatabase automático.
 | 3b.4 | Menú lateral | Académico → Docentes | ✅ | Arriba de Grupos |
 | 3b.5 | Tests | CatalogosTest | ✅ | Guest redirect, page load, filtrar solo docentes |
 
-### Fase 4: Alumnos 🔲 NO INICIADA
+### Fase 4: Alumnos ✅ COMPLETADA
 
-Modelo y migración existen, pero falta:
-- Livewire component + vista
-- Seeder + factory
-- Tests
+> Schema fix: se agregó `grupo_id` + `ciclo_escolar_id` a la tabla `alumnos` vía migración independiente.
 
-### Fase 5: Calificaciones 🔲 NO INICIADA
+| # | Tarea | Componente | Estado | Notas |
+|---|---|---|---|---|
+| 4.1 | Migración: grupo_id + ciclo_escolar_id en alumnos | `2026_06_01_*` | ✅ | FKs nullable a grupos y ciclos_escolares |
+| 4.2 | Alumno model actualizado | `app/Models/Alumno.php` | ✅ | Relaciones grupo(), cicloEscolar(). Fillable extendido |
+| 4.3 | AlumnoFactory + AlumnoSeeder | `database/factories+seeders` | ✅ | 18 alumnos (3 por grado) con grupos asignados |
+| 4.4 | CRUD Alumnos | `Catalogos/Alumnos` | ✅ | Transacción Persona+Alumno, búsqueda nombre/matrícula, filtros grado/grupo/estatus |
+| 4.5 | Estatus management | Métodos darBaja/darEgreso/reactivar | ✅ | Badges de colores (verde/rojo/gris) |
+| 4.6 | Matrícula auto-generada | Formato `ALU{AÑO}{SEQ:04d}` | ✅ | Editable al editar |
+| 4.7 | Tests | CatalogosTest | ✅ | 4 tests: acceso, listado, filtros, superadmin |
 
-### Fase 6: Asistencia 🔲 NO INICIADA
+### Fase 5: Calificaciones ✅ COMPLETADA
 
-### Fase 7: Boleta 🔲 NO INICIADA
+| # | Tarea | Componente | Estado | Notas |
+|---|---|---|---|---|
+| 5.1 | Livewire Calificaciones | `Catalogos/Calificaciones` | ✅ | Selección grupo→materia→periodo, tabla alumnos con inputs de nota |
+| 5.2 | Upsert + auditoría | `CalificacionLog` | ✅ | Crea log en cada creación/cambio de nota |
+| 5.3 | Fix: $table en Calificacion | `app/Models/Calificacion.php` | ✅ | Eloquent infiere `calificacions`, se fijó `calificaciones` |
+| 5.4 | Docente solo ve sus grupos | Filtro en render() | ✅ | Superadmin/Director ve todos |
+| 5.5 | Tests | CatalogosTest | ✅ | 7 tests: acceso, grupos, filtro, materias, carga notas, guardar+log |
 
-### Fase 8: Reinscripciones 🔲 NO INICIADA
+### Fase 6: Asistencia ✅ COMPLETADA
 
-### Fase 9: Tutor 🔲 NO INICIADA
+| # | Tarea | Componente | Estado | Notas |
+|---|---|---|---|---|
+| 6.1 | Livewire Asistencia | `Catalogos/Asistencia` | ✅ | Selección grupo + fecha, tabla alumnos con select de estatus |
+| 6.2 | Estatus disponibles | asistio/falta/retardo/justificado | ✅ | Select con emojis indicadores |
+| 6.3 | Justificante con motivo | `Justificante` model | ✅ | Textarea visible solo cuando estatus=justificado. Se crea/actualiza/elimina automáticamente |
+| 6.4 | Docente solo ve sus grupos | Filtro por rol en render() | ✅ | |
+| 6.5 | Tests | CatalogosTest | ✅ | 7 tests: acceso, grupos, filtro docente, carga alumnos, guardar estatus, justificante |
 
-### Fase 10: Reportes 🔲 NO INICIADA
+### Fase 7: Boleta ✅ COMPLETADA
 
-### Fase 11: CI/CD 🔲 NO INICIADA
+| # | Tarea | Componente | Estado | Notas |
+|---|---|---|---|---|
+| 7.1 | Livewire Boleta | `Catalogos/Boleta` | ✅ | Selección grupo→alumno→periodo, vista previa con tabla cruzada |
+| 7.2 | Tabla calificaciones | Materias × Periodos | ✅ | Con colores (verde ≥6, rojo <6), promedios por materia/periodo/general |
+| 7.3 | Observaciones | `BoletaObservacion` model | ✅ | Agrupadas por periodo |
+| 7.4 | PDF DomPDF | `resources/views/pdf/boleta.blade.php` | ✅ | CSS plano, header profesional, tabla cruzada, footer con fecha |
+| 7.5 | Descarga PDF | `response()->streamDownload()` | ✅ | Nombre: `boleta-{matricula}.pdf` |
+| 7.6 | Tests | CatalogosTest | ✅ | 5 tests: acceso, grupos en select, carga alumnos, carga calificaciones |
+
+### Fase 8: Reinscripciones ✅ COMPLETADA
+
+| # | Tarea | Componente | Estado | Notas |
+|---|---|---|---|---|
+| 8.1 | Livewire Reinscripciones | `Catalogos/Reinscripciones` | ✅ | Selección grupo origen → tabla con checkboxes → grupo destino |
+| 8.2 | Selección múltiple | ToggleAll + checkboxes individuales | ✅ | `wire:model="selected.*"` |
+| 8.3 | Transacción DB | `DB::transaction()` | ✅ | Actualiza grado_id, grupo_id, ciclo_escolar_id |
+| 8.4 | Confirmación | `wire:confirm` | ✅ | Muestra conteo de alumnos a reinscribir |
+| 8.5 | Tests | CatalogosTest | ✅ | 4 tests: acceso, carga alumnos, reinscripción exitosa |
+
+### Fase 9: Tutor 🔲 PENDIENTE
+
+Dashboard para padres/tutores donde pueden consultar la información académica de sus hijos. Dependencias: Fases 4, 5, 6, 7 completadas.
+
+| # | Tarea | Descripción |
+|---|---|---|
+| 9.1 | Vincular Persona (tutor) a User | Relación `User → Persona` para identificar qué tutor es cada usuario |
+| 9.2 | Dashboard tutor | Vista con resumen de hijos: nombre, grado, grupo, ciclo actual |
+| 9.3 | Ver calificaciones | Tabla de calificaciones por periodo/materia para cada hijo (reusa lógica de Boleta) |
+| 9.4 | Ver asistencias | Historial de asistencias con filtro por fecha para cada hijo |
+| 9.5 | Descargar boleta | Botón de descarga PDF (reusa template de Boleta) |
+| 9.6 | Permisos | `tutor.dashboard`, `tutor.ver-calificaciones`, `tutor.ver-asistencia`, `tutor.descargar-boleta` |
+| 9.7 | Tests | Acceso, visualización de hijos, calificaciones, asistencias, descarga |
+
+### Fase 10: Reportes 🔲 PENDIENTE
+
+Módulo de reportes generales para administración escolar (Superadmin, Director, Subdirector).
+
+| # | Tarea | Descripción |
+|---|---|---|
+| 10.1 | Concentrado de calificaciones | Reporte con calificaciones de todos los alumnos por grupo/materia/periodo. Exportable a PDF |
+| 10.2 | Kardex del alumno | Historial completo de calificaciones del alumno a través de todos los ciclos cursados |
+| 10.3 | Inasistencias por alumno/grupo | Reporte de faltas acumuladas, filtrable por grupo, periodo, rango de fechas |
+| 10.4 | Alumnos por tutor | Listado de alumnos agrupados por tutor/padre, con datos de contacto |
+| 10.5 | Permisos | `reportes.concentrado`, `reportes.kardex`, `reportes.inasistencias`, `reportes.alumnos-por-tutor` |
+| 10.6 | Tests | Generación de reportes, filtros, descarga PDF |
+
+### Fase 11: CI/CD 🔲 PENDIENTE
+
+Infraestructura de integración continua y despliegue. Sin dependencias de las fases anteriores.
+
+| # | Tarea | Descripción |
+|---|---|---|
+| 11.1 | GitHub Actions: tests | Workflow que corre `php artisan test` en cada push/PR (ya existe `.github/workflows/tests.yml`) |
+| 11.2 | GitHub Actions: lint | Workflow que corre Pint en cada push (ya existe `.github/workflows/lint.yml`) |
+| 11.3 | Configurar Laravel Cloud | Preparar archivos de configuración para deploy en Laravel Cloud |
+| 11.4 | Base de datos en producción | Migraciones + seeders en entorno productivo |
+| 11.5 | Variables de entorno | Documentar todas las variables .env necesarias para producción |
+| 11.6 | Asset compilation | Script de build para producción (`npm run build` en deploy)
 
 ---
 

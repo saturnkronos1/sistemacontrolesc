@@ -1,12 +1,15 @@
 <?php
 
 use App\Livewire\Catalogos\Alumnos;
+use App\Livewire\Catalogos\Asistencia;
+use App\Livewire\Catalogos\Boleta;
 use App\Livewire\Catalogos\Calificaciones;
 use App\Livewire\Catalogos\CiclosEscolares;
 use App\Livewire\Catalogos\Docentes;
 use App\Livewire\Catalogos\Grupos;
 use App\Livewire\Catalogos\Materias;
 use App\Livewire\Catalogos\PeriodosEvaluacion;
+use App\Livewire\Catalogos\Reinscripciones;
 use App\Livewire\Catalogos\Usuarios;
 use Illuminate\Support\Facades\Route;
 
@@ -64,17 +67,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Asistencia
     Route::prefix('asistencia')->name('asistencia.')->group(function () {
-        Route::get('/', fn () => view('pages.modules.placeholder', ['module' => 'Asistencia']))->name('index');
+        Route::get('/', Asistencia::class)->name('index');
     });
 
     // Reinscripciones
     Route::prefix('reinscripciones')->name('reinscripciones.')->group(function () {
-        Route::get('/', fn () => view('pages.modules.placeholder', ['module' => 'Reinscripciones']))->name('index');
+        Route::get('/', Reinscripciones::class)->name('index');
     });
 
     // Boleta
     Route::prefix('boleta')->name('boleta.')->group(function () {
-        Route::get('/', fn () => view('pages.modules.placeholder', ['module' => 'Boleta']))->name('index');
+        Route::get('/', Boleta::class)->name('index');
     });
 
     // Reportes

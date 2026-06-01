@@ -1,7 +1,10 @@
 <?php
 
+use App\Livewire\Catalogos\Boleta;
 use App\Livewire\Catalogos\Calificaciones;
+use App\Livewire\Catalogos\Reinscripciones;
 use App\Models\Alumno;
+use App\Models\Asistencia;
 use App\Models\Calificacion;
 use App\Models\CicloEscolar;
 use App\Models\Grado;
@@ -367,6 +370,139 @@ test('calificaciones carga alumnos y notas existentes', function () {
         ->assertSee($alumno->persona->apellido_paterno);
 });
 
+// ─── Asistencia ───
+
+test('guest is redirected to login for asistencia', function () {
+    $this->get(route('asistencia.index'))->assertRedirect(route('login'));
+});
+
+test('asistencia page loads successfully for superadmin', function () {
+    $user = User::factory()->create();
+    $user->assignRole('Superadmin');
+
+    $this->actingAs($user)
+        ->get(route('asistencia.index'))
+        ->assertOk();
+});
+
+test('asistencia filters grupos by docente', function () {
+    $docente = User::factory()->create();
+    $docente->assignRole('Docente');
+
+    $otroDocente = User::factory()->create();
+    $otroDocente->assignRole('Docente');
+
+    $grado = Grado::factory()->create(['nombre' => '1°']);
+    $ciclo = CicloEscolar::factory()->activo()->create();
+
+    $miGrupo = Grupo::factory()
+        ->for($grado)->for($ciclo)
+        ->create(['nombre' => 'GrupoA', 'docente_id' => $docente->id]);
+
+    $otroGrupo = Grupo::factory()
+        ->for($grado)->for($ciclo)
+        ->create(['nombre' => 'GrupoB-Otro', 'docente_id' => $otroDocente->id]);
+
+    $this->actingAs($docente)
+        ->get(route('asistencia.index'))
+        ->assertOk()
+        ->assertSee('GrupoA')
+        ->assertDontSee('GrupoB-Otro');
+});
+
+test('asistencia carga alumnos de un grupo', function () {
+    $user = User::factory()->create();
+    $user->assignRole('Superadmin');
+
+    $grado = Grado::factory()->create(['nombre' => '1°']);
+    $ciclo = CicloEscolar::factory()->activo()->create();
+    $grupo = Grupo::factory()->for($grado)->for($ciclo)->create();
+
+    $alumno = Alumno::factory()
+        ->activo()
+        ->for($grado)
+        ->create(['grupo_id' => $grupo->id, 'ciclo_escolar_id' => $ciclo->id]);
+
+    Livewire::actingAs($user)
+        ->test(App\Livewire\Catalogos\Asistencia::class)
+        ->set('grupo_id', $grupo->id)
+        ->set('fecha', '2026-06-01')
+        ->call('cargarAlumnos')
+        ->assertSet('cargado', true)
+        ->assertSee($alumno->persona->apellido_paterno);
+});
+
+test('asistencia guarda estatus para cada alumno', function () {
+    $user = User::factory()->create();
+    $user->assignRole('Superadmin');
+
+    $grado = Grado::factory()->create(['nombre' => '1°']);
+    $ciclo = CicloEscolar::factory()->activo()->create();
+    $grupo = Grupo::factory()->for($grado)->for($ciclo)->create();
+
+    $alumno = Alumno::factory()
+        ->activo()
+        ->for($grado)
+        ->create(['grupo_id' => $grupo->id, 'ciclo_escolar_id' => $ciclo->id]);
+
+    Livewire::actingAs($user)
+        ->test(App\Livewire\Catalogos\Asistencia::class)
+        ->set('grupo_id', $grupo->id)
+        ->set('fecha', '2026-06-01')
+        ->call('cargarAlumnos')
+        ->set("estatusList.{$alumno->id}", 'falta')
+        ->call('guardar')
+        ->assertOk();
+
+    $this->assertDatabaseHas('asistencias', [
+        'alumno_id' => $alumno->id,
+        'grupo_id' => $grupo->id,
+        'estatus' => 'falta',
+    ]);
+});
+
+test('asistencia crea justificante cuando estatus es justificado', function () {
+    $user = User::factory()->create();
+    $user->assignRole('Superadmin');
+
+    $grado = Grado::factory()->create(['nombre' => '1°']);
+    $ciclo = CicloEscolar::factory()->activo()->create();
+    $grupo = Grupo::factory()->for($grado)->for($ciclo)->create();
+
+    $alumno = Alumno::factory()
+        ->activo()
+        ->for($grado)
+        ->create(['grupo_id' => $grupo->id, 'ciclo_escolar_id' => $ciclo->id]);
+
+    Livewire::actingAs($user)
+        ->test(App\Livewire\Catalogos\Asistencia::class)
+        ->set('grupo_id', $grupo->id)
+        ->set('fecha', '2026-06-01')
+        ->call('cargarAlumnos')
+        ->set("estatusList.{$alumno->id}", 'justificado')
+        ->set("motivos.{$alumno->id}", 'Cita médica')
+        ->call('guardar')
+        ->assertOk();
+
+    $this->assertDatabaseHas('asistencias', [
+        'alumno_id' => $alumno->id,
+        'estatus' => 'justificado',
+    ]);
+
+    $this->assertDatabaseHas('justificantes', [
+        'motivo' => 'Cita médica',
+    ]);
+});
+
+test('superadmin can access asistencia', function () {
+    $user = User::factory()->create();
+    $user->assignRole('Superadmin');
+
+    $this->actingAs($user)
+        ->get(route('asistencia.index'))
+        ->assertOk();
+});
+
 test('calificaciones guarda y actualiza notas', function () {
     $user = User::factory()->create();
     $user->assignRole('Superadmin');
@@ -402,5 +538,162 @@ test('calificaciones guarda y actualiza notas', function () {
     $this->assertDatabaseHas('calificacion_logs', [
         'old_calificacion' => null,
         'new_calificacion' => 9.0,
+    ]);
+});
+
+// ─── Boleta ───
+
+test('guest is redirected to login for boleta', function () {
+    $this->get(route('boleta.index'))->assertRedirect(route('login'));
+});
+
+test('boleta page loads successfully for superadmin', function () {
+    $user = User::factory()->create();
+    $user->assignRole('Superadmin');
+
+    $this->actingAs($user)
+        ->get(route('boleta.index'))
+        ->assertOk();
+});
+
+test('boleta shows grupos in select for superadmin', function () {
+    $user = User::factory()->create();
+    $user->assignRole('Superadmin');
+
+    $grado = Grado::factory()->create(['nombre' => '1°']);
+    $ciclo = CicloEscolar::factory()->activo()->create();
+    $grupo = Grupo::factory()
+        ->for($grado)->for($ciclo)
+        ->create(['nombre' => 'A']);
+
+    $this->actingAs($user)
+        ->get(route('boleta.index'))
+        ->assertOk()
+        ->assertSee($grupo->nombre);
+});
+
+test('boleta loads alumnos when grupo selected', function () {
+    $user = User::factory()->create();
+    $user->assignRole('Superadmin');
+
+    $grado = Grado::factory()->create(['nombre' => '1°']);
+    $ciclo = CicloEscolar::factory()->activo()->create();
+    $grupo = Grupo::factory()->for($grado)->for($ciclo)->create();
+
+    $alumno = Alumno::factory()
+        ->activo()
+        ->for($grado)
+        ->create(['grupo_id' => $grupo->id, 'ciclo_escolar_id' => $ciclo->id]);
+
+    Livewire::actingAs($user)
+        ->test(Boleta::class)
+        ->set('grupo_id', $grupo->id)
+        ->assertSet('alumnos', fn ($alumnos) => count($alumnos) === 1);
+});
+
+test('boleta loads calificaciones for alumno', function () {
+    $user = User::factory()->create();
+    $user->assignRole('Superadmin');
+
+    $grado = Grado::factory()->create(['nombre' => '1°']);
+    $ciclo = CicloEscolar::factory()->activo()->create();
+    $materia = Materia::factory()->for($grado)->create(['nombre' => 'Matemáticas']);
+    $periodo = PeriodoEvaluacion::factory()->for($ciclo)->create(['orden' => 1, 'nombre' => '1er Trimestre']);
+    $grupo = Grupo::factory()->for($grado)->for($ciclo)->create();
+
+    $alumno = Alumno::factory()
+        ->activo()
+        ->for($grado)
+        ->create(['grupo_id' => $grupo->id, 'ciclo_escolar_id' => $ciclo->id]);
+
+    Calificacion::factory()->create([
+        'alumno_id' => $alumno->id,
+        'grupo_id' => $grupo->id,
+        'materia_id' => $materia->id,
+        'periodo_evaluacion_id' => $periodo->id,
+        'calificacion' => 9.0,
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(Boleta::class)
+        ->set('grupo_id', $grupo->id)
+        ->set('alumno_id', $alumno->id)
+        ->call('cargar')
+        ->assertSet('cargado', true)
+        ->assertSee('9.0')
+        ->assertSee('Matemáticas');
+});
+
+// ─── Reinscripciones ───
+
+test('guest is redirected to login for reinscripciones', function () {
+    $this->get(route('reinscripciones.index'))->assertRedirect(route('login'));
+});
+
+test('reinscripciones page loads successfully for superadmin', function () {
+    $user = User::factory()->create();
+    $user->assignRole('Superadmin');
+
+    $this->actingAs($user)
+        ->get(route('reinscripciones.index'))
+        ->assertOk();
+});
+
+test('reinscripciones carga alumnos del grupo fuente', function () {
+    $user = User::factory()->create();
+    $user->assignRole('Superadmin');
+
+    $grado = Grado::factory()->create(['nombre' => '1°']);
+    $ciclo = CicloEscolar::factory()->activo()->create();
+    $grupo = Grupo::factory()->for($grado)->for($ciclo)->create();
+
+    $alumno = Alumno::factory()
+        ->activo()
+        ->for($grado)
+        ->create(['grupo_id' => $grupo->id, 'ciclo_escolar_id' => $ciclo->id]);
+
+    Livewire::actingAs($user)
+        ->test(Reinscripciones::class)
+        ->set('source_grupo_id', $grupo->id)
+        ->call('cargarAlumnos')
+        ->assertSet('cargado', true)
+        ->assertSee($alumno->persona->apellido_paterno);
+});
+
+test('reinscripciones reinscribe alumno a nuevo grupo', function () {
+    $user = User::factory()->create();
+    $user->assignRole('Superadmin');
+
+    $grado1 = Grado::factory()->create(['nombre' => '1°']);
+    $grado2 = Grado::factory()->create(['nombre' => '2°']);
+    $cicloActivo = CicloEscolar::factory()->activo()->create();
+    $cicloNuevo = CicloEscolar::factory()->create(['nombre' => '2026-2027', 'activo' => false]);
+
+    $sourceGrupo = Grupo::factory()->for($grado1)->for($cicloActivo)->create(['nombre' => 'A']);
+    $targetGrupo = Grupo::factory()->for($grado2)->for($cicloNuevo)->create(['nombre' => 'A']);
+
+    $alumno = Alumno::factory()
+        ->activo()
+        ->for($grado1)
+        ->create([
+            'grupo_id' => $sourceGrupo->id,
+            'ciclo_escolar_id' => $cicloActivo->id,
+        ]);
+
+    Livewire::actingAs($user)
+        ->test(Reinscripciones::class)
+        ->set('source_grupo_id', $sourceGrupo->id)
+        ->call('cargarAlumnos')
+        ->set('selected', [$alumno->id => true])
+        ->set('target_grupo_id', $targetGrupo->id)
+        ->call('reinscribir')
+        ->assertOk();
+
+    $this->assertDatabaseHas('alumnos', [
+        'id' => $alumno->id,
+        'grado_id' => $grado2->id,
+        'grupo_id' => $targetGrupo->id,
+        'ciclo_escolar_id' => $cicloNuevo->id,
+        'estatus' => 'activo',
     ]);
 });
