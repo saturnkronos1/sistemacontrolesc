@@ -1,0 +1,214 @@
+# Prompt: Sistema de Control Escolar — Primaria Rural (México)
+
+## Contexto
+
+Escuela primaria rural en México. 6 grados, cada grado con 1 o 2 grupos (A, B). Un docente por grupo, imparte **todas las materias** a su grupo y **no cambia en todo el ciclo escolar**. El sistema se despliega en un servidor accesible por internet para director, subdirector, docentes y tutores. Equipamiento básico.
+
+## Stack tecnológico
+
+| Componente | Versión / Librería |
+|---|---|
+| Framework | **Laravel 13** |
+| PHP | 8.3 |
+| Frontend | **Blade + Livewire 4 + Tailwind CSS** (responsivo) |
+| Auth | **Laravel Breeze** |
+| Roles + Permisos | Spatie Laravel Permission |
+| Base de datos | MySQL |
+| PDF | DomPDF o Laravel DOMPDF Wrapper |
+| Tests | **Pest** + **CI/CD pipeline** |
+
+## Roles y permisos
+
+| Rol | Alcance |
+|---|---|
+| **Superadmin** | Acceso total, configuración del sistema, catálogos, gestión de usuarios. Puede modificar datos en ciclos inactivos |
+| **Director** | Todos los grupos y grados, reportes generales, seguimiento académico. Sin grupo asignado. Puede modificar en ciclos inactivos |
+| **Subdirector** | Puramente administrativo — reportes, seguimiento académico. Sin grupo asignado. Sin captura de calificaciones ni asistencia |
+| **Docente** | Acceso SOLO a su grupo. Captura calificaciones de **todas las materias** de su grupo. Captura asistencia diaria (principalmente desde dispositivo móvil) |
+| **Tutor (padre/madre/tutor legal)** | Acceso al sistema con usuario y contraseña creados automáticamente al registrar al alumno. Consulta y descarga de reportes de calificaciones y asistencia de **todos sus hijos**. Solo lectura |
+
+**Todos los roles** tienen **foto de perfil** (avatar).
+
+## Navegación
+
+- **Menú lateral izquierdo dinámico**
+- Se renderiza según **usuario autenticado**
+- Opciones filtradas por **rol** (ej. Docente solo ve su grupo, Subdirector no ve capturas)
+- Componente Livewire `<nav-sidebar>` con estado reactivo
+
+## Estructura escolar
+
+- **Grados**: 1º a 6º (fijo)
+- **Grupos**: 1 o 2 por grado (A, B) — ABM
+- **Docente**: exactamente 1 por grupo, fijo durante el ciclo escolar
+- **Materias**: se dan de alta por grado (catálogo configurable por grado). Cada materia tiene **clave_materia** (identificador único por materia + grado). Pueden repetirse entre grados — no importa si "Español" existe como materia distinta en 1° y en 2°. **No están ligadas a un ciclo escolar**, solo al grado (al cambiar de ciclo, las materias del grado ya existen)
+- **Evaluación**: 3 periodos por materia por ciclo escolar. Los periodos se definen en tabla `periodos_evaluacion`
+- **Promedios**: por materia (promedio de 3 periodos) + promedio general del grado
+- **Asistencia**: captura diaria por alumno, preferentemente desde móvil
+- **Promoción**: al realizar la reinscripción al siguiente ciclo (manual, alumno por alumno)
+- **Egresado**: alumno que cursa 6º y se reinscribe → pasa a estado "egresado" (terminal)
+- **Baja**: lógica, determinada exclusivamente por el director
+
+## Regla clave: CURP único por ciclo escolar
+
+La CURP en México es única por persona a nivel nacional, pero en este sistema **no se usa como identificador único global**. Un mismo alumno aparece en múltiples ciclos escolares (1°, 2°, 3°...). Para permitir la reinscripción, la restricción de unicidad es **compuesta**:
+
+```sql
+UNIQUE(curp, ciclo_escolar_id)
+```
+
+Esto permite que Juan Pérez (CURP `PEMJ120101HDFLRN09`) tenga un registro en 2024–2025 (1°) y otro en 2025–2026 (2°), ambos con su misma CURP. El **kardex** se construye consultando todos los registros del alumno por su CURP a través de los ciclos.
+
+## Ciclos escolares
+
+- Solo **1 ciclo activo** a la vez en el sistema
+- Los ciclos anteriores quedan **inactivos**
+- Superadmin y director pueden consultar y modificar datos en ciclos inactivos
+- El resto de los roles solo ven el ciclo activo
+
+## Módulos del sistema
+
+### 1. Catálogos
+- **Grados**: 1–6 (fijo)
+- **Grupos**: ABM por grado (A, B, o ambos)
+- **Materias por grado**: alta, edición, baja. Cada materia incluye **clave_materia** (identificador único por materia + grado). Cada grado puede tener materias distintas. No están ligadas a un ciclo escolar
+- **Ciclos escolares**: ej. 2024–2025, 2025–2026…
+- **Usuarios**: CRUD con asignación de rol (incluye edición de foto de perfil)
+- Componentes Livewire para ABM con formularios reactivos y modales
+
+### 2. Gestión de grupos y asignación docente
+- Crear grupos vinculados a grado + ciclo escolar
+- Asignar **exactamente un docente** por grupo
+- Reasignar solo al cambiar de ciclo
+
+### 3. Registro de alumnos (inscripción)
+
+**Datos del alumno:**
+- CURP (único por ciclo escolar — unique compuesto con ciclo_escolar_id)
+- Nombre
+- Primer apellido
+- Segundo apellido
+- Sexo
+- Fecha de nacimiento
+- Grupo asignado (grado + letra)
+- Estado: **activo** (cursando el grado del ciclo en curso) / **baja** (lógica, determinada por el director, ej. cambio de escuela) / **egresado** (terminal, asignado automáticamente al reinscribir 6° o manualmente por el director)
+
+**Datos de padres / tutores:**
+- Captura de 2 padres (opcional: 1 o ninguno si hay tutor legal)
+- De los 2 padres, se designa **uno como tutor del alumno**
+- O se registra un **tutor legal** (persona distinta a los padres)
+- El tutor (padre designado o tutor legal) puede tener **1 o varios hijos** (hermanos) a su cargo en la escuela
+- **Al elegir al tutor, el sistema crea automáticamente su cuenta** (usuario y contraseña) con **rol Tutor**
+
+**Datos del tutor (padre designado o tutor legal):**
+- Nombre
+- Primer apellido
+- Segundo apellido
+- Teléfono 1
+- Teléfono 2 (opcional)
+- Correo electrónico (opcional)
+- Fecha de nacimiento
+- Domicilio
+- Foto de perfil
+
+### 4. Control de calificaciones
+
+**Flujo del docente:**
+- Inicia sesión → ve solo su grupo (componente Livewire)
+- Selecciona materia (del catálogo del grado)
+- Captura 3 calificaciones parciales por materia por alumno
+- Promedios **calculados en consulta SQL** (no almacenados en tabla):
+  - **Promedio por materia**: `AVG` de las 3 calificaciones del periodo
+  - **Promedio general**: `AVG` de todas las materias del grado
+
+**Bitácora (auditoría):**
+- Cada captura o modificación de calificación registra:
+  - Usuario que realizó el cambio
+  - Fecha y hora
+  - Valor anterior y nuevo valor
+  - Tipo de operación (creación / modificación)
+
+### 5. Asistencia
+- Pase de lista diario por grupo
+- Componente Livewire con checkboxes grandes / toggles táctiles
+- Diseñado **responsivo** para uso principal desde dispositivo móvil (interfaz táctil, botones grandes)
+- Estados: Presente / Ausente / Justificado
+- Cuando se marca **Justificado**, se habilita la subida de **archivo adjunto** (foto o PDF) que acredite el justificante, almacenado en tabla `justificantes` (1 por cada falta, con posibilidad de aprobación futura)
+- Reportes por alumno y concentrado grupal por periodo
+
+### 6. Boleta SEP
+- Generación de PDF con **formato oficial simplificado**
+  - Datos del alumno
+  - Materias del grado con calificaciones por periodo + promedio final (calculado en consulta)
+  - Promedio general (calculado en consulta)
+  - Asistencia (días trabajados vs inasistencias)
+  - Observaciones (desde tabla `boleta_observaciones`)
+- Descargable por docente, director, subdirector
+- Tutor puede consultar y descargar desde su sesión
+
+### 7. Reinscripción y egreso
+- Proceso **alumno por alumno**: se corrobora o actualiza la información del alumno antes de reinscribir
+- Al cierre del ciclo:
+  - Alumno de 1°–5°: promovido al siguiente grado (mismo grupo A/B o según disponibilidad)
+  - Alumno de 6°: pasa a estado **egresado** (terminal)
+- Se captura nuevo ciclo escolar, nuevo grupo
+- Las **materias no están ligadas al ciclo escolar**, sino solo al grado. Al cambiar de ciclo, las materias del grado ya existen sin necesidad de replicación
+- Se puede **definir materias desde cero** para un grado si se requiere, pero no es necesario replicar
+- Historial conserva calificaciones del ciclo anterior
+
+### 8. Reportes
+- Concentrado grupal por periodo
+- Kardex del alumno (histórico por ciclo, visible para el tutor)
+- Listado de alumnos por tutor
+- Reporte de inasistencias por alumno/grupo/periodo
+
+### 9. Portal del tutor
+- Login con usuario y contraseña (cuenta creada automáticamente al registrar al alumno)
+- Dashboard con tarjetas de cada hijo (Livewire)
+- Consulta de calificaciones por periodo
+- Descarga de boleta PDF
+- Consulta de asistencia (días por periodo, porcentaje)
+- Sin permisos de edición — solo lectura y descarga
+- Foto de perfil
+
+## Vistas principales (Livewire full-page)
+
+| Ruta | Componente | Roles |
+|---|---|---|
+| `/dashboard` | `Dashboard` | Todos |
+| `/catalogos/*` | `Catalogos/*` | Superadmin |
+| `/grupos/*` | `Grupos/*` | Superadmin, Director |
+| `/alumnos/*` | `Alumnos/*` | Superadmin, Director |
+| `/calificaciones` | `Calificaciones` | Docente |
+| `/calificaciones/reporte` | `ReporteCalificaciones` | Director, Subdirector |
+| `/asistencia` | `Asistencia` | Docente |
+| `/reinscripciones` | `Reinscripciones` | Director |
+| `/reportes/*` | `Reportes/*` | Director, Subdirector |
+| `/tutor/dashboard` | `TutorDashboard` | Tutor |
+| `/profile` | `Profile` (Breeze) | Todos |
+
+## Reglas de negocio clave
+
+| # | Regla |
+|---|---|
+| 1 | **CURP único por ciclo escolar** (constraint compuesta `UNIQUE(curp, ciclo_escolar_id)`). Un mismo alumno aparece en múltiples ciclos con su misma CURP |
+| 2 | Un **docente** ve SOLO su grupo — ni calificaciones ni datos de otros grupos |
+| 3 | Un **subdirector** NO tiene grupo asignado, NO captura calificaciones ni asistencia |
+| 4 | Un **tutor** puede tener varios hijos; al consultar, ve los datos de TODOS sus hijos |
+| 5 | Las **materias se definen por grado**, no globales. Cada materia tiene `clave_materia`. Pueden tener el mismo nombre entre grados (son entradas independientes). **No están ligadas a ciclo escolar** |
+| 6 | **3 periodos** de evaluación. Definidos en tabla `periodos_evaluacion` por ciclo escolar |
+| 7 | **1 solo ciclo activo** a la vez en el sistema. Superadmin y director pueden modificar en ciclos inactivos; los demás roles solo ven el ciclo activo |
+| 8 | **Baja de alumno**: lógica, determinada exclusivamente por el director (cambio de escuela u otros motivos) |
+| 9 | **Egreso**: se asigna automáticamente al reinscribir a un alumno de 6°, o manualmente por el director en cualquier momento. Estado terminal — fuera de listados activos |
+| 10 | **Cuenta de tutor creada automáticamente** al registrar al alumno y elegir al tutor (padre designado o tutor legal) |
+| 11 | La **promoción es manual** (al reinscribir), no automática |
+| 12 | La **reinscripción** se hace alumno por alumno para corroborar o actualizar sus datos |
+| 13 | **Egresado** es un estado terminal; el alumno ya no aparece en listados activos |
+| 14 | Toda **modificación de calificación** queda registrada en bitácora con usuario, fecha, valor anterior y nuevo |
+| 15 | El **pase de lista** debe ser funcional en **pantallas pequeñas (móvil)** con diseño táctil. Al marcar **Justificado** el docente sube archivo adjunto (foto o PDF), almacenado en tabla `justificantes` |
+| 16 | **Boleta SEP**: formato oficial simplificado en PDF. Las observaciones se almacenan en tabla `boleta_observaciones` |
+| 17 | **Promedios calculados en consulta** (`AVG`), no almacenados en tabla |
+| 18 | **Menú lateral izquierdo dinámico**: se renderiza según usuario autenticado y rol |
+| 19 | **Foto de perfil** para todos los roles |
+| 20 | **No se implementan** los módulos de CTE, Estadística 911, pagos/colegiaturas, ni comunicados |
+| 21 | **Tests con Pest** + **CI/CD pipeline** obligatorio |
