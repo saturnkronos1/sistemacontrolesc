@@ -697,8 +697,8 @@ TODOS los tests en `tests/Feature/` tienen RefreshDatabase automático.
 | 1.7 | Reescribir sidebar.blade.php | ✅ | Layout Alpine+Tailwind, NO Flux en el layout |
 | 1.8 | Sistema Toast Alpine | ✅ | window events + Alpine component |
 | 1.9 | Rutas con nombre en modules.php | ✅ | 12 rutas fuera del wrapper Teams |
-| 1.10 | CicloActivoMiddleware | 🔲 | Pendiente para cuando se necesite |
-| 1.11 | Profile con foto | 🔲 | Pendiente (existe vista default de Starter Kit) |
+| 1.10 | CicloActivoMiddleware | ✅ | `app/Http/Middleware/CicloActivoMiddleware.php` — registrado en `bootstrap/app.php`. Comparte ciclo activo en vistas + warning si no hay |
+| 1.11 | Profile con foto | ✅ | Implementado en SFC `⚡profile.blade.php` — upload, preview, remove, validación 1MB.
 | 1.12 | migrate --seed verificado | ✅ | Funcional |
 | 1.13 | Tests básicos auth | ✅ | RoleAccessTest (11 tests) |
 
@@ -815,18 +815,18 @@ Módulo de reportes generales para administración escolar (Superadmin, Director
 | 10.5 | Permisos ya existentes | RolePermissionSeeder | ✅ | Ya estaban creados. Ruta actualizada a componente real |
 | 10.6 | Tests | `tests/Feature/Catalogos/ReportesTest.php` | ✅ | 15 tests: acceso, carga de datos, 4 reportes, PDF |
 
-### Fase 11: CI/CD 🔲 PENDIENTE
+### Fase 11: CI/CD ✅ COMPLETADA
 
 Infraestructura de integración continua y despliegue. Sin dependencias de las fases anteriores.
 
-| # | Tarea | Descripción |
+| # | Tarea | Estado | Detalle |
 |---|---|---|
-| 11.1 | GitHub Actions: tests | Workflow que corre `php artisan test` en cada push/PR (ya existe `.github/workflows/tests.yml`) |
-| 11.2 | GitHub Actions: lint | Workflow que corre Pint en cada push (ya existe `.github/workflows/lint.yml`) |
-| 11.3 | Configurar Laravel Cloud | Preparar archivos de configuración para deploy en Laravel Cloud |
-| 11.4 | Base de datos en producción | Migraciones + seeders en entorno productivo |
-| 11.5 | Variables de entorno | Documentar todas las variables .env necesarias para producción |
-| 11.6 | Asset compilation | Script de build para producción (`npm run build` en deploy)
+| 11.1 | GitHub Actions: tests | ✅ | `tests.yml` — PHP 8.3/8.4/8.5, Node 22, Pest |
+| 11.2 | GitHub Actions: lint | ✅ | `lint.yml` — Pint en cada push/PR |
+| 11.3 | Configurar Laravel Cloud | ✅ | `config/cloud.php` + sección `extra.cloud` en composer.json con build/deploy commands |
+| 11.4 | Base de datos en producción | ✅ | Migraciones listas + seeders (`php artisan migrate --force` en deploy) |
+| 11.5 | Variables de entorno | ✅ | `.env.example` actualizado con secciones comentadas para producción, Flux, Cloud |
+| 11.6 | Asset compilation | ✅ | En `composer.json` script `setup` (`npm install && npm run build`)
 
 ---
 
