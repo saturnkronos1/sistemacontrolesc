@@ -332,8 +332,9 @@ app/
 │   │   ├── Asistencia.php            ✅ (pase de lista diario)
 │   │   ├── Boleta.php                ✅ (vista previa + PDF DomPDF)
 │   │   ├── Reinscripciones.php       ✅ (cambio de ciclo escolar)
-│   │   └── TutorDashboard.php        ✅ (dashboard tutor con 3 vistas)
-│   └── ... (Resto: Reportes pendientes)
+│   │   ├── TutorDashboard.php        ✅ (dashboard tutor con 3 vistas)
+│   │   └── Reportes.php              ✅ (4 reportes: concentrado, kardex, inasistencias, alumnos-por-tutor)
+│   └── ...
 ├── Models/
 │   ├── Grado.php                     ✅ 13 modelos de dominio
 │   ├── CicloEscolar.php              ✅
@@ -375,9 +376,13 @@ resources/
 │   │   │   ├── boleta.blade.php             ✅
 │   │   │   └── reinscripciones.blade.php    ✅
 │   │   ├── tutor-dashboard.blade.php       ✅
-│   │   └── ... (pendiente)
+│   │   └── reportes.blade.php             ✅
 │   └── pdf/
-│       └── boleta.blade.php          ✅ (template PDF DomPDF)
+│       ├── boleta.blade.php          ✅ (template PDF DomPDF)
+│       ├── concentrado.blade.php     ✅
+│       ├── kardex.blade.php          ✅
+│       ├── inasistencias.blade.php   ✅
+│       └── alumnos-por-tutor.blade.php ✅
 
 database/
 ├── migrations/
@@ -643,6 +648,7 @@ TODOS los tests en `tests/Feature/` tienen RefreshDatabase automático.
 | `tests/Feature/Auth/RoleAccessTest.php` | 11 tests: permisos por rol y acceso a rutas | ✅ Todos verdes |
 | `tests/Feature/Catalogos/CatalogosTest.php` | 46 tests: CRUD + grupos + docentes + alumnos + calificaciones + asistencia + boleta + reinscripciones | ✅ Todos verdes |
 | `tests/Feature/Tutor/TutorTest.php` | 7 tests: acceso, hijos, calificaciones, asistencias, volver | ✅ Todos verdes |
+| `tests/Feature/Catalogos/ReportesTest.php` | 15 tests: 4 reportes con filtros + PDF | ✅ Todos verdes |
 
 **Tests de catálogos (46 tests):**
 
@@ -655,7 +661,7 @@ TODOS los tests en `tests/Feature/` tienen RefreshDatabase automático.
 - **Reinscripciones (4):** Guest redirect, page load, carga alumnos, reinscribir a nuevo grupo
 
 **Tests pendientes para fases futuras:**
-- Reportes
+- Ninguno
 
 ---
 
@@ -796,18 +802,18 @@ Dashboard para padres/tutores donde pueden consultar la información académica 
 | 9.6 | Permisos ya existentes | RolePermissionSeeder | ✅ | Ya estaban creados desde Fase 0. Ruta actualizada a componente real |
 | 9.7 | Tests | `tests/Feature/Tutor/TutorTest.php` | ✅ | 7 tests: guest redirect, page load, sin hijos, con hijos, calificaciones, asistencias, volver |
 
-### Fase 10: Reportes 🔲 PENDIENTE
+### Fase 10: Reportes ✅ COMPLETADA
 
 Módulo de reportes generales para administración escolar (Superadmin, Director, Subdirector).
 
-| # | Tarea | Descripción |
-|---|---|---|
-| 10.1 | Concentrado de calificaciones | Reporte con calificaciones de todos los alumnos por grupo/materia/periodo. Exportable a PDF |
-| 10.2 | Kardex del alumno | Historial completo de calificaciones del alumno a través de todos los ciclos cursados |
-| 10.3 | Inasistencias por alumno/grupo | Reporte de faltas acumuladas, filtrable por grupo, periodo, rango de fechas |
-| 10.4 | Alumnos por tutor | Listado de alumnos agrupados por tutor/padre, con datos de contacto |
-| 10.5 | Permisos | `reportes.concentrado`, `reportes.kardex`, `reportes.inasistencias`, `reportes.alumnos-por-tutor` |
-| 10.6 | Tests | Generación de reportes, filtros, descarga PDF |
+| # | Tarea | Componente | Estado | Notas |
+|---|---|---|---|---|
+| 10.1 | Concentrado de calificaciones | Vista `concentrado` en Reportes | ✅ | Tabla alumnos×materias con promedios. Filtro grupo + periodo opcional. PDF con DomPDF |
+| 10.2 | Kardex del alumno | Vista `kardex` en Reportes | ✅ | Historial completo del alumno a través de todos los ciclos. PDF agrupado por ciclo |
+| 10.3 | Inasistencias por alumno/grupo | Vista `inasistencias` en Reportes | ✅ | Conteo por estatus (asistió/falta/retardo/justificado) con filtro de fechas. PDF con totales |
+| 10.4 | Alumnos por tutor | Vista `alumnos-por-tutor` en Reportes | ✅ | Lista de tutores con teléfono, cantidad de hijos y nombres. Búsqueda por nombre |
+| 10.5 | Permisos ya existentes | RolePermissionSeeder | ✅ | Ya estaban creados. Ruta actualizada a componente real |
+| 10.6 | Tests | `tests/Feature/Catalogos/ReportesTest.php` | ✅ | 15 tests: acceso, carga de datos, 4 reportes, PDF |
 
 ### Fase 11: CI/CD 🔲 PENDIENTE
 

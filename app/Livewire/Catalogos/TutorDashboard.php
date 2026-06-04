@@ -109,7 +109,7 @@ class TutorDashboard extends Component
     }
 
     /** Descargar boleta PDF del alumno seleccionado */
-    public function descargarBoleta(?int $alumnoId = null): \Symfony\Component\HttpFoundation\StreamedResponse
+    public function descargarBoleta(?int $alumnoId = null): StreamedResponse
     {
         if ($alumnoId !== null) {
             $this->alumnoId = $alumnoId;

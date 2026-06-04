@@ -10,6 +10,7 @@ use App\Livewire\Catalogos\Grupos;
 use App\Livewire\Catalogos\Materias;
 use App\Livewire\Catalogos\PeriodosEvaluacion;
 use App\Livewire\Catalogos\Reinscripciones;
+use App\Livewire\Catalogos\Reportes;
 use App\Livewire\Catalogos\TutorDashboard;
 use App\Livewire\Catalogos\Usuarios;
 use Illuminate\Support\Facades\Route;
@@ -83,7 +84,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Reportes
     Route::prefix('reportes')->name('reportes.')->group(function () {
-        Route::get('/', fn () => view('pages.modules.placeholder', ['module' => 'Reportes']))->name('index');
+        Route::get('/', Reportes::class)->name('index');
     });
 
     // Tutor
