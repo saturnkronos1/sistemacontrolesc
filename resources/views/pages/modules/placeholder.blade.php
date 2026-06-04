@@ -1,4 +1,5 @@
 <x-layouts::app.sidebar>
+    <x-page-header :title="$module ?? 'Módulo'" />
     <div class="flex flex-col items-center justify-center py-20 text-center">
         <div class="rounded-full bg-zinc-100 dark:bg-zinc-800 p-6 mb-6">
             <svg class="w-12 h-12 text-zinc-400 dark:text-zinc-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">

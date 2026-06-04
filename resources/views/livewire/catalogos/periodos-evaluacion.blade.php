@@ -1,6 +1,7 @@
 <div>
-    <x-layouts::app.sidebar>
+   {{--  <x-layouts::app.sidebar> --}}
         <flux:main>
+            <x-page-header title="Periodos de Evaluación" />
             <div class="flex items-center justify-between mb-6">
                 <h1 class="text-2xl font-bold">Periodos de Evaluación</h1>
                 <flux:button wire:click="crear" variant="primary">
@@ -29,71 +30,31 @@
                             <th wire:click="sortBy('ciclo_escolar_id')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-zinc-700 dark:hover:text-zinc-300 whitespace-nowrap">
                                 <div class="flex items-center gap-1">
                                     Ciclo
-                                    @if($sortField === 'ciclo_escolar_id')
-                                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-                                            @if($sortDirection === 'asc')
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5"/>
-                                            @else
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
-                                            @endif
-                                        </svg>
-                                    @endif
+                                    <x-sort-indicator :field="'ciclo_escolar_id'" :sort-field="$sortField" :sort-direction="$sortDirection" />
                                 </div>
                             </th>
                             <th wire:click="sortBy('nombre')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-zinc-700 dark:hover:text-zinc-300 whitespace-nowrap">
                                 <div class="flex items-center gap-1">
                                     Nombre
-                                    @if($sortField === 'nombre')
-                                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-                                            @if($sortDirection === 'asc')
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5"/>
-                                            @else
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
-                                            @endif
-                                        </svg>
-                                    @endif
+                                    <x-sort-indicator :field="'nombre'" :sort-field="$sortField" :sort-direction="$sortDirection" />
                                 </div>
                             </th>
                             <th wire:click="sortBy('orden')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-zinc-700 dark:hover:text-zinc-300 whitespace-nowrap">
                                 <div class="flex items-center gap-1">
                                     Orden
-                                    @if($sortField === 'orden')
-                                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-                                            @if($sortDirection === 'asc')
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5"/>
-                                            @else
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
-                                            @endif
-                                        </svg>
-                                    @endif
+                                    <x-sort-indicator :field="'orden'" :sort-field="$sortField" :sort-direction="$sortDirection" />
                                 </div>
                             </th>
                             <th wire:click="sortBy('fecha_inicio')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-zinc-700 dark:hover:text-zinc-300 whitespace-nowrap">
                                 <div class="flex items-center gap-1">
                                     Fecha Inicio
-                                    @if($sortField === 'fecha_inicio')
-                                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-                                            @if($sortDirection === 'asc')
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5"/>
-                                            @else
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
-                                            @endif
-                                        </svg>
-                                    @endif
+                                    <x-sort-indicator :field="'fecha_inicio'" :sort-field="$sortField" :sort-direction="$sortDirection" />
                                 </div>
                             </th>
                             <th wire:click="sortBy('fecha_fin')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-zinc-700 dark:hover:text-zinc-300 whitespace-nowrap">
                                 <div class="flex items-center gap-1">
                                     Fecha Fin
-                                    @if($sortField === 'fecha_fin')
-                                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-                                            @if($sortDirection === 'asc')
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5"/>
-                                            @else
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
-                                            @endif
-                                        </svg>
-                                    @endif
+                                    <x-sort-indicator :field="'fecha_fin'" :sort-field="$sortField" :sort-direction="$sortDirection" />
                                 </div>
                             </th>
                             <th class="px-4 py-3"></th>
@@ -156,5 +117,5 @@
                 </div>
             </flux:modal>
         </flux:main>
-    </x-layouts::app.sidebar>
+    {{-- </x-layouts::app.sidebar> --}}
 </div>

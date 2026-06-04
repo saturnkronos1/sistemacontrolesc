@@ -1,6 +1,7 @@
 <div>
     <x-layouts::app.sidebar>
         <flux:main>
+            <x-page-header title="Reinscripciones" />
             <div class="flex items-center justify-between mb-6">
                 <h1 class="text-2xl font-bold">Reinscripciones</h1>
             </div>

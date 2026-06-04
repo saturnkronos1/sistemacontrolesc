@@ -331,8 +331,9 @@ app/
 │   │   ├── Calificaciones.php        ✅ (captura por grupo/materia/periodo)
 │   │   ├── Asistencia.php            ✅ (pase de lista diario)
 │   │   ├── Boleta.php                ✅ (vista previa + PDF DomPDF)
-│   │   └── Reinscripciones.php       ✅ (cambio de ciclo escolar)
-│   └── ... (Resto: Reportes, Tutor pendientes)
+│   │   ├── Reinscripciones.php       ✅ (cambio de ciclo escolar)
+│   │   └── TutorDashboard.php        ✅ (dashboard tutor con 3 vistas)
+│   └── ... (Resto: Reportes pendientes)
 ├── Models/
 │   ├── Grado.php                     ✅ 13 modelos de dominio
 │   ├── CicloEscolar.php              ✅
@@ -373,6 +374,7 @@ resources/
 │   │   │   ├── asistencia.blade.php         ✅
 │   │   │   ├── boleta.blade.php             ✅
 │   │   │   └── reinscripciones.blade.php    ✅
+│   │   ├── tutor-dashboard.blade.php       ✅
 │   │   └── ... (pendiente)
 │   └── pdf/
 │       └── boleta.blade.php          ✅ (template PDF DomPDF)
@@ -640,6 +642,7 @@ TODOS los tests en `tests/Feature/` tienen RefreshDatabase automático.
 |---------|-------|--------|
 | `tests/Feature/Auth/RoleAccessTest.php` | 11 tests: permisos por rol y acceso a rutas | ✅ Todos verdes |
 | `tests/Feature/Catalogos/CatalogosTest.php` | 46 tests: CRUD + grupos + docentes + alumnos + calificaciones + asistencia + boleta + reinscripciones | ✅ Todos verdes |
+| `tests/Feature/Tutor/TutorTest.php` | 7 tests: acceso, hijos, calificaciones, asistencias, volver | ✅ Todos verdes |
 
 **Tests de catálogos (46 tests):**
 
@@ -653,7 +656,6 @@ TODOS los tests en `tests/Feature/` tienen RefreshDatabase automático.
 
 **Tests pendientes para fases futuras:**
 - Reportes
-- Tutor
 
 ---
 
@@ -780,19 +782,19 @@ TODOS los tests en `tests/Feature/` tienen RefreshDatabase automático.
 | 8.4 | Confirmación | `wire:confirm` | ✅ | Muestra conteo de alumnos a reinscribir |
 | 8.5 | Tests | CatalogosTest | ✅ | 4 tests: acceso, carga alumnos, reinscripción exitosa |
 
-### Fase 9: Tutor 🔲 PENDIENTE
+### Fase 9: Tutor ✅ COMPLETADA
 
 Dashboard para padres/tutores donde pueden consultar la información académica de sus hijos. Dependencias: Fases 4, 5, 6, 7 completadas.
 
-| # | Tarea | Descripción |
-|---|---|---|
-| 9.1 | Vincular Persona (tutor) a User | Relación `User → Persona` para identificar qué tutor es cada usuario |
-| 9.2 | Dashboard tutor | Vista con resumen de hijos: nombre, grado, grupo, ciclo actual |
-| 9.3 | Ver calificaciones | Tabla de calificaciones por periodo/materia para cada hijo (reusa lógica de Boleta) |
-| 9.4 | Ver asistencias | Historial de asistencias con filtro por fecha para cada hijo |
-| 9.5 | Descargar boleta | Botón de descarga PDF (reusa template de Boleta) |
-| 9.6 | Permisos | `tutor.dashboard`, `tutor.ver-calificaciones`, `tutor.ver-asistencia`, `tutor.descargar-boleta` |
-| 9.7 | Tests | Acceso, visualización de hijos, calificaciones, asistencias, descarga |
+| # | Tarea | Componente | Estado | Notas |
+|---|---|---|---|---|
+| 9.1 | Vincular Persona a User | Migración + Modelos | ✅ | `persona_id` nullable FK en `users`. Relaciones `User->persona()`, `Persona->user()` |
+| 9.2 | Dashboard tutor | `TutorDashboard` | ✅ | Lista de hijos con nombre, matrícula, grado, grupo, estatus |
+| 9.3 | Ver calificaciones | Vista `calificaciones` | ✅ | Tabla materias×periodos con colores, promedios, observaciones |
+| 9.4 | Ver asistencias | Vista `asistencias` | ✅ | Historial con badges de estatus + resumen numérico |
+| 9.5 | Descargar boleta | método `descargarBoleta()` | ✅ | Reusa template `pdf.boleta` de DomPDF |
+| 9.6 | Permisos ya existentes | RolePermissionSeeder | ✅ | Ya estaban creados desde Fase 0. Ruta actualizada a componente real |
+| 9.7 | Tests | `tests/Feature/Tutor/TutorTest.php` | ✅ | 7 tests: guest redirect, page load, sin hijos, con hijos, calificaciones, asistencias, volver |
 
 ### Fase 10: Reportes 🔲 PENDIENTE
 

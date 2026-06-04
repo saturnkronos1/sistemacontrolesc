@@ -118,7 +118,7 @@ class Alumnos extends Component
 
         return view('livewire.catalogos.alumnos', [
             'alumnos' => $query->paginate(15),
-            'grados' => Grado::orderBy('orden')->get(),
+            'grados' => Grado::orderBy('nombre')->get(),
             'grupos' => $grupos,
         ]);
     }

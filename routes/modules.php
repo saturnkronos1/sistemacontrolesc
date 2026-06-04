@@ -10,6 +10,7 @@ use App\Livewire\Catalogos\Grupos;
 use App\Livewire\Catalogos\Materias;
 use App\Livewire\Catalogos\PeriodosEvaluacion;
 use App\Livewire\Catalogos\Reinscripciones;
+use App\Livewire\Catalogos\TutorDashboard;
 use App\Livewire\Catalogos\Usuarios;
 use Illuminate\Support\Facades\Route;
 
@@ -87,7 +88,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Tutor
     Route::prefix('tutor')->name('tutor.')->group(function () {
-        Route::get('/', fn () => view('pages.modules.placeholder', ['module' => 'Tutor']))->name('dashboard');
+        Route::get('/', TutorDashboard::class)->name('dashboard');
     });
 
 });

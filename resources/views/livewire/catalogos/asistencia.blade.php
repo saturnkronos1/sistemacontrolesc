@@ -1,6 +1,7 @@
 <div>
     <x-layouts::app.sidebar>
         <flux:main>
+            <x-page-header title="Asistencia" />
             <div class="flex items-center justify-between mb-6">
                 <h1 class="text-2xl font-bold">Asistencia</h1>
             </div>
