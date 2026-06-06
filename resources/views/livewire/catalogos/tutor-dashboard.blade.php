@@ -1,5 +1,5 @@
 <div>
-    <x-layouts::app.sidebar>
+    {{-- <x-layouts::app.sidebar> --}}
         <flux:main>
             @if($vista === 'dashboard')
                 {{-- Dashboard: listado de hijos --}}
@@ -265,5 +265,5 @@
                 @endif
             @endif
         </flux:main>
-    </x-layouts::app.sidebar>
+    {{-- </x-layouts::app.sidebar> --}}
 </div>

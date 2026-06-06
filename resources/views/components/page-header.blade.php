@@ -1,6 +1,6 @@
 @props(['title'])
 
-<div class="hidden lg:flex items-center justify-between border-b border-neutral-200 pb-4 mb-6 dark:border-neutral-700">
+<div class="hidden lg:flex items-center justify-between border-b-2 border-[#185c7a] pb-4 mb-4 dark:border-[#185c7a]">
     <h1 class="text-2xl font-bold">{{ $title }}</h1>
 
     <flux:dropdown position="bottom" align="end">
@@ -32,7 +32,7 @@
             <flux:menu.separator />
             <flux:menu.radio.group>
                 <flux:menu.item :href="route('profile.edit')" icon="cog" wire:navigate>
-                    {{ __('Settings') }}
+                    {{ __('Configuración') }}
                 </flux:menu.item>
                 <form method="POST" action="{{ route('logout') }}" class="w-full">
                     @csrf
@@ -42,7 +42,7 @@
                         icon="arrow-right-start-on-rectangle"
                         class="w-full cursor-pointer"
                     >
-                        {{ __('Log out') }}
+                        {{ __('Salir') }}
                     </flux:menu.item>
                 </form>
             </flux:menu.radio.group>

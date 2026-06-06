@@ -7,7 +7,6 @@ use App\Models\Grado;
 use App\Models\Grupo;
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 class GrupoSeeder extends Seeder
 {
@@ -19,32 +18,13 @@ class GrupoSeeder extends Seeder
             return;
         }
 
-        // Crear algunos docentes de prueba si no existen
-        $docentes = [];
-        $nombresDocentes = [
-            ['name' => 'María García', 'email' => 'maria@sistema.test'],
-            ['name' => 'Juan Pérez', 'email' => 'juan@sistema.test'],
-            ['name' => 'Laura Martínez', 'email' => 'laura@sistema.test'],
-        ];
+        $docentes = User::role('Docente')->orderBy('id')->get();
 
-        foreach ($nombresDocentes as $data) {
-            $docente = User::firstOrCreate(
-                ['email' => $data['email']],
-                [
-                    'name' => $data['name'],
-                    'password' => Hash::make('password'),
-                    'email_verified_at' => now(),
-                ]
-            );
-
-            if (! $docente->hasRole('Docente')) {
-                $docente->assignRole('Docente');
-            }
-
-            $docentes[] = $docente;
+        if ($docentes->isEmpty()) {
+            return;
         }
 
-        $grados = Grado::all();
+        $grados = Grado::orderBy('id')->get();
 
         foreach ($grados as $i => $grado) {
             Grupo::firstOrCreate(
@@ -54,7 +34,7 @@ class GrupoSeeder extends Seeder
                     'nombre' => 'A',
                 ],
                 [
-                    'docente_id' => $docentes[$i % count($docentes)]->id,
+                    'docente_id' => $docentes[$i % $docentes->count()]->id,
                 ]
             );
         }

@@ -1,9 +1,11 @@
 <?php
 
+use App\Livewire\Catalogos\Alumnos;
 use App\Livewire\Catalogos\Boleta;
 use App\Livewire\Catalogos\Calificaciones;
 use App\Livewire\Catalogos\Reinscripciones;
 use App\Models\Alumno;
+use App\Models\AlumnoFamilia;
 use App\Models\Asistencia;
 use App\Models\Calificacion;
 use App\Models\CicloEscolar;
@@ -248,6 +250,202 @@ test('alumnos filters by estatus', function () {
         ->assertOk()
         ->assertSee('ACT001')
         ->assertSee('BAJA001');
+});
+
+// ─── Alumnos: Family / Parents / Tutors ───
+
+test('alumnos creates alumno with one parent as tutor', function () {
+    $user = User::factory()->create();
+    $user->assignRole('Superadmin');
+
+    $grado = Grado::factory()->create(['nombre' => '1°']);
+    $ciclo = CicloEscolar::factory()->activo()->create();
+    $grupo = Grupo::factory()->for($grado)->for($ciclo)->create();
+
+    Livewire::actingAs($user)
+        ->test(Alumnos::class)
+        ->call('crear')
+        ->set('nombre', 'Juanito')
+        ->set('apellido_paterno', 'Pérez')
+        ->set('apellido_materno', 'López')
+        ->set('grado_id', $grado->id)
+        ->set('grupo_id', $grupo->id)
+        ->set('showFamilia', true)
+        ->set('tipo_registro', 'padres')
+        ->set('p1_nombre', 'José')
+        ->set('p1_apellido_paterno', 'Pérez')
+        ->set('p1_apellido_materno', 'García')
+        ->set('p1_parentesco', 'Padre')
+        ->set('p1_telefono', '5512345678')
+        ->set('p1_email', 'jose@example.com')
+        ->set('tutor_designado', 'padre1')
+        ->call('guardar')
+        ->assertOk();
+
+    // Verify alumno was created
+    $alumno = Alumno::where('matricula', 'like', 'ALU%')->first();
+    expect($alumno)->not->toBeNull();
+
+    // Verify persona for parent exists
+    $this->assertDatabaseHas('personas', [
+        'nombre' => 'José',
+        'apellido_paterno' => 'Pérez',
+        'email' => 'jose@example.com',
+    ]);
+
+    // Verify family pivot
+    $this->assertDatabaseHas('alumno_familia', [
+        'alumno_id' => $alumno->id,
+        'parentesco' => 'Padre',
+    ]);
+
+    // Verify tutor user was auto-created
+    $this->assertDatabaseHas('users', [
+        'email' => 'jose@example.com',
+    ]);
+    $tutorUser = User::where('email', 'jose@example.com')->first();
+    expect($tutorUser)->not->toBeNull();
+    expect($tutorUser->hasRole('Tutor'))->toBeTrue();
+});
+
+test('alumnos creates alumno with two parents and designated tutor', function () {
+    $user = User::factory()->create();
+    $user->assignRole('Superadmin');
+
+    $grado = Grado::factory()->create(['nombre' => '1°']);
+    $ciclo = CicloEscolar::factory()->activo()->create();
+    $grupo = Grupo::factory()->for($grado)->for($ciclo)->create();
+
+    Livewire::actingAs($user)
+        ->test(Alumnos::class)
+        ->call('crear')
+        ->set('nombre', 'María')
+        ->set('apellido_paterno', 'García')
+        ->set('grado_id', $grado->id)
+        ->set('grupo_id', $grupo->id)
+        ->set('showFamilia', true)
+        ->set('tipo_registro', 'padres')
+        ->set('p1_nombre', 'Carlos')
+        ->set('p1_apellido_paterno', 'García')
+        ->set('p1_parentesco', 'Padre')
+        ->set('p1_telefono', '5511111111')
+        ->set('p2_activo', true)
+        ->set('p2_nombre', 'Laura')
+        ->set('p2_apellido_paterno', 'García')
+        ->set('p2_parentesco', 'Madre')
+        ->set('p2_telefono', '5522222222')
+        ->set('tutor_designado', 'padre2')
+        ->call('guardar')
+        ->assertOk();
+
+    $alumno = Alumno::where('matricula', 'like', 'ALU%')->latest()->first();
+
+    // Both parents in family
+    expect($alumno->familiares()->count())->toBe(2);
+
+    // Tutor user created for parent 2 (madre)
+    $tutorPersona = $alumno->familiares()
+        ->where('parentesco', 'Madre')
+        ->first()?->persona;
+    expect($tutorPersona)->not->toBeNull();
+    expect($tutorPersona->user)->not->toBeNull();
+    expect($tutorPersona->user->hasRole('Tutor'))->toBeTrue();
+});
+
+test('alumnos creates alumno with legal tutor', function () {
+    $user = User::factory()->create();
+    $user->assignRole('Superadmin');
+
+    $grado = Grado::factory()->create(['nombre' => '1°']);
+    $ciclo = CicloEscolar::factory()->activo()->create();
+    $grupo = Grupo::factory()->for($grado)->for($ciclo)->create();
+
+    Livewire::actingAs($user)
+        ->test(Alumnos::class)
+        ->call('crear')
+        ->set('nombre', 'Luis')
+        ->set('apellido_paterno', 'Martínez')
+        ->set('grado_id', $grado->id)
+        ->set('grupo_id', $grupo->id)
+        ->set('showFamilia', true)
+        ->set('tipo_registro', 'tutor_legal')
+        ->set('tl_nombre', 'Roberto')
+        ->set('tl_apellido_paterno', 'Martínez')
+        ->set('tl_telefono', '5533333333')
+        ->set('tl_email', 'roberto@example.com')
+        ->call('guardar')
+        ->assertOk();
+
+    $alumno = Alumno::where('matricula', 'like', 'ALU%')->latest()->first();
+    expect($alumno->familiares()->count())->toBe(1);
+    expect($alumno->familiares()->first()->parentesco)->toBe('Tutor');
+
+    // Tutor user created
+    $this->assertDatabaseHas('users', [
+        'email' => 'roberto@example.com',
+    ]);
+});
+
+test('alumnos edit preserves family data', function () {
+    $user = User::factory()->create();
+    $user->assignRole('Superadmin');
+
+    $grado = Grado::factory()->create(['nombre' => '1°']);
+    $ciclo = CicloEscolar::factory()->activo()->create();
+    $grupo = Grupo::factory()->for($grado)->for($ciclo)->create();
+
+    $persona = Persona::factory()->create(['nombre' => 'Alumno', 'apellido_paterno' => 'Test']);
+    $alumno = Alumno::factory()->create([
+        'persona_id' => $persona->id,
+        'grado_id' => $grado->id,
+        'grupo_id' => $grupo->id,
+        'ciclo_escolar_id' => $ciclo->id,
+        'matricula' => 'FAM001',
+    ]);
+
+    // Add a parent with user account
+    $padre = Persona::factory()->create([
+        'nombre' => 'Papá',
+        'apellido_paterno' => 'Test',
+        'email' => 'papa@example.com',
+    ]);
+    AlumnoFamilia::factory()->create([
+        'alumno_id' => $alumno->id,
+        'persona_id' => $padre->id,
+        'parentesco' => 'Padre',
+    ]);
+    $tutorUser = User::factory()->create([
+        'name' => 'Papá Test',
+        'email' => 'papa@example.com',
+        'persona_id' => $padre->id,
+    ]);
+    $tutorUser->assignRole('Tutor');
+
+    Livewire::actingAs($user)
+        ->test(Alumnos::class)
+        ->call('editar', $alumno->id)
+        ->assertSet('p1_nombre', 'Papá')
+        ->assertSet('p1_apellido_paterno', 'Test')
+        ->assertSet('showFamilia', true);
+});
+
+test('alumnos creates alumno without family data', function () {
+    $user = User::factory()->create();
+    $user->assignRole('Superadmin');
+
+    $grado = Grado::factory()->create(['nombre' => '1°']);
+
+    Livewire::actingAs($user)
+        ->test(Alumnos::class)
+        ->call('crear')
+        ->set('nombre', 'Solo')
+        ->set('apellido_paterno', 'Alumno')
+        ->set('grado_id', $grado->id)
+        ->call('guardar')
+        ->assertOk();
+
+    $alumno = Alumno::where('matricula', 'like', 'ALU%')->latest()->first();
+    expect($alumno->familiares()->count())->toBe(0);
 });
 
 test('superadmin can access all catalog pages', function () {

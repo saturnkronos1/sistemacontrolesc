@@ -19,7 +19,24 @@ class Persona extends Model
         'apellido_materno',
         'curp',
         'telefono',
+        'telefono_2',
+        'email',
+        'fecha_nacimiento',
+        'domicilio',
+        'foto_perfil',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'fecha_nacimiento' => 'date:Y-m-d',
+        ];
+    }
+
+    public function nombreCompleto(): string
+    {
+        return trim("{$this->nombre} {$this->apellido_paterno} {$this->apellido_materno}");
+    }
 
     /** @return HasMany<Alumno, $this> */
     public function alumnos(): HasMany

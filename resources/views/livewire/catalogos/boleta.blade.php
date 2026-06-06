@@ -1,5 +1,5 @@
 <div>
-    <x-layouts::app.sidebar>
+    {{-- <x-layouts::app.sidebar> --}}
         <flux:main>
             <x-page-header title="Boleta de Calificaciones" />
             <div class="flex items-center justify-between mb-6">
@@ -162,5 +162,5 @@
                 </div>
             @endif
         </flux:main>
-    </x-layouts::app.sidebar>
+    {{-- </x-layouts::app.sidebar> --}}
 </div>

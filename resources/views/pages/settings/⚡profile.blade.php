@@ -110,7 +110,7 @@ new #[Title('Profile settings')] class extends Component {
             return null;
         }
 
-        return Storage::disk('public')->url($user->foto_perfil);
+        return '/storage/' . $user->foto_perfil;
     }
 }; ?>
 

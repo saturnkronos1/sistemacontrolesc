@@ -8,6 +8,7 @@ use App\Livewire\Catalogos\CiclosEscolares;
 use App\Livewire\Catalogos\Docentes;
 use App\Livewire\Catalogos\Grupos;
 use App\Livewire\Catalogos\Materias;
+use App\Livewire\Catalogos\PadresFamilia;
 use App\Livewire\Catalogos\PeriodosEvaluacion;
 use App\Livewire\Catalogos\Reinscripciones;
 use App\Livewire\Catalogos\Reportes;
@@ -60,6 +61,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Alumnos
     Route::prefix('alumnos')->name('alumnos.')->group(function () {
         Route::get('/', Alumnos::class)->name('index');
+    });
+
+    // Padres de Familia
+    Route::prefix('padres-familia')->name('padres-familia.')->group(function () {
+        Route::get('/', PadresFamilia::class)->name('index');
     });
 
     // Calificaciones

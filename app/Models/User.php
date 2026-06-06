@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Contracts\PasskeyUser;
 use Laravel\Fortify\PasskeyAuthenticatable;
@@ -60,7 +59,7 @@ class User extends Authenticatable implements PasskeyUser
             return null;
         }
 
-        return Storage::disk('public')->url($this->foto_perfil);
+        return '/storage/'.$this->foto_perfil;
     }
 
     /** @return BelongsTo<Persona, $this> */

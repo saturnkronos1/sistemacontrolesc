@@ -154,6 +154,9 @@
             <main class="flex-1 p-6 mx-auto w-full max-w-7xl">
                 {{ $slot }}
             </main>
+
+            {{-- Footer --}}
+            <x-footer />
         </div>
     </div>
 

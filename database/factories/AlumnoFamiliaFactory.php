@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\AlumnoFamilia;
+use App\Models\Persona;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,7 +19,8 @@ class AlumnoFamiliaFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'persona_id' => Persona::factory(),
+            'parentesco' => fake()->randomElement(['Padre', 'Madre', 'Tutor']),
         ];
     }
 }

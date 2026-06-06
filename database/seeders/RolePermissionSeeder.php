@@ -20,6 +20,7 @@ class RolePermissionSeeder extends Seeder
             'Docentes' => ['listar', 'crear', 'editar', 'eliminar'],
             'Grupos' => ['listar', 'crear', 'editar', 'asignar-docente'],
             'Alumnos' => ['listar', 'inscribir', 'editar', 'dar-baja', 'dar-egreso'],
+            'Padres' => ['listar', 'crear', 'editar', 'eliminar'],
             'Calificaciones' => ['capturar', 'ver-reporte'],
             'Asistencia' => ['pasar-lista', 'ver-reporte', 'subir-justificante', 'validar-justificante'],
             'Boleta' => ['generar', 'descargar'],
@@ -67,6 +68,8 @@ class RolePermissionSeeder extends Seeder
             'asistencia.pasar-lista', 'asistencia.ver-reporte', 'asistencia.subir-justificante', 'asistencia.validar-justificante',
             // Boleta
             'boleta.generar', 'boleta.descargar',
+            // Padres
+            'padres.listar', 'padres.crear', 'padres.editar', 'padres.eliminar',
             // Reinscripciones
             'reinscripciones.reinscribir', 'reinscripciones.listar',
             // Reportes
