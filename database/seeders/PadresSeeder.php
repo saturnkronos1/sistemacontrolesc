@@ -24,6 +24,10 @@ class PadresSeeder extends Seeder
         $parentescos = ['Padre', 'Madre', 'Tutor'];
 
         foreach ($alumnos as $alumno) {
+            if ($alumno->familiares()->exists()) {
+                continue;
+            }
+
             // 30% chance: reuse an existing tutor for this grupo (simulates siblings).
             $existing = AlumnoFamilia::whereHas('alumno', fn ($q) => $q->where('grupo_id', $alumno->grupo_id))
                 ->inRandomOrder()
