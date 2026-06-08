@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Database\Factories\CicloEscolarFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -18,7 +19,8 @@ class CicloEscolar extends Model
         'nombre',
         'fecha_inicio',
         'fecha_fin',
-        'activo',
+        'estatus',
+        'autocreado',
     ];
 
     protected function casts(): array
@@ -26,7 +28,7 @@ class CicloEscolar extends Model
         return [
             'fecha_inicio' => 'date',
             'fecha_fin' => 'date',
-            'activo' => 'boolean',
+            'autocreado' => 'boolean',
         ];
     }
 
@@ -40,5 +42,21 @@ class CicloEscolar extends Model
     public function grupos(): HasMany
     {
         return $this->hasMany(Grupo::class);
+    }
+
+    // ── Scopes ───────────────────────────────────
+
+    /** Scope for active cycles (estatus = 'activo'). */
+    public function scopeActivo(Builder $query): void
+    {
+        $query->where('estatus', 'activo');
+    }
+
+    // ── Accessors / Mutators ──────────────────────
+
+    /** Backward-compatible accessor for blade/tests that used $ciclo->activo. */
+    public function getActivoAttribute(): bool
+    {
+        return $this->estatus === 'activo';
     }
 }

@@ -3,6 +3,7 @@
 use App\Livewire\Catalogos\Alumnos;
 use App\Livewire\Catalogos\Boleta;
 use App\Livewire\Catalogos\Calificaciones;
+use App\Livewire\Catalogos\CiclosEscolares;
 use App\Livewire\Catalogos\Reinscripciones;
 use App\Models\Alumno;
 use App\Models\AlumnoFamilia;
@@ -865,7 +866,7 @@ test('reinscripciones reinscribe alumno a nuevo grupo', function () {
     $grado1 = Grado::factory()->create(['nombre' => '1°']);
     $grado2 = Grado::factory()->create(['nombre' => '2°']);
     $cicloActivo = CicloEscolar::factory()->activo()->create();
-    $cicloNuevo = CicloEscolar::factory()->create(['nombre' => '2026-2027', 'activo' => false]);
+    $cicloNuevo = CicloEscolar::factory()->create(['nombre' => '2026-2027', 'estatus' => 'pendiente']);
 
     $sourceGrupo = Grupo::factory()->for($grado1)->for($cicloActivo)->create(['nombre' => 'A']);
     $targetGrupo = Grupo::factory()->for($grado2)->for($cicloNuevo)->create(['nombre' => 'A']);
@@ -893,5 +894,33 @@ test('reinscripciones reinscribe alumno a nuevo grupo', function () {
         'grupo_id' => $targetGrupo->id,
         'ciclo_escolar_id' => $cicloNuevo->id,
         'estatus' => 'activo',
+    ]);
+});
+
+// ─── Ciclos Escolares: confirmación rápida ───
+
+test('confirma ciclo pendiente y finaliza el activo anterior', function () {
+    $user = User::factory()->create();
+    $user->assignRole('Superadmin');
+
+    $activo = CicloEscolar::factory()->activo()->create(['nombre' => '2025-2026']);
+    $pendiente = CicloEscolar::factory()->create([
+        'nombre' => '2026-2027',
+        'estatus' => 'pendiente',
+        'autocreado' => true,
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(CiclosEscolares::class)
+        ->call('confirmar', $pendiente->id);
+
+    $this->assertDatabaseHas('ciclos_escolares', [
+        'id' => $pendiente->id,
+        'estatus' => 'activo',
+    ]);
+
+    $this->assertDatabaseHas('ciclos_escolares', [
+        'id' => $activo->id,
+        'estatus' => 'finalizado',
     ]);
 });

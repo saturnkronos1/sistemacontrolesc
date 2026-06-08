@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\CicloEscolar;
+use App\Support\CicloActivoService;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
@@ -12,8 +12,10 @@ class CicloActivoMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
+        $cicloActivoService = app(CicloActivoService::class);
+
         try {
-            $cicloActivo = CicloEscolar::where('activo', true)->first();
+            $cicloActivo = $cicloActivoService->get();
         } catch (\Exception) {
             $cicloActivo = null;
         }

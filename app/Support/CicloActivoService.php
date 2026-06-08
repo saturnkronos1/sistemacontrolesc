@@ -19,12 +19,17 @@ class CicloActivoService
 
     /**
      * Get the active school cycle model, or null if none is set.
+     *
+     * We cache only the ID to avoid serialization issues (__PHP_Incomplete_Class)
+     * when the model definition changes between cache writes and reads.
      */
     public function get(): ?CicloEscolar
     {
-        return Cache::remember(self::CACHE_KEY, self::CACHE_TTL, function () {
-            return CicloEscolar::where('activo', true)->first();
+        $id = Cache::remember(self::CACHE_KEY, self::CACHE_TTL, function () {
+            return CicloEscolar::activo()->value('id');
         });
+
+        return $id !== null ? CicloEscolar::find($id) : null;
     }
 
     /**
@@ -32,7 +37,9 @@ class CicloActivoService
      */
     public function getId(): ?int
     {
-        return $this->get()?->id;
+        return Cache::remember(self::CACHE_KEY, self::CACHE_TTL, function () {
+            return CicloEscolar::activo()->value('id');
+        });
     }
 
     /**
