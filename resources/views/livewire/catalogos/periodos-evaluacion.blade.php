@@ -3,7 +3,7 @@
         <flux:main>
             <x-page-header title="Periodos de Evaluación" />
             <div class="flex items-center justify-between mb-6">
-                <h1 class="text-2xl font-bold">Periodos de Evaluación</h1>
+                <h1 class="text-2xl font-bold lg:hidden">Periodos de Evaluación</h1>
                 <flux:button wire:click="crear" variant="primary">
                     Nuevo Periodo
                 </flux:button>

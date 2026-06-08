@@ -3,7 +3,7 @@
         <flux:main>
             <x-page-header title="Grupos" />
             <div class="flex items-center justify-between mb-6">
-                <h1 class="text-2xl font-bold">Grupos</h1>
+                <h1 class="text-2xl font-bold lg:hidden">Grupos</h1>
                 <flux:button wire:click="crear" variant="primary">
                     Nuevo Grupo
                 </flux:button>
