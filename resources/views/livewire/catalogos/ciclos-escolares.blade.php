@@ -36,10 +36,10 @@
                                     <x-sort-indicator :field="'fecha_fin'" :sort-field="$sortField" :sort-direction="$sortDirection" />
                                 </div>
                             </th>
-                            <th wire:click="sortBy('activo')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-zinc-700 dark:hover:text-zinc-300 whitespace-nowrap">
+                            <th wire:click="sortBy('estatus')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-zinc-700 dark:hover:text-zinc-300 whitespace-nowrap">
                                 <div class="flex items-center gap-1">
-                                    Activo
-                                    <x-sort-indicator :field="'activo'" :sort-field="$sortField" :sort-direction="$sortDirection" />
+                                    Estatus
+                                    <x-sort-indicator :field="'estatus'" :sort-field="$sortField" :sort-direction="$sortDirection" />
                                 </div>
                             </th>
                             <th class="px-4 py-3"></th>
@@ -52,17 +52,29 @@
                                 <td class="px-4 py-3 text-sm">{{ $ciclo->fecha_inicio->format('d/m/Y') }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $ciclo->fecha_fin->format('d/m/Y') }}</td>
                                 <td class="px-4 py-3">
-                                    @if($ciclo->activo)
-                                        <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-300">
-                                            Activo
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-zinc-600 dark:bg-zinc-700 dark:text-zinc-400">
-                                            Inactivo
-                                        </span>
-                                    @endif
+                                    @php
+                                        $badge = match($ciclo->estatus) {
+                                            'activo' => ['color' => 'green', 'label' => 'Activo'],
+                                            'pendiente' => ['color' => 'yellow', 'label' => 'Pendiente'],
+                                            'finalizado' => ['color' => 'zinc', 'label' => 'Finalizado'],
+                                            default => ['color' => 'zinc', 'label' => $ciclo->estatus],
+                                        };
+                                    @endphp
+                                    <span @class([
+                                        'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
+                                        'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' => $badge['color'] === 'green',
+                                        'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300' => $badge['color'] === 'yellow',
+                                        'bg-zinc-100 text-zinc-600 dark:bg-zinc-700 dark:text-zinc-400' => $badge['color'] === 'zinc',
+                                    ])>
+                                        {{ $badge['label'] }}
+                                    </span>
                                 </td>
-                                <td class="px-4 py-3 text-right">
+                                <td class="px-4 py-3 text-right flex items-center justify-end gap-2">
+                                    @if($ciclo->estatus === 'pendiente' && $ciclo->autocreado)
+                                        <flux:button wire:click="confirmar({{ $ciclo->id }})" size="sm" variant="primary" inset="top bottom" wire:confirm="¿Activar este ciclo escolar?">
+                                            Confirmar
+                                        </flux:button>
+                                    @endif
                                     <flux:button wire:click="editar({{ $ciclo->id }})" size="sm" inset="top bottom">Editar</flux:button>
                                     <flux:button wire:click="eliminar({{ $ciclo->id }})" size="sm" variant="danger" inset="top bottom" wire:confirm="¿Eliminar este ciclo escolar?">Eliminar</flux:button>
                                 </td>
@@ -96,7 +108,11 @@
                         <flux:input wire:model="fecha_fin" label="Fecha de fin" type="date" />
                     </div>
 
-                    <flux:checkbox wire:model="activo" label="Establecer como activo" />
+                    <flux:select wire:model="estatus" label="Estatus">
+                        <option value="pendiente">Pendiente</option>
+                        <option value="activo">Activo</option>
+                        <option value="finalizado">Finalizado</option>
+                    </flux:select>
 
                     <div class="flex justify-end gap-3 pt-2">
                         <flux:button wire:click="resetModal" variant="ghost">Cancelar</flux:button>

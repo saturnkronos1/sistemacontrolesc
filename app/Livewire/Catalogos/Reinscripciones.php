@@ -3,8 +3,8 @@
 namespace App\Livewire\Catalogos;
 
 use App\Models\Alumno;
-use App\Models\CicloEscolar;
 use App\Models\Grupo;
+use App\Support\CicloActivoService;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
@@ -29,7 +29,7 @@ class Reinscripciones extends Component
             ->get();
 
         // Mostrar solo grupos del ciclo activo como fuente, y otros como destino
-        $cicloActivo = CicloEscolar::where('activo', true)->first();
+        $cicloActivo = app(CicloActivoService::class)->get();
 
         return view('livewire.catalogos.reinscripciones', [
             'grupos' => $grupos,

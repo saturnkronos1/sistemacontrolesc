@@ -3,6 +3,7 @@
 namespace App\Livewire\Catalogos;
 
 use App\Models\CicloEscolar;
+use App\Support\CicloActivoService;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -20,7 +21,7 @@ class CiclosEscolares extends Component
 
     public $fecha_fin = '';
 
-    public $activo = false;
+    public string $estatus = 'pendiente';
 
     public string $sortField = 'fecha_inicio';
 
@@ -34,7 +35,7 @@ class CiclosEscolares extends Component
             'nombre' => 'required|string|max:255',
             'fecha_inicio' => 'required|date',
             'fecha_fin' => 'required|date|after:fecha_inicio',
-            'activo' => 'boolean',
+            'estatus' => 'required|in:pendiente,activo,finalizado',
         ];
     }
 
@@ -77,7 +78,7 @@ class CiclosEscolares extends Component
         $this->nombre = $ciclo->nombre;
         $this->fecha_inicio = $ciclo->fecha_inicio->format('Y-m-d');
         $this->fecha_fin = $ciclo->fecha_fin->format('Y-m-d');
-        $this->activo = $ciclo->activo;
+        $this->estatus = $ciclo->estatus;
         $this->showModal = true;
     }
 
@@ -85,9 +86,13 @@ class CiclosEscolares extends Component
     {
         $this->validate();
 
-        if ($this->activo) {
-            // Desactivar todos los otros ciclos
-            CicloEscolar::where('id', '!=', $this->editId)->update(['activo' => false]);
+        $cicloActivoService = app(CicloActivoService::class);
+
+        if ($this->estatus === 'activo') {
+            // Desactivar otros ciclos activos
+            CicloEscolar::where('id', '!=', $this->editId)
+                ->where('estatus', 'activo')
+                ->update(['estatus' => 'pendiente']);
         }
 
         CicloEscolar::updateOrCreate(
@@ -96,12 +101,29 @@ class CiclosEscolares extends Component
                 'nombre' => $this->nombre,
                 'fecha_inicio' => $this->fecha_inicio,
                 'fecha_fin' => $this->fecha_fin,
-                'activo' => $this->activo,
+                'estatus' => $this->estatus,
             ]
         );
 
+        $cicloActivoService->refresh();
+
         $this->dispatch('toast', message: 'Ciclo escolar guardado exitosamente.', type: 'success');
         $this->resetModal();
+    }
+
+    public function confirmar($id)
+    {
+        $ciclo = CicloEscolar::findOrFail($id);
+        $ciclo->update(['estatus' => 'activo']);
+
+        // Finalizar el ciclo activo anterior
+        CicloEscolar::where('estatus', 'activo')
+            ->where('id', '!=', $ciclo->id)
+            ->update(['estatus' => 'finalizado']);
+
+        app(CicloActivoService::class)->refresh();
+
+        $this->dispatch('toast', message: "Ciclo {$ciclo->nombre} confirmado y activado.", type: 'success');
     }
 
     public function eliminar($id)
@@ -117,6 +139,6 @@ class CiclosEscolares extends Component
         $this->nombre = '';
         $this->fecha_inicio = '';
         $this->fecha_fin = '';
-        $this->activo = false;
+        $this->estatus = 'pendiente';
     }
 }

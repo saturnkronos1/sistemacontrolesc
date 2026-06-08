@@ -6,6 +6,7 @@ use App\Models\CicloEscolar;
 use App\Models\Grado;
 use App\Models\Grupo;
 use App\Models\User;
+use App\Support\CicloActivoService;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -85,9 +86,9 @@ class Grupos extends Component
     public function crear()
     {
         $this->resetModal();
-        $activeCiclo = CicloEscolar::where('activo', true)->first();
-        if ($activeCiclo) {
-            $this->ciclo_escolar_id = $activeCiclo->id;
+        $cicloActivoId = app(CicloActivoService::class)->getId();
+        if ($cicloActivoId) {
+            $this->ciclo_escolar_id = $cicloActivoId;
         }
         $this->showModal = true;
     }

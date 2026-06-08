@@ -12,7 +12,7 @@ class GrupoSeeder extends Seeder
 {
     public function run(): void
     {
-        $ciclo = CicloEscolar::where('activo', true)->first();
+        $ciclo = CicloEscolar::activo()->first();
 
         if (! $ciclo) {
             return;

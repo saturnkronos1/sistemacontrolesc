@@ -30,13 +30,17 @@ class CalificacionesSeeder extends Seeder
 
             foreach ($materias as $materia) {
                 foreach ($periodos as $periodo) {
-                    Calificacion::create([
-                        'alumno_id' => $alumno->id,
-                        'grupo_id' => $alumno->grupo_id,
-                        'materia_id' => $materia->id,
-                        'periodo_evaluacion_id' => $periodo->id,
-                        'calificacion' => fake()->randomFloat(2, 6, 10),
-                    ]);
+                    Calificacion::firstOrCreate(
+                        [
+                            'alumno_id' => $alumno->id,
+                            'grupo_id' => $alumno->grupo_id,
+                            'materia_id' => $materia->id,
+                            'periodo_evaluacion_id' => $periodo->id,
+                        ],
+                        [
+                            'calificacion' => fake()->randomFloat(2, 6, 10),
+                        ]
+                    );
                 }
             }
         }

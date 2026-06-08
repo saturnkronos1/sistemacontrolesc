@@ -25,7 +25,8 @@ class CicloEscolarFactory extends Factory
             'nombre' => "{$year}-{$nextYear}",
             'fecha_inicio' => "{$year}-08-15",
             'fecha_fin' => "{$nextYear}-07-15",
-            'activo' => false,
+            'estatus' => 'pendiente',
+            'autocreado' => false,
         ];
     }
 
@@ -33,7 +34,7 @@ class CicloEscolarFactory extends Factory
     public function activo(): static
     {
         return $this->state(fn (array $attributes) => [
-            'activo' => true,
+            'estatus' => 'activo',
         ]);
     }
 }

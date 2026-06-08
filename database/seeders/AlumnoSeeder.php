@@ -22,6 +22,13 @@ class AlumnoSeeder extends Seeder
 
         foreach ($grupos as $grupo) {
             for ($i = 1; $i <= 20; $i++) {
+                $matricula = sprintf('ALU%s%04d', $anio, $seq);
+                $seq++;
+
+                if (Alumno::where('matricula', $matricula)->exists()) {
+                    continue;
+                }
+
                 $persona = Persona::factory()->create();
 
                 Alumno::create([
@@ -29,11 +36,9 @@ class AlumnoSeeder extends Seeder
                     'grado_id' => $grupo->grado_id,
                     'grupo_id' => $grupo->id,
                     'ciclo_escolar_id' => $grupo->ciclo_escolar_id,
-                    'matricula' => sprintf('ALU%s%04d', $anio, $seq),
+                    'matricula' => $matricula,
                     'estatus' => 'activo',
                 ]);
-
-                $seq++;
             }
         }
     }
