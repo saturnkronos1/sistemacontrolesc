@@ -3,7 +3,7 @@
         <flux:main>
             <x-page-header title="Boleta de Calificaciones" />
             <div class="flex items-center justify-between mb-6">
-                <h1 class="text-2xl font-bold">Boleta de Calificaciones</h1>
+                <h1 class="text-2xl font-bold lg:hidden">Boleta de Calificaciones</h1>
             </div>
 
             {{-- Selectores --}}

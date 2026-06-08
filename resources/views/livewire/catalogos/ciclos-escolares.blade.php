@@ -3,7 +3,7 @@
         <flux:main>
             <x-page-header title="Ciclos Escolares" />
             <div class="flex items-center justify-between mb-6">
-                <h1 class="text-2xl font-bold">Ciclos Escolares</h1>
+                <h1 class="text-2xl font-bold lg:hidden">Ciclos Escolares</h1>
                 <flux:button wire:click="crear" variant="primary">
                     Nuevo Ciclo
                 </flux:button>

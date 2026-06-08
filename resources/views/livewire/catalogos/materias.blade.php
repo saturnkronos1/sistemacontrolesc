@@ -3,7 +3,7 @@
         <flux:main>
             <x-page-header title="Materias" />
             <div class="flex items-center justify-between mb-6">
-                <h1 class="text-2xl font-bold">Materias</h1>
+                <h1 class="text-2xl font-bold lg:hidden">Materias</h1>
                 <flux:button wire:click="crear" variant="primary">
                     Nueva Materia
                 </flux:button>
