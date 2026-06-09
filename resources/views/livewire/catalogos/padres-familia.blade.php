@@ -176,8 +176,8 @@
 
                 @if($crear_cuenta)
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <flux:input wire:model="password" label="{{ $editId ? 'Nueva contraseña (dejar vacío para mantener)' : 'Contraseña *' }}" type="password" />
-                        <flux:input wire:model="password_confirmation" label="Confirmar contraseña" type="password" />
+                        <flux:input wire:model="password" label="{{ $editId ? 'Nueva contraseña (dejar vacío para mantener)' : 'Contraseña *' }}" type="password" viewable />
+                        <flux:input wire:model="password_confirmation" label="Confirmar contraseña" type="password" viewable />
                     </div>
                 @endif
 

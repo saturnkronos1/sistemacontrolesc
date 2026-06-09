@@ -94,11 +94,11 @@
                     <flux:input wire:model="email" label="Email" type="email" placeholder="correo@ejemplo.com" />
 
                     @if($editId)
-                        <flux:input wire:model="password" label="Nueva contraseña (dejar vacío para mantener)" type="password" />
-                        <flux:input wire:model="password_confirmation" label="Confirmar contraseña" type="password" />
+                        <flux:input wire:model="password" label="Nueva contraseña (dejar vacío para mantener)" type="password" viewable />
+                        <flux:input wire:model="password_confirmation" label="Confirmar contraseña" type="password" viewable />
                     @else
-                        <flux:input wire:model="password" label="Contraseña" type="password" />
-                        <flux:input wire:model="password_confirmation" label="Confirmar contraseña" type="password" />
+                        <flux:input wire:model="password" label="Contraseña" type="password" viewable />
+                        <flux:input wire:model="password_confirmation" label="Confirmar contraseña" type="password" viewable />
                     @endif
 
                     <flux:select wire:model="rol" label="Rol">

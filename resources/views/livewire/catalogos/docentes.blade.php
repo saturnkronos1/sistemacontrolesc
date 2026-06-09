@@ -137,8 +137,8 @@
 
                     {{-- Password --}}
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <flux:input wire:model="password" label="{{ $editId ? 'Nueva contraseña (dejar vacío para mantener)' : 'Contraseña *' }}" type="password" />
-                        <flux:input wire:model="password_confirmation" label="Confirmar contraseña" type="password" />
+                        <flux:input wire:model="password" label="{{ $editId ? 'Nueva contraseña (dejar vacío para mantener)' : 'Contraseña *' }}" type="password" viewable />
+                        <flux:input wire:model="password_confirmation" label="Confirmar contraseña" type="password" viewable />
                     </div>
 
                     <div class="flex justify-end gap-3 pt-2">
