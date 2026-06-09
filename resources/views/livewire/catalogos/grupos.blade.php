@@ -19,7 +19,8 @@
                     </flux:select>
                 </div>
                 <div class="max-w-xs flex-1">
-                    <flux:select wire:model.live="filtro_grado" placeholder="Todos los grados">
+                    <flux:select wire:model.live="filtro_grado">
+                        <option value="">Todos los grados</option>
                         @foreach($grados as $grado)
                             <option value="{{ $grado->id }}">{{ $grado->nombre }}</option>
                         @endforeach
