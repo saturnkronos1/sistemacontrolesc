@@ -71,7 +71,7 @@ class Boleta extends Component
             $grupo = Grupo::with('grado')->find($this->grupo_id);
             if ($grupo) {
                 $this->alumnos = $grupo->alumnos()
-                    ->where('estatus', 'activo')
+                    ->where('alumnos.estatus', 'activo')
                     ->with('persona')
                     ->join('personas', 'alumnos.persona_id', '=', 'personas.id')
                     ->orderBy('personas.apellido_paterno')

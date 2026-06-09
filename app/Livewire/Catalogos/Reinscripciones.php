@@ -52,7 +52,7 @@ class Reinscripciones extends Component
         $grupo = Grupo::with('grado', 'cicloEscolar')->findOrFail($this->source_grupo_id);
 
         $this->alumnos = $grupo->alumnos()
-            ->where('estatus', 'activo')
+            ->where('alumnos.estatus', 'activo')
             ->with('persona', 'grado')
             ->join('personas', 'alumnos.persona_id', '=', 'personas.id')
             ->orderBy('personas.apellido_paterno')

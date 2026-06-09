@@ -55,7 +55,7 @@ class Asistencia extends Component
         $grupo = Grupo::with('grado')->findOrFail($this->grupo_id);
 
         $this->alumnos = $grupo->alumnos()
-            ->where('estatus', 'activo')
+            ->where('alumnos.estatus', 'activo')
             ->with('persona')
             ->join('personas', 'alumnos.persona_id', '=', 'personas.id')
             ->orderBy('personas.apellido_paterno')
