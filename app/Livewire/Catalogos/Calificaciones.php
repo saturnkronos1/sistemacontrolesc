@@ -79,7 +79,7 @@ class Calificaciones extends Component
 
         // Cargar alumnos activos del grupo
         $this->alumnos = $grupo->alumnos()
-            ->where('estatus', 'activo')
+            ->where('alumnos.estatus', 'activo')
             ->with('persona')
             ->join('personas', 'alumnos.persona_id', '=', 'personas.id')
             ->orderBy('personas.apellido_paterno')

@@ -18,12 +18,14 @@ class Persona extends Model
         'apellido_paterno',
         'apellido_materno',
         'curp',
+        'cedula',
         'telefono',
         'telefono_2',
         'email',
         'fecha_nacimiento',
         'domicilio',
         'foto_perfil',
+        'estatus',
     ];
 
     protected function casts(): array
@@ -32,6 +34,10 @@ class Persona extends Model
             'fecha_nacimiento' => 'date:Y-m-d',
         ];
     }
+
+    protected $attributes = [
+        'estatus' => 'activo',
+    ];
 
     public function nombreCompleto(): string
     {
