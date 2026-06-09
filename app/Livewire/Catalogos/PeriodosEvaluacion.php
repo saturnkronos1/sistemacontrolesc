@@ -34,6 +34,11 @@ class PeriodosEvaluacion extends Component
 
     public string $search = '';
 
+    public function mount(): void
+    {
+        $this->filtro_ciclo = (string) app(CicloActivoService::class)->getId() ?: '';
+    }
+
     protected function rules()
     {
         return [
