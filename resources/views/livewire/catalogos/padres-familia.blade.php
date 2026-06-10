@@ -104,8 +104,8 @@
                     <flux:input wire:model="apellido_paterno" label="Apellido Paterno *" placeholder="Apellido paterno" />
                     <flux:input wire:model="apellido_materno" label="Apellido Materno" placeholder="Apellido materno" />
                     <flux:input wire:model="curp" label="CURP" placeholder="18 caracteres" maxlength="18" />
-                    <flux:input wire:model="telefono" label="Teléfono" placeholder="10 dígitos" />
-                    <flux:input wire:model="telefono_2" label="Teléfono 2" placeholder="Teléfono adicional" />
+                    <flux:input wire:model="telefono" label="Teléfono" type="tel" placeholder="10 dígitos" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)" />
+                    <flux:input wire:model="telefono_2" label="Teléfono 2" type="tel" placeholder="Teléfono adicional" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)" />
                     <flux:input wire:model="email" label="Email" type="email" placeholder="correo@ejemplo.com" />
                     <flux:input wire:model="fecha_nacimiento" label="Fecha de Nacimiento" type="date" />
                 </div>

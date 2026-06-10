@@ -114,7 +114,7 @@
 
                     {{-- Teléfono y correo --}}
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <flux:input wire:model="telefono" label="Teléfono" placeholder="10 dígitos" maxlength="20" />
+                        <flux:input wire:model="telefono" label="Teléfono" type="tel" placeholder="10 dígitos" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)" />
                         <flux:input wire:model="correo" label="Correo" type="email" placeholder="correo@ejemplo.com" />
                     </div>
 

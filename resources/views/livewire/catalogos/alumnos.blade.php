@@ -148,7 +148,7 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <flux:input wire:model="curp" label="CURP" placeholder="GARC123456HDFRRN08" maxlength="18" class="font-mono uppercase" />
-                    <flux:input wire:model="telefono" label="Teléfono" placeholder="5512345678" maxlength="20" />
+                    <flux:input wire:model="telefono" label="Teléfono" type="tel" placeholder="5512345678" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)" />
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -205,10 +205,10 @@
                                             <option value="Padre">Padre</option>
                                             <option value="Madre">Madre</option>
                                         </flux:select>
-                                        <flux:input wire:model="p1_telefono" label="Teléfono" placeholder="5512345678" />
+                                        <flux:input wire:model="p1_telefono" label="Teléfono" type="tel" placeholder="5512345678" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)" />
                                     </div>
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                        <flux:input wire:model="p1_telefono_2" label="Teléfono 2 (opcional)" placeholder="5512345679" />
+                                        <flux:input wire:model="p1_telefono_2" label="Teléfono 2 (opcional)" type="tel" placeholder="5512345679" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)" />
                                         <flux:input wire:model="p1_email" label="Email (opcional)" placeholder="correo@ejemplo.com" type="email" />
                                     </div>
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -234,10 +234,10 @@
                                                 <option value="Madre">Madre</option>
                                                 <option value="Padre">Padre</option>
                                             </flux:select>
-                                            <flux:input wire:model="p2_telefono" label="Teléfono" placeholder="5512345678" />
+                                            <flux:input wire:model="p2_telefono" label="Teléfono" type="tel" placeholder="5512345678" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)" />
                                         </div>
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                            <flux:input wire:model="p2_telefono_2" label="Teléfono 2 (opcional)" placeholder="5512345679" />
+                                            <flux:input wire:model="p2_telefono_2" label="Teléfono 2 (opcional)" type="tel" placeholder="5512345679" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)" />
                                             <flux:input wire:model="p2_email" label="Email (opcional)" placeholder="correo@ejemplo.com" type="email" />
                                         </div>
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -278,8 +278,8 @@
                                     </div>
                                     <flux:input wire:model="tl_nombre" label="Nombre(s)" placeholder="Roberto" />
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                        <flux:input wire:model="tl_telefono" label="Teléfono" placeholder="5512345678" />
-                                        <flux:input wire:model="tl_telefono_2" label="Teléfono 2 (opcional)" placeholder="5512345679" />
+                                        <flux:input wire:model="tl_telefono" label="Teléfono" type="tel" placeholder="5512345678" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)" />
+                                        <flux:input wire:model="tl_telefono_2" label="Teléfono 2 (opcional)" type="tel" placeholder="5512345679" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)" />
                                     </div>
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                         <flux:input wire:model="tl_email" label="Email (opcional)" placeholder="correo@ejemplo.com" type="email" />

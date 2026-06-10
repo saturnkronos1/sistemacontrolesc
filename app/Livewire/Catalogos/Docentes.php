@@ -64,7 +64,7 @@ class Docentes extends Component
             'apellido_materno' => 'nullable|string|max:100',
             'curp' => ['nullable', 'string', 'size:18', Rule::unique('personas', 'curp')->ignore($personaId)],
             'cedula' => 'nullable|string|max:50',
-            'telefono' => 'nullable|string|max:20',
+            'telefono' => 'nullable|digits:10',
             'correo' => 'nullable|email|max:100',
             'fecha_nacimiento' => 'nullable|date',
             'direccion' => 'nullable|string|max:500',
