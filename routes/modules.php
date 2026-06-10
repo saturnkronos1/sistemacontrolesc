@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth', 'verified'])->group(function () {
 
     // Dashboard (también existe en {current_team}/dashboard para el starter kit)
-    Route::view('/dashboard', 'dashboard')->name('dashboard');
+    Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
 
     // Catálogos
     Route::prefix('catalogos')->name('catalogos.')->group(function () {
