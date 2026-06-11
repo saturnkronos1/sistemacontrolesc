@@ -8,6 +8,7 @@ use App\Models\Grado;
 use App\Models\Grupo;
 use App\Models\Persona;
 use App\Models\User;
+use App\Support\CicloActivoService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Livewire\Component;
@@ -226,9 +227,15 @@ class Alumnos extends Component
 
         $query->orderBy($sortField, $this->sortDirection);
 
+        $cicloActivoId = app(CicloActivoService::class)->getId();
+
         $grupos = $this->filtro_grado
-            ? Grupo::where('grado_id', $this->filtro_grado)->orderBy('nombre')->get()
-            : Grupo::with('grado')->orderBy('grado_id')->orderBy('nombre')->get();
+            ? Grupo::where('grado_id', $this->filtro_grado)
+                ->where('ciclo_escolar_id', $cicloActivoId)
+                ->orderBy('nombre')->get()
+            : Grupo::with('grado')
+                ->where('ciclo_escolar_id', $cicloActivoId)
+                ->orderBy('grado_id')->orderBy('nombre')->get();
 
         return view('livewire.catalogos.alumnos', [
             'alumnos' => $query->paginate(15),
