@@ -1,6 +1,6 @@
 @props(['title'])
 
-<div class="hidden lg:flex items-center justify-between border-b-2 border-[#185c7a] pb-4 mb-4 dark:border-[#185c7a]">
+<div class="hidden lg:flex items-center justify-between border-b-2 border-primary pb-4 mb-4">
     <h1 class="text-2xl font-bold">{{ $title }}</h1>
 
     <flux:dropdown position="bottom" align="end">

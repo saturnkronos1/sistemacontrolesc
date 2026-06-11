@@ -1,4 +1,4 @@
-<footer class="mt-auto px-6 py-4" style="background-color: #1d87bb;">
+<footer class="mt-auto px-6 py-4 bg-footer">
     <div class="mx-auto flex max-w-7xl flex-col items-center gap-3 sm:flex-row sm:justify-between">
         {{-- Copyright --}}
         <p class="text-sm text-white/90">

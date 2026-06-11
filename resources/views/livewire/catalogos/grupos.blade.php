@@ -31,29 +31,29 @@
                 </div>
             </div>
 
-            <div class="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
-                <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
-                    <thead class="bg-zinc-50 dark:bg-zinc-800">
+            <div class="overflow-x-auto rounded-lg border border-borde">
+                <table class="min-w-full divide-y divide-borde">
+                    <thead class="bg-tabla-encabezado">
                         <tr>
-                            <th wire:click="sortBy('nombre')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-zinc-700 dark:hover:text-zinc-300 whitespace-nowrap">
+                            <th wire:click="sortBy('nombre')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap">
                                 <div class="flex items-center gap-1">
                                     Nombre
                                     <x-sort-indicator :field="'nombre'" :sort-field="$sortField" :sort-direction="$sortDirection" />
                                 </div>
                             </th>
-                            <th wire:click="sortBy('grado_id')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-zinc-700 dark:hover:text-zinc-300 whitespace-nowrap">
+                            <th wire:click="sortBy('grado_id')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap">
                                 <div class="flex items-center gap-1">
                                     Grado
                                     <x-sort-indicator :field="'grado_id'" :sort-field="$sortField" :sort-direction="$sortDirection" />
                                 </div>
                             </th>
-                            <th wire:click="sortBy('ciclo_escolar_id')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-zinc-700 dark:hover:text-zinc-300 whitespace-nowrap">
+                            <th wire:click="sortBy('ciclo_escolar_id')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap">
                                 <div class="flex items-center gap-1">
                                     Ciclo
                                     <x-sort-indicator :field="'ciclo_escolar_id'" :sort-field="$sortField" :sort-direction="$sortDirection" />
                                 </div>
                             </th>
-                            <th wire:click="sortBy('docente_id')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-zinc-700 dark:hover:text-zinc-300 whitespace-nowrap">
+                            <th wire:click="sortBy('docente_id')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap">
                                 <div class="flex items-center gap-1">
                                     Docente
                                     <x-sort-indicator :field="'docente_id'" :sort-field="$sortField" :sort-direction="$sortDirection" />
@@ -62,15 +62,15 @@
                             <th class="px-4 py-3"></th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700 bg-white dark:bg-zinc-900">
+                    <tbody class="divide-y divide-borde bg-white">
                         @forelse($grupos as $grupo)
-                            <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
+                            <tr class="hover:bg-hover">
                                 <td class="px-4 py-3 text-sm font-medium">{{ $grupo->nombre }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $grupo->grado?->nombre }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $grupo->cicloEscolar?->nombre }}</td>
                                 <td class="px-4 py-3 text-sm">
                                     @if($grupo->docente)
-                                        <span class="inline-flex items-center rounded-full bg-violet-100 px-2.5 py-0.5 text-xs font-medium text-violet-800 dark:bg-violet-900/30 dark:text-violet-300">
+                                        <span class="inline-flex items-center rounded-full bg-violet-100 px-2.5 py-0.5 text-xs font-medium text-violet-800">
                                             {{ $grupo->docente->name }}
                                         </span>
                                     @else

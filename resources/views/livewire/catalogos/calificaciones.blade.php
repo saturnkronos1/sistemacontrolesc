@@ -34,18 +34,18 @@
             </div>
 
             @if($cargado)
-                <div class="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
-                    <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
-                        <thead class="bg-zinc-50 dark:bg-zinc-800">
+                <div class="overflow-x-auto rounded-lg border border-borde">
+                    <table class="min-w-full divide-y divide-borde">
+                        <thead class="bg-tabla-encabezado">
                             <tr>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">#</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">Nombre</th>
                                 <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">Calificación</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700 bg-white dark:bg-zinc-900">
+                        <tbody class="divide-y divide-borde bg-white">
                             @forelse($alumnos as $index => $alumno)
-                                <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
+                                <tr class="hover:bg-hover">
                                     <td class="px-4 py-3 text-sm text-zinc-500">{{ $loop->iteration }}</td>
                                     <td class="px-4 py-3 text-sm font-medium">
                                         {{ $alumno['persona']['apellido_paterno'] }} {{ $alumno['persona']['apellido_materno'] }}, {{ $alumno['persona']['nombre'] }}
@@ -57,7 +57,7 @@
                                             min="0"
                                             max="10"
                                             wire:model="notas.{{ $alumno['id'] }}"
-                                            class="w-24 rounded-md border-zinc-300 text-center text-sm font-mono shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white"
+                                            class="w-24 rounded-md border-borde text-center text-sm font-mono shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                             placeholder="—"
                                         />
                                     </td>
