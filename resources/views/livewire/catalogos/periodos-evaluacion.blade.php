@@ -23,35 +23,35 @@
                 </div>
             </div>
 
-            <div class="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
-                <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
-                    <thead class="bg-zinc-50 dark:bg-zinc-800">
+            <div class="overflow-x-auto rounded-lg border border-borde">
+                <table class="min-w-full divide-y divide-borde">
+                    <thead class="bg-tabla-encabezado">
                         <tr>
-                            <th wire:click="sortBy('ciclo_escolar_id')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-zinc-700 dark:hover:text-zinc-300 whitespace-nowrap">
+                            <th wire:click="sortBy('ciclo_escolar_id')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap">
                                 <div class="flex items-center gap-1">
                                     Ciclo
                                     <x-sort-indicator :field="'ciclo_escolar_id'" :sort-field="$sortField" :sort-direction="$sortDirection" />
                                 </div>
                             </th>
-                            <th wire:click="sortBy('nombre')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-zinc-700 dark:hover:text-zinc-300 whitespace-nowrap">
+                            <th wire:click="sortBy('nombre')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap">
                                 <div class="flex items-center gap-1">
                                     Nombre
                                     <x-sort-indicator :field="'nombre'" :sort-field="$sortField" :sort-direction="$sortDirection" />
                                 </div>
                             </th>
-                            <th wire:click="sortBy('orden')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-zinc-700 dark:hover:text-zinc-300 whitespace-nowrap">
+                            <th wire:click="sortBy('orden')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap">
                                 <div class="flex items-center gap-1">
                                     Orden
                                     <x-sort-indicator :field="'orden'" :sort-field="$sortField" :sort-direction="$sortDirection" />
                                 </div>
                             </th>
-                            <th wire:click="sortBy('fecha_inicio')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-zinc-700 dark:hover:text-zinc-300 whitespace-nowrap">
+                            <th wire:click="sortBy('fecha_inicio')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap">
                                 <div class="flex items-center gap-1">
                                     Fecha Inicio
                                     <x-sort-indicator :field="'fecha_inicio'" :sort-field="$sortField" :sort-direction="$sortDirection" />
                                 </div>
                             </th>
-                            <th wire:click="sortBy('fecha_fin')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-zinc-700 dark:hover:text-zinc-300 whitespace-nowrap">
+                            <th wire:click="sortBy('fecha_fin')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap">
                                 <div class="flex items-center gap-1">
                                     Fecha Fin
                                     <x-sort-indicator :field="'fecha_fin'" :sort-field="$sortField" :sort-direction="$sortDirection" />
@@ -60,9 +60,9 @@
                             <th class="px-4 py-3"></th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700 bg-white dark:bg-zinc-900">
+                    <tbody class="divide-y divide-borde bg-white">
                         @forelse($periodos as $periodo)
-                            <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
+                            <tr class="hover:bg-hover">
                                 <td class="px-4 py-3 text-sm">{{ $periodo->cicloEscolar?->nombre }}</td>
                                 <td class="px-4 py-3 text-sm font-medium">{{ $periodo->nombre }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $periodo->orden }}</td>

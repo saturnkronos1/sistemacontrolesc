@@ -14,29 +14,29 @@
                 <flux:input wire:model.live="search" placeholder="Buscar por nombre o fecha..." icon="magnifying-glass" />
             </div>
 
-            <div class="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
-                <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
-                    <thead class="bg-zinc-50 dark:bg-zinc-800">
+            <div class="overflow-x-auto rounded-lg border border-borde">
+                <table class="min-w-full divide-y divide-borde">
+                    <thead class="bg-tabla-encabezado">
                         <tr>
-                            <th wire:click="sortBy('nombre')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-zinc-700 dark:hover:text-zinc-300 whitespace-nowrap">
+                            <th wire:click="sortBy('nombre')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap">
                                 <div class="flex items-center gap-1">
                                     Nombre
                                     <x-sort-indicator :field="'nombre'" :sort-field="$sortField" :sort-direction="$sortDirection" />
                                 </div>
                             </th>
-                            <th wire:click="sortBy('fecha_inicio')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-zinc-700 dark:hover:text-zinc-300 whitespace-nowrap">
+                            <th wire:click="sortBy('fecha_inicio')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap">
                                 <div class="flex items-center gap-1">
                                     Inicio
                                     <x-sort-indicator :field="'fecha_inicio'" :sort-field="$sortField" :sort-direction="$sortDirection" />
                                 </div>
                             </th>
-                            <th wire:click="sortBy('fecha_fin')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-zinc-700 dark:hover:text-zinc-300 whitespace-nowrap">
+                            <th wire:click="sortBy('fecha_fin')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap">
                                 <div class="flex items-center gap-1">
                                     Fin
                                     <x-sort-indicator :field="'fecha_fin'" :sort-field="$sortField" :sort-direction="$sortDirection" />
                                 </div>
                             </th>
-                            <th wire:click="sortBy('estatus')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-zinc-700 dark:hover:text-zinc-300 whitespace-nowrap">
+                            <th wire:click="sortBy('estatus')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap">
                                 <div class="flex items-center gap-1">
                                     Estatus
                                     <x-sort-indicator :field="'estatus'" :sort-field="$sortField" :sort-direction="$sortDirection" />
@@ -45,9 +45,9 @@
                             <th class="px-4 py-3"></th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700 bg-white dark:bg-zinc-900">
+                    <tbody class="divide-y divide-borde bg-white">
                         @forelse($ciclos as $ciclo)
-                            <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
+                            <tr class="hover:bg-hover">
                                 <td class="px-4 py-3 text-sm font-medium">{{ $ciclo->nombre }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $ciclo->fecha_inicio->format('d/m/Y') }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $ciclo->fecha_fin->format('d/m/Y') }}</td>
@@ -62,9 +62,9 @@
                                     @endphp
                                     <span @class([
                                         'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
-                                        'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' => $badge['color'] === 'green',
-                                        'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300' => $badge['color'] === 'yellow',
-                                        'bg-zinc-100 text-zinc-600 dark:bg-zinc-700 dark:text-zinc-400' => $badge['color'] === 'zinc',
+                                        'bg-green-100 text-green-800' => $badge['color'] === 'green',
+                                        'bg-yellow-100 text-yellow-800' => $badge['color'] === 'yellow',
+                                        'bg-zinc-100 text-zinc-600' => $badge['color'] === 'zinc',
                                     ])>
                                         {{ $badge['label'] }}
                                     </span>

@@ -24,7 +24,7 @@
             </div>
 
             @if($cargado)
-                <div class="mb-4 rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
+                <div class="mb-4 rounded-lg border border-borde bg-white p-4">
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-sm font-semibold text-zinc-500 uppercase">
                             Alumnos activos en el grupo de origen
@@ -37,9 +37,9 @@
                         @endif
                     </div>
 
-                    <div class="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
-                        <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
-                            <thead class="bg-zinc-50 dark:bg-zinc-800">
+                    <div class="overflow-x-auto rounded-lg border border-borde">
+                        <table class="min-w-full divide-y divide-borde">
+                            <thead class="bg-tabla-encabezado">
                                 <tr>
                                     <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase whitespace-nowrap w-10">
                                         <input type="checkbox" wire:click="toggleAll" {{ count($selected) === count($alumnos) && count($alumnos) > 0 ? 'checked' : '' }} class="rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500" />
@@ -49,10 +49,10 @@
                                     <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">Grado actual</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700 bg-white dark:bg-zinc-900">
+                            <tbody class="divide-y divide-borde bg-white">
                                 @forelse($alumnos as $alumno)
                                     @php $alumnoId = $alumno['id']; @endphp
-                                    <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
+                                    <tr class="hover:bg-hover">
                                         <td class="px-4 py-3 text-center">
                                             <input type="checkbox" wire:model="selected.{{ $alumnoId }}" value="{{ $alumnoId }}" class="rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500" />
                                         </td>
@@ -75,7 +75,7 @@
                 </div>
 
                 {{-- Target selection --}}
-                <div class="mb-6 rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
+                <div class="mb-6 rounded-lg border border-borde bg-white p-4">
                     <h2 class="text-sm font-semibold text-zinc-500 uppercase mb-3">Grupo de destino</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <flux:select wire:model.live="target_grupo_id" placeholder="Seleccionar grupo destino">

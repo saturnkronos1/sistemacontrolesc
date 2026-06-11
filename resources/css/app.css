@@ -11,6 +11,30 @@
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
+    /* === Project Palette — frontenduiux === */
+    --color-fondo:           #F7F3EC;
+    --color-fondo-secundario:#F1ECE3;
+    --color-sidebar:         #14532D;
+    --color-primary:         #15803D;
+    --color-secondary:       #0284C7;
+    --color-accento:         #F97316;
+    --color-texto:           #334155;
+    --color-texto-secundario:#64748B;
+    --color-borde:           #D8D0C3;
+    --color-footer:          #EFE8DD;
+    --color-hover:           #EDF8EF;
+    --color-tabla-encabezado:#ECE6DA;
+    --color-input-bg:        #FAF7F1;
+    --color-input-focus-bg:  #FDFBF7;
+    --color-modal-bg:        #F8F4EC;
+    --color-modal-border:    #E4DCCF;
+
+    /* Flux accent — primary green for interactive elements */
+    --color-accent:           #15803D;
+    --color-accent-content:   #15803D;
+    --color-accent-foreground:#FFFFFF;
+
+    /* Zinc palette — kept for dark mode compatibility */
     --color-zinc-50: #fafafa;
     --color-zinc-100: #f5f5f5;
     --color-zinc-200: #e5e5e5;
@@ -22,10 +46,6 @@
     --color-zinc-800: #262626;
     --color-zinc-900: #171717;
     --color-zinc-950: #0a0a0a;
-
-    --color-accent: var(--color-neutral-800);
-    --color-accent-content: var(--color-neutral-800);
-    --color-accent-foreground: var(--color-white);
 }
 
 @layer theme {
@@ -49,6 +69,56 @@
     button:not(:disabled) {
         cursor: pointer;
     }
+}
+
+/* Input field styling */
+input[data-flux-control],
+textarea[data-flux-control],
+select[data-flux-control] {
+    background-color: #FAF7F1 !important;
+    border-color: #D8D0C3 !important;
+}
+
+input[data-flux-control]:focus,
+textarea[data-flux-control]:focus,
+select[data-flux-control]:focus {
+    background-color: #FDFBF7 !important;
+    border-color: #15803D !important;
+}
+
+/* Modal overlay background */
+ui-modal > dialog::backdrop {
+    background: rgba(20, 83, 45, 0.25) !important;
+}
+
+/* Modal container styling */
+ui-modal > dialog {
+    background-color: #F8F4EC !important;
+    border: 1px solid #E4DCCF !important;
+    border-radius: 24px !important;
+    box-shadow: none !important;
+}
+
+/* Modal header — first child inside slot content */
+ui-modal > dialog > :first-child:not([class*="absolute"]) > :first-child {
+    background-color: #F1ECE3;
+    margin: -1.5rem -1.5rem 1rem -1.5rem;
+    padding: 1rem 1.5rem;
+    border-radius: 24px 24px 0 0;
+}
+
+/* Modal footer — last child inside slot content (buttons) */
+ui-modal > dialog > :first-child:not([class*="absolute"]) > :last-child {
+    background-color: #EFE8DD;
+    margin: 1.5rem -1.5rem -1.5rem -1.5rem;
+    padding: 1rem 1.5rem;
+    border-radius: 0 0 24px 24px;
+}
+
+/* Cancelar button hover — first button in modal footer turns red */
+ui-modal > dialog > :first-child:not([class*="absolute"]) > :last-child button[data-flux-button]:first-child:hover {
+    background-color: #FEE2E2 !important;
+    color: #DC2626 !important;
 }
 
 [data-flux-field]:not(ui-radio, ui-checkbox) {

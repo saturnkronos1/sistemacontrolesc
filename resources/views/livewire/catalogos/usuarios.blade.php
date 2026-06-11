@@ -14,18 +14,18 @@
                 <flux:input wire:model.live="search" placeholder="Buscar por nombre o email..." icon="magnifying-glass" />
             </div>
 
-            <div class="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
-                <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
-                    <thead class="bg-zinc-50 dark:bg-zinc-800">
+            <div class="overflow-x-auto rounded-lg border border-borde">
+                <table class="min-w-full divide-y divide-borde">
+                    <thead class="bg-tabla-encabezado">
                         <tr>
                             <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">Foto</th>
-                            <th wire:click="sortBy('name')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-zinc-700 dark:hover:text-zinc-300 whitespace-nowrap">
+                            <th wire:click="sortBy('name')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap">
                                 <div class="flex items-center gap-1">
                                     Nombre
                                     <x-sort-indicator :field="'name'" :sort-field="$sortField" :sort-direction="$sortDirection" />
                                 </div>
                             </th>
-                            <th wire:click="sortBy('email')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-zinc-700 dark:hover:text-zinc-300 whitespace-nowrap">
+                            <th wire:click="sortBy('email')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap">
                                 <div class="flex items-center gap-1">
                                     Email
                                     <x-sort-indicator :field="'email'" :sort-field="$sortField" :sort-direction="$sortDirection" />
@@ -35,15 +35,15 @@
                             <th class="px-4 py-3"></th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700 bg-white dark:bg-zinc-900">
+                    <tbody class="divide-y divide-borde bg-white">
                         @forelse($usuarios as $usuario)
-                            <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
+                            <tr class="hover:bg-hover">
                                 <td class="px-4 py-3">
                                     @php $photoUrl = $usuario->profilePhotoUrl(); @endphp
                                     @if($photoUrl)
                                         <img src="{{ $photoUrl }}" alt="{{ $usuario->name }}" class="h-8 w-8 rounded-full object-cover">
                                     @else
-                                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-200 dark:bg-zinc-600 text-xs font-semibold">
+                                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-200  text-xs font-semibold">
                                             {{ $usuario->initials() }}
                                         </span>
                                     @endif
@@ -52,7 +52,7 @@
                                 <td class="px-4 py-3 text-sm">{{ $usuario->email }}</td>
                                 <td class="px-4 py-3 text-sm">
                                     @if($usuario->roles->isNotEmpty())
-                                        <span class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                                        <span class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 ">
                                             {{ $usuario->roles->first()->name }}
                                         </span>
                                     @else
@@ -111,7 +111,7 @@
                     <flux:field>
                         <flux:label>Foto de perfil</flux:label>
                         <input type="file" wire:model="foto_perfil" accept="image/jpeg,image/png,image/webp"
-                               class="block w-full text-sm text-zinc-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-zinc-50 file:text-zinc-700 hover:file:bg-zinc-100 dark:file:bg-zinc-800 dark:file:text-zinc-300 dark:hover:file:bg-zinc-700">
+                               class="block w-full text-sm text-zinc-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-zinc-50 file:text-zinc-700 hover:file:bg-zinc-100 ">
                         <flux:error name="foto_perfil" />
                     </flux:field>
 

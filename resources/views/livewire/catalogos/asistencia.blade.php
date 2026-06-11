@@ -24,9 +24,9 @@
             </div>
 
             @if($cargado)
-                <div class="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
-                    <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
-                        <thead class="bg-zinc-50 dark:bg-zinc-800">
+                <div class="overflow-x-auto rounded-lg border border-borde">
+                    <table class="min-w-full divide-y divide-borde">
+                        <thead class="bg-tabla-encabezado">
                             <tr>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">#</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">Nombre</th>
@@ -34,10 +34,10 @@
                                 <th class="px-4 py-3 text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">Motivo (justificante)</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700 bg-white dark:bg-zinc-900">
+                        <tbody class="divide-y divide-borde bg-white">
                             @forelse($alumnos as $index => $alumno)
                                 @php $alumnoId = $alumno['id']; @endphp
-                                <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
+                                <tr class="hover:bg-hover">
                                     <td class="px-4 py-3 text-sm text-zinc-500">{{ $loop->iteration }}</td>
                                     <td class="px-4 py-3 text-sm font-medium whitespace-nowrap">
                                         {{ $alumno['persona']['apellido_paterno'] }} {{ $alumno['persona']['apellido_materno'] }}, {{ $alumno['persona']['nombre'] }}

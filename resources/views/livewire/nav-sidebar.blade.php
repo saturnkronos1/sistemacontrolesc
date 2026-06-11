@@ -5,7 +5,7 @@
 <div class="space-y-1">
     @foreach($menuGroups as $label => $items)
         @if(count($items))
-            <p class="px-3 py-1 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+            <p class="px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white/40">
                 {{ __($label) }}
             </p>
             @foreach($items as $item)
@@ -17,8 +17,8 @@
                     wire:navigate
                     @class([
                         'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
-                        'bg-zinc-200 dark:bg-zinc-700 text-zinc-900 dark:text-white' => $isActive,
-                        'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700/50 hover:text-zinc-900 dark:hover:text-white' => !$isActive,
+                        'bg-white/20 text-white' => $isActive,
+                        'text-white/70 hover:bg-white/10 hover:text-white' => !$isActive,
                     ])
                 >
                     {!! $item['svg'] !!}

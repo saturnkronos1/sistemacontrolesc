@@ -14,17 +14,17 @@
             <flux:input wire:model.live="search" placeholder="Buscar por nombre, email o CURP..." icon="magnifying-glass" />
         </div>
 
-        <div class="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
-            <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
-                <thead class="bg-zinc-50 dark:bg-zinc-800">
+        <div class="overflow-x-auto rounded-lg border border-borde">
+            <table class="min-w-full divide-y divide-borde">
+                <thead class="bg-tabla-encabezado">
                     <tr>
-                        <th wire:click="sortBy('apellido_paterno')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-zinc-700 dark:hover:text-zinc-300 whitespace-nowrap">
+                        <th wire:click="sortBy('apellido_paterno')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap">
                             <div class="flex items-center gap-1">
                                 Nombre Completo
                                 <x-sort-indicator :field="'apellido_paterno'" :sort-field="$sortField" :sort-direction="$sortDirection" />
                             </div>
                         </th>
-                        <th wire:click="sortBy('email')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-zinc-700 dark:hover:text-zinc-300 whitespace-nowrap">
+                        <th wire:click="sortBy('email')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap">
                             <div class="flex items-center gap-1">
                                 Email
                                 <x-sort-indicator :field="'email'" :sort-field="$sortField" :sort-direction="$sortDirection" />
@@ -45,9 +45,9 @@
                         <th class="px-4 py-3"></th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700 bg-white dark:bg-zinc-900">
+                <tbody class="divide-y divide-borde bg-white">
                     @forelse($padres as $padre)
-                        <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
+                        <tr class="hover:bg-hover">
                             <td class="px-4 py-3 text-sm font-medium">
                                 {{ $padre->nombreCompleto() }}
                             </td>
@@ -64,7 +64,7 @@
                             </td>
                             <td class="px-4 py-3 text-sm">
                                 @if($padre->user)
-                                    <span class="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 ">
                                         <svg class="size-3" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>
                                         Sí
                                     </span>
@@ -135,10 +135,10 @@
                 @else
                     {{-- En edición: lista de vínculos actuales --}}
                     <div class="space-y-2">
-                        <label class="text-sm font-medium text-zinc-800 dark:text-zinc-200">Alumnos vinculados</label>
+                        <label class="text-sm font-medium text-texto">Alumnos vinculados</label>
 
                         @if(count($vinculos) > 0)
-                            <div class="divide-y divide-zinc-200 dark:divide-zinc-700 border rounded-lg border-zinc-200 dark:border-zinc-700">
+                            <div class="divide-y divide-borde border rounded-lg border-borde">
                                 @foreach($vinculos as $index => $vinculo)
                                     <div class="flex items-center justify-between px-3 py-2 text-sm">
                                         <span>{{ $vinculo['alumno_nombre'] }} ({{ $vinculo['parentesco'] }})</span>
