@@ -90,7 +90,7 @@
             <div class="flex flex-col gap-6">
                 {{-- School icon --}}
                 <div class="flex justify-center">
-                    <img src="{{ asset('heroes/icon/ico1.png') }}" alt="Icono escolar" class="size-8 rounded-full object-cover">
+                    <img src="{{ asset('heroes/icon/ico1.png') }}" alt="Icono escolar" class="size-12 rounded-full object-cover">
                 </div>
 
                 <x-auth-header :title="__('Inicio de sesión')" :description="__('Ingresa tu correo y contraseña')" />
@@ -125,9 +125,9 @@
                         />
 
                         @if (Route::has('password.request'))
-                            <flux:link class="absolute top-0 text-sm end-0" :href="route('password.request')" wire:navigate>
+                            {{-- <flux:link class="absolute top-0 text-sm end-0" :href="route('password.request')" wire:navigate>
                                 {{ __('Olvidaste tu contraseña?') }}
-                            </flux:link>
+                            </flux:link> --}}
                         @endif
                     </div>
 
@@ -140,10 +140,10 @@
                     </div>
                 </form>
 
-                <div class="space-x-1 text-sm text-center rtl:space-x-reverse text-zinc-600 dark:text-zinc-400">
+                {{-- <div class="space-x-1 text-sm text-center rtl:space-x-reverse text-zinc-600 dark:text-zinc-400">
                     <span>{{ __("No tienes cuenta?") }}</span>
                     <flux:link :href="route('register')" wire:navigate>{{ __('Registrase') }}</flux:link>
-                </div>
+                </div> --}}
             </div>
         </flux:modal>
 
