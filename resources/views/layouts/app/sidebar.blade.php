@@ -23,8 +23,8 @@
             {{-- Sidebar Header: Logo + Close (mobile only) --}}
             <div class="flex items-center justify-between px-4 py-3">
                 <a href="{{ route('dashboard') }}" wire:navigate class="flex items-center gap-2">
-                    <x-app-logo-icon class="h-8 w-auto text-white" />
-                    <span class="text-lg font-bold hidden sm:inline text-white">{{ config('app.name', 'Laravel') }}</span>
+                    <img src="{{ asset('heroes/icon/ico2.png') }}" alt="Icono escolar" class="h-8 w-auto" />
+                    <span class="text-lg font-bold hidden sm:inline text-white">{{ config('app.name', 'Sistema Control Escolar') }}</span>
                 </a>
                 <button @click="sidebarOpen = false" class="lg:hidden p-1 rounded-md text-white/70 hover:text-white hover:bg-white/10">
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
