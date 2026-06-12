@@ -115,6 +115,11 @@ ui-modal > dialog > :first-child:not([class*="absolute"]) > :last-child {
     border-radius: 0 0 24px 24px;
 }
 
+/* Login primary button hover */
+form[action*="login"] button[type="submit"]:hover {
+    background-color: #14532D !important;
+}
+
 /* Cancelar button hover — first button in modal footer turns red */
 ui-modal > dialog > :first-child:not([class*="absolute"]) > :last-child button[data-flux-button]:first-child:hover {
     background-color: #FEE2E2 !important;

@@ -6,8 +6,10 @@
     </head>
     <body class="bg-[#ecece5] dark:bg-[#0a0a0a] text-[#1b1b18] flex p-6 lg:p-8 items-center min-h-screen flex-col">
         <header class="w-full lg:max-w-4xl max-w-[335px] text-sm mb-6 not-has-[nav]:hidden border-b-2 border-[#185c7a] pb-4">
+            
             @if (Route::has('login'))
-                <nav class="flex items-center justify-end gap-4">
+                <nav class="flex items-center justify-between gap-4">
+                    <h1 class="font-bold text-lg">Sistema de Control Escolar</h1>
                     @auth
                         <a
                             href="{{ route('dashboard') }}"
@@ -17,18 +19,18 @@
                         </a>
                     @else
                         <flux:modal.trigger name="login-modal">
-                            <flux:button variant="ghost" class="px-5 py-1.5! text-sm! leading-normal! rounded-sm!">
+                            <flux:button variant="ghost" class="hover:#14532D px-5 py-1.5! text-sm! leading-normal! rounded-sm!">
                                 Iniciar sesión
                             </flux:button>
                                
                         </flux:modal.trigger>
 
                         @if (Route::has('register'))
-                            <a
+                            {{-- <a
                                 href="{{ route('register') }}"
                                 class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal">
                                 Registrar
-                            </a>
+                            </a> --}}
                         @endif
                     @endauth
                 </nav>
@@ -86,6 +88,11 @@
 
         <flux:modal name="login-modal" :show="$errors->has('email')" focusable class="max-w-lg md:w-[512px]">
             <div class="flex flex-col gap-6">
+                {{-- School icon --}}
+                <div class="flex justify-center">
+                    <img src="{{ asset('heroes/icon/ico1.png') }}" alt="Icono escolar" class="size-8 rounded-full object-cover">
+                </div>
+
                 <x-auth-header :title="__('Inicio de sesión')" :description="__('Ingresa tu correo y contraseña')" />
 
                 <x-auth-session-status class="text-center" :status="session('status')" />
