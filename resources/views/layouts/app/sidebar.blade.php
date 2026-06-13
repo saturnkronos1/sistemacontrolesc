@@ -10,7 +10,7 @@
     <div
         x-data="layout()"
         x-init="init()"
-        class="flex min-h-screen"
+        class="flex h-screen overflow-hidden"
     >
         {{-- ============================================ --}}
         {{-- SIDEBAR (Desktop: fixed, Mobile: overlay)    --}}
@@ -18,13 +18,14 @@
         
         <aside
             :style="sidebarOpen ? 'translate: none;' : ''"
-            class="flex w-64 min-h-0 flex-col border-e border-white/10 bg-sidebar text-white transition-transform duration-200 ease-in-out max-lg:fixed max-lg:inset-y-0 max-lg:left-0 max-lg:z-50 max-lg:-translate-x-full"
+            class="flex w-64 min-h-0 h-screen flex-col border-e border-white/10 bg-sidebar text-white transition-transform duration-200 ease-in-out max-lg:fixed max-lg:inset-y-0 max-lg:left-0 max-lg:z-50 max-lg:-translate-x-full"
         >
             {{-- Sidebar Header: Logo + Close (mobile only) --}}
             <div class="flex items-center justify-between px-4 py-3">
                 <a href="{{ route('dashboard') }}" wire:navigate class="flex items-center gap-2">
-                    <img src="{{ asset('heroes/icon/ico2.png') }}" alt="Icono escolar" class="h-8 w-auto" />
-                    <span class="text-lg font-bold hidden sm:inline text-white">{{ config('app.name', 'Sistema Control Escolar') }}</span>
+                    <img src="{{ asset('heroes/icon/ico2.png') }}" alt="Icono escolar" class="h-10 w-10 rounded-full" />
+                    <span class="text-lg font-bold hidden sm:inline text-white">{{ config('app.name', 'Sistema de Control Escolar') }}</span>
+                    
                 </a>
                 <button @click="sidebarOpen = false" class="lg:hidden p-1 rounded-md text-white/70 hover:text-white hover:bg-white/10">
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
