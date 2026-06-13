@@ -8,10 +8,13 @@ use App\Models\Grupo;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Carbon;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 
 class Asistencia extends Component
 {
+    use WithFileUploads;
     use WithPagination;
 
     // ─── Modo consulta ───
@@ -40,7 +43,13 @@ class Asistencia extends Component
     public $estatusList = [];
 
     /** @var array<int, string> [alumno_id => motivo] */
-    public $motivos = [];
+    public $justificanteMotivos = [];
+
+    /** @var array<int, TemporaryUploadedFile|null> [alumno_id => UploadedFile] */
+    public $justificanteArchivos = [];
+
+    /** @var array<int, bool> [alumno_id => completado] */
+    public $justificanteCompletado = [];
 
     public $cargado = false;
 
@@ -111,7 +120,7 @@ class Asistencia extends Component
                     'asistio' => $all->where('estatus', 'asistio')->count(),
                     'falta' => $all->where('estatus', 'falta')->count(),
                     'retardo' => $all->where('estatus', 'retardo')->count(),
-                    'justificado' => $all->where('estatus', 'justificado')->count(),
+                    'justificado' => $all->whereIn('estatus', ['pendiente', 'justificado'])->count(),
                     'total' => $all->count(),
                 ];
             }
@@ -243,6 +252,23 @@ class Asistencia extends Component
 
     // ─── Pasar lista ───
 
+    public function cambiarEstatus($alumnoId): void
+    {
+        $ciclo = [
+            'asistio' => 'falta',
+            'falta' => 'retardo',
+            'retardo' => 'pendiente',
+            'pendiente' => 'asistio',
+        ];
+
+        $this->estatusList[$alumnoId] = $ciclo[$this->estatusList[$alumnoId]] ?? 'asistio';
+
+        // Si ya no es pendiente, limpiar archivo subido temporal
+        if ($this->estatusList[$alumnoId] !== 'pendiente') {
+            unset($this->justificanteArchivos[$alumnoId]);
+        }
+    }
+
     public function cargarAlumnos()
     {
         $this->validate([
@@ -271,12 +297,29 @@ class Asistencia extends Component
             ->keyBy('alumno_id');
 
         $this->estatusList = [];
-        $this->motivos = [];
+        $this->justificanteMotivos = [];
+        $this->justificanteArchivos = [];
+        $this->justificanteCompletado = [];
 
         foreach ($this->alumnos as $alumno) {
-            $asis = $existentes->get($alumno['id']);
-            $this->estatusList[$alumno['id']] = $asis?->estatus ?? 'asistio';
-            $this->motivos[$alumno['id']] = $asis?->justificante?->motivo ?? '';
+            $alumnoId = $alumno['id'];
+            $asis = $existentes->get($alumnoId);
+
+            if ($asis) {
+                if ($asis->estatus === 'justificado') {
+                    // Justificado completo — mostrar botón azul con check
+                    $this->estatusList[$alumnoId] = 'pendiente';
+                    $this->justificanteCompletado[$alumnoId] = true;
+                } else {
+                    $this->estatusList[$alumnoId] = $asis->estatus;
+                }
+
+                $this->justificanteMotivos[$alumnoId] = $asis?->justificante?->motivo ?? '';
+            } else {
+                $this->estatusList[$alumnoId] = 'asistio';
+                $this->justificanteMotivos[$alumnoId] = '';
+                $this->justificanteCompletado[$alumnoId] = false;
+            }
         }
 
         $this->cargado = true;
@@ -285,15 +328,34 @@ class Asistencia extends Component
     public function guardar()
     {
         $this->validate([
-            'estatusList.*' => 'required|in:asistio,falta,retardo,justificado',
-            'motivos.*' => 'nullable|string|max:500',
+            'estatusList.*' => 'required|in:asistio,falta,retardo,pendiente',
+            'justificanteMotivos.*' => 'nullable|string|max:500',
+            'justificanteArchivos.*' => 'nullable|file|mimes:pdf,jpg,png|max:10240',
         ]);
+
+        // Validar que pendiente tenga motivo
+        foreach ($this->estatusList as $alumnoId => $estatus) {
+            if ($estatus === 'pendiente' && empty(trim($this->justificanteMotivos[$alumnoId] ?? ''))) {
+                $this->addError(
+                    "justificanteMotivos.{$alumnoId}",
+                    'El motivo es obligatorio cuando el estatus es Justificado.',
+                );
+
+                return;
+            }
+        }
 
         $grupo = Grupo::findOrFail($this->grupo_id);
 
         foreach ($this->alumnos as $alumno) {
             $alumnoId = $alumno['id'];
             $estatus = $this->estatusList[$alumnoId];
+
+            // Si es pendiente y subió archivo, guardar como justificado
+            $saveEstatus = $estatus;
+            if ($estatus === 'pendiente' && isset($this->justificanteArchivos[$alumnoId])) {
+                $saveEstatus = 'justificado';
+            }
 
             $asistencia = AsistenciaModel::updateOrCreate(
                 [
@@ -302,18 +364,30 @@ class Asistencia extends Component
                     'fecha' => $this->fecha,
                 ],
                 [
-                    'estatus' => $estatus,
+                    'estatus' => $saveEstatus,
                 ]
             );
 
-            // Si es justificado, crear o actualizar justificante con motivo
-            if ($estatus === 'justificado' && ($this->motivos[$alumnoId] ?? null)) {
+            if ($estatus === 'pendiente') {
+                // Crear o actualizar justificante
+                $justificanteData = [
+                    'motivo' => $this->justificanteMotivos[$alumnoId] ?? '',
+                ];
+
+                if (isset($this->justificanteArchivos[$alumnoId])) {
+                    $file = $this->justificanteArchivos[$alumnoId];
+                    $extension = $file->getClientOriginalExtension();
+                    $filename = "{$alumnoId}_{$this->fecha}_{$asistencia->id}.{$extension}";
+                    $path = $file->storeAs('justificantes', $filename, 'public');
+                    $justificanteData['archivo_path'] = $path;
+                }
+
                 $asistencia->justificante()->updateOrCreate(
                     ['asistencia_id' => $asistencia->id],
-                    ['motivo' => $this->motivos[$alumnoId]]
+                    $justificanteData
                 );
-            } elseif ($estatus !== 'justificado' && $asistencia->justificante) {
-                // Si ya no es justificado, eliminar el justificante (opcional)
+            } elseif ($asistencia->justificante) {
+                // Si cambió a otro estatus, eliminar justificante
                 $asistencia->justificante()->delete();
             }
         }
@@ -327,7 +401,9 @@ class Asistencia extends Component
     {
         $this->alumnos = [];
         $this->estatusList = [];
-        $this->motivos = [];
+        $this->justificanteMotivos = [];
+        $this->justificanteArchivos = [];
+        $this->justificanteCompletado = [];
         $this->cargado = false;
     }
 }

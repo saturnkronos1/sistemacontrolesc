@@ -139,7 +139,8 @@
                 <th style="width: 32%;">Alumno</th>
                 <th style="width: 10%;">Grupo</th>
                 <th style="width: 16%;">Estatus</th>
-                <th style="width: 25%;">Motivo</th>
+                <th style="width: 15%;">Motivo</th>
+                <th style="width: 15%;">Archivo</th>
             </tr>
         </thead>
         <tbody>
@@ -153,6 +154,7 @@
                         {{ ucfirst($item->estatus) }}
                     </td>
                     <td>{{ $item->justificante?->motivo ?? '—' }}</td>
+                    <td>{{ $item->justificante?->archivo_path ? basename($item->justificante->archivo_path) : '—' }}</td>
                 </tr>
             @endforeach
         </tbody>

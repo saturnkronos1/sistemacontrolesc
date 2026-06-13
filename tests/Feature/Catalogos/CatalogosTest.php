@@ -662,7 +662,7 @@ test('asistencia guarda estatus para cada alumno', function () {
     ]);
 });
 
-test('asistencia crea justificante cuando estatus es justificado', function () {
+test('asistencia guarda justificante como pendiente cuando no hay archivo', function () {
     $user = User::factory()->create();
     $user->assignRole('Superadmin');
 
@@ -681,14 +681,14 @@ test('asistencia crea justificante cuando estatus es justificado', function () {
         ->set('grupo_id', $grupo->id)
         ->set('fecha', '2026-06-01')
         ->call('cargarAlumnos')
-        ->set("estatusList.{$alumno->id}", 'justificado')
-        ->set("motivos.{$alumno->id}", 'Cita médica')
+        ->set("estatusList.{$alumno->id}", 'pendiente')
+        ->set("justificanteMotivos.{$alumno->id}", 'Cita médica')
         ->call('guardar')
         ->assertOk();
 
     $this->assertDatabaseHas('asistencias', [
         'alumno_id' => $alumno->id,
-        'estatus' => 'justificado',
+        'estatus' => 'pendiente',
     ]);
 
     $this->assertDatabaseHas('justificantes', [
@@ -1154,4 +1154,68 @@ test('confirma ciclo pendiente y finaliza el activo anterior', function () {
         'id' => $activo->id,
         'estatus' => 'finalizado',
     ]);
+});
+
+test('asistencia cambiarEstatus cicla a traves de todos los estados', function () {
+    $user = User::factory()->create();
+    $user->assignRole('Superadmin');
+
+    $grado = Grado::factory()->create(['nombre' => '1°']);
+    $ciclo = CicloEscolar::factory()->activo()->create();
+    $grupo = Grupo::factory()->for($grado)->for($ciclo)->create();
+
+    $alumno = Alumno::factory()
+        ->activo()
+        ->for($grado)
+        ->create(['grupo_id' => $grupo->id, 'ciclo_escolar_id' => $ciclo->id]);
+
+    $component = Livewire::actingAs($user)
+        ->test(App\Livewire\Catalogos\Asistencia::class)
+        ->set('modo', 'pasar-lista')
+        ->set('grupo_id', $grupo->id)
+        ->set('fecha', '2026-06-01')
+        ->call('cargarAlumnos');
+
+    // Default: asistio
+    $component->assertSet("estatusList.{$alumno->id}", 'asistio');
+
+    // 1st click: falta
+    $component->call('cambiarEstatus', $alumno->id);
+    $component->assertSet("estatusList.{$alumno->id}", 'falta');
+
+    // 2nd click: retardo
+    $component->call('cambiarEstatus', $alumno->id);
+    $component->assertSet("estatusList.{$alumno->id}", 'retardo');
+
+    // 3rd click: pendiente
+    $component->call('cambiarEstatus', $alumno->id);
+    $component->assertSet("estatusList.{$alumno->id}", 'pendiente');
+
+    // 4th click: back to asistio (completes cycle)
+    $component->call('cambiarEstatus', $alumno->id);
+    $component->assertSet("estatusList.{$alumno->id}", 'asistio');
+});
+
+test('asistencia pendiente sin motivo muestra error', function () {
+    $user = User::factory()->create();
+    $user->assignRole('Superadmin');
+
+    $grado = Grado::factory()->create(['nombre' => '1°']);
+    $ciclo = CicloEscolar::factory()->activo()->create();
+    $grupo = Grupo::factory()->for($grado)->for($ciclo)->create();
+
+    $alumno = Alumno::factory()
+        ->activo()
+        ->for($grado)
+        ->create(['grupo_id' => $grupo->id, 'ciclo_escolar_id' => $ciclo->id]);
+
+    Livewire::actingAs($user)
+        ->test(App\Livewire\Catalogos\Asistencia::class)
+        ->set('modo', 'pasar-lista')
+        ->set('grupo_id', $grupo->id)
+        ->set('fecha', '2026-06-01')
+        ->call('cargarAlumnos')
+        ->set("estatusList.{$alumno->id}", 'pendiente')
+        ->call('guardar')
+        ->assertHasErrors("justificanteMotivos.{$alumno->id}");
 });

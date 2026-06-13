@@ -49,11 +49,12 @@
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">#</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">Nombre</th>
                                 <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">Estatus</th>
-                                <th class="px-4 py-3 text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">Motivo (justificante)</th>
+                                <th class="px-4 py-3 text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">Motivo</th>
+                                <th class="px-4 py-3 text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">Archivo</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-borde bg-white">
-                            @forelse($alumnos as $index => $alumno)
+                            @forelse($alumnos as $alumno)
                                 @php $alumnoId = $alumno['id']; @endphp
                                 <tr class="hover:bg-hover">
                                     <td class="px-4 py-3 text-sm text-zinc-500">{{ $loop->iteration }}</td>
@@ -61,16 +62,82 @@
                                         {{ $alumno['persona']['apellido_paterno'] }} {{ $alumno['persona']['apellido_materno'] }}, {{ $alumno['persona']['nombre'] }}
                                     </td>
                                     <td class="px-4 py-3 text-center">
-                                        <flux:select wire:model="estatusList.{{ $alumnoId }}" class="min-w-[140px]">
-                                            <option value="asistio">✅ Asistió</option>
-                                            <option value="falta">❌ Falta</option>
-                                            <option value="retardo">⏰ Retardo</option>
-                                            <option value="justificado">📄 Justificado</option>
-                                        </flux:select>
+                                        <button
+                                            type="button"
+                                            wire:click="cambiarEstatus({{ $alumnoId }})"
+                                            class="inline-flex items-center gap-2 rounded-lg px-9 py-4 text-lg font-semibold shadow-sm transition-all duration-150 cursor-pointer border-0
+                                                @switch($estatusList[$alumnoId] ?? 'asistio')
+                                                    @case('asistio')
+                                                        bg-green-600 hover:bg-green-700 text-black ring-1 ring-green-400
+                                                        @break
+                                                    @case('falta')
+                                                        bg-red-600 hover:bg-red-700 text-black ring-1 ring-red-400
+                                                        @break
+                                                    @case('retardo')
+                                                        bg-yellow-400 hover:bg-yellow-500 text-black ring-1 ring-yellow-300
+                                                        @break
+                                                    @case('pendiente')
+                                                        bg-blue-600 hover:bg-blue-700 text-black ring-1 ring-blue-400
+                                                        @break
+                                                @endswitch
+                                            "
+                                        >
+                                            @switch($estatusList[$alumnoId] ?? 'asistio')
+                                                @case('asistio')
+                                                    ✅ Asistió
+                                                    @break
+                                                @case('falta')
+                                                    ❌ Falta
+                                                    @break
+                                                @case('retardo')
+                                                    ⏰ Retardo
+                                                    @break
+                                                @case('pendiente')
+                                                    📄 Justificado
+                                                    @if($justificanteCompletado[$alumnoId] ?? false)
+                                                        ✓
+                                                    @endif
+                                                    @break
+                                            @endswitch
+                                        </button>
                                     </td>
                                     <td class="px-4 py-3">
-                                        @if(($estatusList[$alumnoId] ?? '') === 'justificado')
-                                            <flux:textarea wire:model="motivos.{{ $alumnoId }}" placeholder="Motivo del justificante..." rows="2" class="min-w-[200px]" />
+                                        @if(($estatusList[$alumnoId] ?? '') === 'pendiente')
+                                            @if($justificanteCompletado[$alumnoId] ?? false)
+                                                <span class="text-sm text-zinc-600">{{ $justificanteMotivos[$alumnoId] ?? '' }}</span>
+                                            @else
+                                                <textarea
+                                                    wire:model="justificanteMotivos.{{ $alumnoId }}"
+                                                    placeholder="Motivo del justificante..."
+                                                    rows="2"
+                                                    class="block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm shadow-xs focus:border-zinc-400 focus:outline-hidden focus:ring-1 focus:ring-zinc-300"
+                                                ></textarea>
+                                                @error("justificanteMotivos.{$alumnoId}")
+                                                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                                @enderror
+                                            @endif
+                                        @else
+                                            <span class="text-sm text-zinc-400">—</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        @if(($estatusList[$alumnoId] ?? '') === 'pendiente')
+                                            @if($justificanteCompletado[$alumnoId] ?? false)
+                                                <span class="inline-flex items-center gap-1 text-sm text-green-600">
+                                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                                                    Completado
+                                                </span>
+                                            @else
+                                                <input
+                                                    type="file"
+                                                    wire:model="justificanteArchivos.{{ $alumnoId }}"
+                                                    accept=".pdf,.jpg,.png"
+                                                    class="block w-full text-sm text-zinc-500 file:mr-3 file:rounded-lg file:border-0 file:bg-zinc-100 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-zinc-700 hover:file:bg-zinc-200"
+                                                />
+                                                @error("justificanteArchivos.{$alumnoId}")
+                                                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                                @enderror
+                                            @endif
                                         @else
                                             <span class="text-sm text-zinc-400">—</span>
                                         @endif
@@ -78,7 +145,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="px-4 py-12 text-center text-zinc-500">
+                                    <td colspan="5" class="px-4 py-12 text-center text-zinc-500">
                                         No hay alumnos activos en este grupo.
                                     </td>
                                 </tr>
@@ -158,6 +225,7 @@
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">Grupo</th>
                                 <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">Estatus</th>
                                 <th class="px-4 py-3 text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">Motivo</th>
+                                <th class="px-4 py-3 text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">Archivo</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-borde bg-white">
@@ -182,6 +250,9 @@
                                             @case('retardo')
                                                 <span class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-700">⏰ Retardo</span>
                                                 @break
+                                            @case('pendiente')
+                                                <span class="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-700">📄 Pendiente</span>
+                                                @break
                                             @case('justificado')
                                                 <span class="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-700">📄 Justificado</span>
                                                 @break
@@ -190,10 +261,19 @@
                                     <td class="px-4 py-3 text-sm text-zinc-500">
                                         {{ $item->justificante?->motivo ?? '—' }}
                                     </td>
+                                    <td class="px-4 py-3 text-sm">
+                                        @if($item->justificante?->archivo_path)
+                                            <a href="{{ asset('storage/' . $item->justificante->archivo_path) }}" target="_blank" class="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 underline">
+                                                📎 Descargar
+                                            </a>
+                                        @else
+                                            <span class="text-zinc-400">—</span>
+                                        @endif
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="px-4 py-12 text-center text-zinc-500">
+                                    <td colspan="7" class="px-4 py-12 text-center text-zinc-500">
                                         No se encontraron registros de asistencia para los filtros seleccionados.
                                     </td>
                                 </tr>
