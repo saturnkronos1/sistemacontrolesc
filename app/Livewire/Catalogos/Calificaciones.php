@@ -4,6 +4,7 @@ namespace App\Livewire\Catalogos;
 
 use App\Models\Calificacion;
 use App\Models\CalificacionLog;
+use App\Models\CicloEscolar;
 use App\Models\Grupo;
 use App\Models\Materia;
 use App\Models\PeriodoEvaluacion;
@@ -11,6 +12,8 @@ use Livewire\Component;
 
 class Calificaciones extends Component
 {
+    public $ciclo_escolar_id = '';
+
     public $grupo_id = '';
 
     public $materia_id = '';
@@ -28,10 +31,19 @@ class Calificaciones extends Component
     {
         $user = auth()->user();
 
+        $ciclosEscolares = CicloEscolar::activo()->orderBy('nombre')->get();
+
         // Docente solo ve sus grupos, el resto ve todos
-        $grupos = $user->hasRole('Docente')
-            ? Grupo::where('docente_id', $user->id)->with('grado', 'cicloEscolar')->orderBy('grado_id')->get()
-            : Grupo::with('grado', 'cicloEscolar')->orderBy('grado_id')->get();
+        $gruposQuery = $user->hasRole('Docente')
+            ? Grupo::where('docente_id', $user->id)
+            : Grupo::query();
+
+        // Filtrar por ciclo escolar si está seleccionado
+        if ($this->ciclo_escolar_id) {
+            $gruposQuery->where('ciclo_escolar_id', $this->ciclo_escolar_id);
+        }
+
+        $grupos = $gruposQuery->with('grado', 'cicloEscolar')->orderBy('grado_id')->get();
 
         $materias = $this->grupo_id
             ? Materia::where('grado_id', Grupo::find($this->grupo_id)?->grado_id)
@@ -46,10 +58,17 @@ class Calificaciones extends Component
             : collect();
 
         return view('livewire.catalogos.calificaciones', [
+            'ciclosEscolares' => $ciclosEscolares,
             'grupos' => $grupos,
             'materias' => $materias,
             'periodos' => $periodos,
         ]);
+    }
+
+    public function updatedCicloEscolarId(): void
+    {
+        $this->grupo_id = '';
+        $this->resetSeleccion();
     }
 
     public function updatedGrupoId(): void

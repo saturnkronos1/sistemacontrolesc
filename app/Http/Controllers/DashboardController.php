@@ -6,6 +6,7 @@ use App\Models\Alumno;
 use App\Models\Calificacion;
 use App\Models\User;
 use App\Support\CicloActivoService;
+use Spatie\Permission\Models\Role;
 
 class DashboardController extends Controller
 {
@@ -20,7 +21,7 @@ class DashboardController extends Controller
                 ->count()
             : 0;
 
-        $totalDocentes = \Spatie\Permission\Models\Role::where('name', 'Docente')->exists()
+        $totalDocentes = Role::where('name', 'Docente')->exists()
             ? User::role('Docente')->count()
             : 0;
 

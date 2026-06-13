@@ -7,7 +7,13 @@
             </div>
 
             {{-- Selectores --}}
-            <div class="mb-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="mb-4 grid grid-cols-1 sm:grid-cols-4 gap-4">
+                <flux:select wire:model.live="ciclo_escolar_id" placeholder="Seleccionar ciclo escolar">
+                    @foreach($ciclosEscolares as $ciclo)
+                        <option value="{{ $ciclo->id }}">{{ $ciclo->nombre }}</option>
+                    @endforeach
+                </flux:select>
+
                 <flux:select wire:model.live="grupo_id" placeholder="Seleccionar grupo">
                     @foreach($grupos as $grupo)
                         <option value="{{ $grupo->id }}">{{ $grupo->grado?->nombre }} - {{ $grupo->nombre }} ({{ $grupo->cicloEscolar?->nombre ?? 'Sin ciclo' }})</option>
