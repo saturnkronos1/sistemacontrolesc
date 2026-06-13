@@ -624,6 +624,7 @@ test('asistencia carga alumnos de un grupo', function () {
 
     Livewire::actingAs($user)
         ->test(App\Livewire\Catalogos\Asistencia::class)
+        ->set('modo', 'pasar-lista')
         ->set('grupo_id', $grupo->id)
         ->set('fecha', '2026-06-01')
         ->call('cargarAlumnos')
@@ -646,6 +647,7 @@ test('asistencia guarda estatus para cada alumno', function () {
 
     Livewire::actingAs($user)
         ->test(App\Livewire\Catalogos\Asistencia::class)
+        ->set('modo', 'pasar-lista')
         ->set('grupo_id', $grupo->id)
         ->set('fecha', '2026-06-01')
         ->call('cargarAlumnos')
@@ -675,6 +677,7 @@ test('asistencia crea justificante cuando estatus es justificado', function () {
 
     Livewire::actingAs($user)
         ->test(App\Livewire\Catalogos\Asistencia::class)
+        ->set('modo', 'pasar-lista')
         ->set('grupo_id', $grupo->id)
         ->set('fecha', '2026-06-01')
         ->call('cargarAlumnos')
@@ -700,6 +703,234 @@ test('superadmin can access asistencia', function () {
     $this->actingAs($user)
         ->get(route('asistencia.index'))
         ->assertOk();
+});
+
+// ─── Asistencia: Pasar lista after admin mount ───
+
+test('asistencia pasar lista keeps grupo_id after switching from consulta', function () {
+    $user = User::factory()->create();
+    $user->assignRole('Superadmin');
+
+    $grado = Grado::factory()->create(['nombre' => '1°']);
+    $ciclo = CicloEscolar::factory()->activo()->create();
+    $grupo = Grupo::factory()->for($grado)->for($ciclo)->create();
+
+    $alumno = Alumno::factory()
+        ->activo()
+        ->for($grado)
+        ->create(['grupo_id' => $grupo->id, 'ciclo_escolar_id' => $ciclo->id]);
+
+    // Step 1: Mount as admin — should be in consulta mode with ciclo auto-set
+    $component = Livewire::actingAs($user)->test(App\Livewire\Catalogos\Asistencia::class);
+
+    // Verify initial state
+    $component->assertSet('modo', 'consulta');
+    expect($component->get('ciclo_escolar_id'))->not()->toBeEmpty();
+
+    // Step 2: Switch to pasar-lista mode
+    $component->set('modo', 'pasar-lista');
+    $component->assertSet('modo', 'pasar-lista');
+
+    // Step 3: Select a group (should not clear grupo_id)
+    $component->set('grupo_id', (string) $grupo->id);
+    $component->assertSet('grupo_id', (string) $grupo->id);
+
+    // Step 4: Check cargarAlumnos works
+    $component->set('fecha', '2026-06-01');
+    $component->call('cargarAlumnos')
+        ->assertSet('cargado', true)
+        ->assertCount('alumnos', 1)
+        ->assertOk();
+
+    // Step 5: Verify grupo_id is still set
+    $component->assertSet('grupo_id', (string) $grupo->id);
+});
+
+// ─── Asistencia: Consulta ───
+
+test('asistencia consulta shows tabs for admin roles', function () {
+    $user = User::factory()->create();
+    $user->assignRole('Superadmin');
+
+    Livewire::actingAs($user)
+        ->test(App\Livewire\Catalogos\Asistencia::class)
+        ->assertSet('modo', 'consulta')
+        ->assertSee('Pasar lista')
+        ->assertSee('Consulta');
+});
+
+test('asistencia consulta defaults to pasar-lista for docente', function () {
+    $user = User::factory()->create();
+    $user->assignRole('Docente');
+
+    Livewire::actingAs($user)
+        ->test(App\Livewire\Catalogos\Asistencia::class)
+        ->assertSet('modo', 'pasar-lista')
+        ->assertDontSee('Consulta');
+});
+
+test('asistencia consulta loads attendance records filtered by grupo and date range', function () {
+    $user = User::factory()->create();
+    $user->assignRole('Superadmin');
+
+    $grado = Grado::factory()->create(['nombre' => '1°']);
+    $ciclo = CicloEscolar::factory()->activo()->create();
+    $grupo = Grupo::factory()->for($grado)->for($ciclo)->create();
+
+    $alumno = Alumno::factory()
+        ->activo()
+        ->for($grado)
+        ->create(['grupo_id' => $grupo->id, 'ciclo_escolar_id' => $ciclo->id]);
+
+    Asistencia::factory()->create([
+        'alumno_id' => $alumno->id,
+        'grupo_id' => $grupo->id,
+        'fecha' => '2026-06-01',
+        'estatus' => 'asistio',
+    ]);
+
+    Asistencia::factory()->create([
+        'alumno_id' => $alumno->id,
+        'grupo_id' => $grupo->id,
+        'fecha' => '2026-06-02',
+        'estatus' => 'falta',
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(App\Livewire\Catalogos\Asistencia::class)
+        ->set('modo', 'consulta')
+        ->set('grupo_id', $grupo->id)
+        ->set('fecha_desde', '2026-06-01')
+        ->set('fecha_hasta', '2026-06-30')
+        ->call('consultar')
+        ->assertSet('consultado', true)
+        ->assertSee($alumno->persona->apellido_paterno);
+});
+
+test('asistencia consulta shows resumen counts', function () {
+    $user = User::factory()->create();
+    $user->assignRole('Superadmin');
+
+    $grado = Grado::factory()->create(['nombre' => '1°']);
+    $ciclo = CicloEscolar::factory()->activo()->create();
+    $grupo = Grupo::factory()->for($grado)->for($ciclo)->create();
+
+    $alumno = Alumno::factory()
+        ->activo()
+        ->for($grado)
+        ->create(['grupo_id' => $grupo->id, 'ciclo_escolar_id' => $ciclo->id]);
+
+    collect(['2026-06-01', '2026-06-02', '2026-06-03'])->each(function ($fecha) use ($alumno, $grupo) {
+        Asistencia::factory()->create([
+            'alumno_id' => $alumno->id,
+            'grupo_id' => $grupo->id,
+            'estatus' => 'asistio',
+            'fecha' => $fecha,
+        ]);
+    });
+
+    Asistencia::factory()->create([
+        'alumno_id' => $alumno->id,
+        'grupo_id' => $grupo->id,
+        'fecha' => '2026-06-11',
+        'estatus' => 'falta',
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(App\Livewire\Catalogos\Asistencia::class)
+        ->set('modo', 'consulta')
+        ->set('grupo_id', $grupo->id)
+        ->set('fecha_desde', '2026-06-01')
+        ->set('fecha_hasta', '2026-06-30')
+        ->call('consultar')
+        ->assertSet('resumen.asistio', 3)
+        ->assertSet('resumen.falta', 1)
+        ->assertSet('resumen.total', 4);
+});
+
+test('asistencia consulta filters by alumno', function () {
+    $user = User::factory()->create();
+    $user->assignRole('Superadmin');
+
+    $grado = Grado::factory()->create(['nombre' => '1°']);
+    $ciclo = CicloEscolar::factory()->activo()->create();
+    $grupo = Grupo::factory()->for($grado)->for($ciclo)->create();
+
+    $alumno1 = Alumno::factory()
+        ->activo()
+        ->for($grado)
+        ->create(['grupo_id' => $grupo->id, 'ciclo_escolar_id' => $ciclo->id]);
+
+    $alumno2 = Alumno::factory()
+        ->activo()
+        ->for($grado)
+        ->create(['grupo_id' => $grupo->id, 'ciclo_escolar_id' => $ciclo->id]);
+
+    Asistencia::factory()->create([
+        'alumno_id' => $alumno1->id,
+        'grupo_id' => $grupo->id,
+        'fecha' => '2026-06-01',
+        'estatus' => 'asistio',
+    ]);
+
+    Asistencia::factory()->create([
+        'alumno_id' => $alumno2->id,
+        'grupo_id' => $grupo->id,
+        'fecha' => '2026-06-01',
+        'estatus' => 'falta',
+    ]);
+
+    // Sin filtro de alumno — ve todos
+    Livewire::actingAs($user)
+        ->test(App\Livewire\Catalogos\Asistencia::class)
+        ->set('modo', 'consulta')
+        ->set('grupo_id', $grupo->id)
+        ->set('fecha_desde', '2026-06-01')
+        ->set('fecha_hasta', '2026-06-30')
+        ->call('consultar')
+        ->assertSet('resumen.total', 2);
+
+    // Con filtro de alumno1 — ve solo sus registros
+    Livewire::actingAs($user)
+        ->test(App\Livewire\Catalogos\Asistencia::class)
+        ->set('modo', 'consulta')
+        ->set('grupo_id', $grupo->id)
+        ->set('alumno_id', $alumno1->id)
+        ->set('fecha_desde', '2026-06-01')
+        ->set('fecha_hasta', '2026-06-30')
+        ->call('consultar')
+        ->assertSet('resumen.total', 1)
+        ->assertSet('resumen.asistio', 1);
+});
+
+test('asistencia consulta generates PDF download', function () {
+    $user = User::factory()->create();
+    $user->assignRole('Superadmin');
+
+    $grado = Grado::factory()->create(['nombre' => '1°']);
+    $ciclo = CicloEscolar::factory()->activo()->create();
+    $grupo = Grupo::factory()->for($grado)->for($ciclo)->create();
+
+    $alumno = Alumno::factory()
+        ->activo()
+        ->for($grado)
+        ->create(['grupo_id' => $grupo->id, 'ciclo_escolar_id' => $ciclo->id]);
+
+    Asistencia::factory()->create([
+        'alumno_id' => $alumno->id,
+        'grupo_id' => $grupo->id,
+        'fecha' => '2026-06-01',
+        'estatus' => 'asistio',
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(App\Livewire\Catalogos\Asistencia::class)
+        ->set('modo', 'consulta')
+        ->set('grupo_id', $grupo->id)
+        ->set('fecha_desde', '2026-06-01')
+        ->set('fecha_hasta', '2026-06-30')
+        ->call('descargarPDFConsulta')
+        ->assertFileDownloaded("asistencia-{$grado->nombre}-{$grupo->nombre}.pdf");
 });
 
 test('calificaciones guarda y actualiza notas', function () {
