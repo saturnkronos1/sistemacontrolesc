@@ -53,9 +53,16 @@ class Asistencia extends Component
 
     public $cargado = false;
 
+    // ─── Docente auto-carga ───
+    public bool $esDocente = false;
+
+    public bool $modoLectura = false;
+
     public function mount(): void
     {
         $user = auth()->user();
+
+        $this->esDocente = $user->hasRole('Docente');
 
         if ($user->hasRole('Superadmin') || $user->hasRole('Director') || $user->hasRole('Subdirector')) {
             $this->modo = 'consulta';
@@ -70,6 +77,15 @@ class Asistencia extends Component
         }
 
         $this->fecha = Carbon::today()->format('Y-m-d');
+
+        // Auto-carga para docente: seleccionar su primer grupo y cargar alumnos
+        if ($this->esDocente) {
+            $grupo = Grupo::where('docente_id', $user->id)->first();
+            if ($grupo) {
+                $this->grupo_id = $grupo->id;
+                $this->cargarAlumnos();
+            }
+        }
     }
 
     public function render()
@@ -131,6 +147,7 @@ class Asistencia extends Component
             'grupos' => $grupos,
             'alumnosConsulta' => $alumnosConsulta,
             'esAdmin' => $esAdmin,
+            'esDocente' => $this->esDocente,
             'resultados' => $resultados,
         ]);
     }
@@ -198,6 +215,15 @@ class Asistencia extends Component
     {
         $this->resetearConsulta();
         $this->resetCarga();
+    }
+
+    public function updatedFecha(): void
+    {
+        // Al cambiar la fecha en modo docente, recargar automáticamente
+        if ($this->esDocente && $this->grupo_id && $this->fecha) {
+            $this->modoLectura = false;
+            $this->cargarAlumnos();
+        }
     }
 
     public function consultar()
@@ -307,7 +333,6 @@ class Asistencia extends Component
 
             if ($asis) {
                 if ($asis->estatus === 'justificado') {
-                    // Justificado completo — mostrar botón azul con check
                     $this->estatusList[$alumnoId] = 'pendiente';
                     $this->justificanteCompletado[$alumnoId] = true;
                 } else {
@@ -323,6 +348,13 @@ class Asistencia extends Component
         }
 
         $this->cargado = true;
+
+        // Si el docente ya guardó asistencia para esta fecha → modo lectura
+        if ($this->esDocente && $existentes->isNotEmpty()) {
+            $this->modoLectura = true;
+        } else {
+            $this->modoLectura = false;
+        }
     }
 
     public function guardar()
@@ -395,6 +427,11 @@ class Asistencia extends Component
         $this->dispatch('toast', message: 'Asistencias guardadas exitosamente.', type: 'success');
 
         $this->cargarAlumnos();
+
+        // Docente: después de guardar, bloquear edición en modo lectura
+        if ($this->esDocente) {
+            $this->modoLectura = true;
+        }
     }
 
     public function resetCarga(): void
