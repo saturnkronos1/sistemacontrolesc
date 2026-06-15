@@ -32,15 +32,6 @@
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase whitespace-nowrap hidden sm:table-cell">
                             Teléfono
                         </th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">
-                            Parentesco
-                        </th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">
-                            Hijos
-                        </th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase whitespace-nowrap hidden sm:table-cell">
-                            Cuenta
-                        </th>
                         <th class="px-4 py-3"></th>
                     </tr>
                 </thead>
@@ -52,25 +43,7 @@
                             </td>
                             <td class="px-4 py-3 text-sm hidden sm:table-cell">{{ $padre->email ?? '—' }}</td>
                             <td class="px-4 py-3 text-sm hidden sm:table-cell">{{ $padre->telefono ?? '—' }}</td>
-                            <td class="px-4 py-3 text-sm">
-                                @php
-                                    $parentescos = $padre->familiares->pluck('parentesco')->unique()->implode(', ');
-                                @endphp
-                                {{ $parentescos ?: '—' }}
-                            </td>
-                            <td class="px-4 py-3 text-sm">
-                                {{ $padre->familiares->count() }}
-                            </td>
-                            <td class="px-4 py-3 text-sm hidden sm:table-cell">
-                                @if($padre->user)
-                                    <span class="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 ">
-                                        <svg class="size-3" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>
-                                        Sí
-                                    </span>
-                                @else
-                                    <span class="text-zinc-400">—</span>
-                                @endif
-                            </td>
+
                             <td class="px-4 py-3 text-right whitespace-nowrap">
                                 <flux:button wire:click="editar({{ $padre->id }})" size="sm" inset="top bottom">Editar</flux:button>
                                 <flux:button wire:click="eliminar({{ $padre->id }})" size="sm" variant="danger" inset="top bottom" wire:confirm="¿Desvincular este padre de familia? Se eliminarán sus vínculos con alumnos pero se conservará su registro.">Desvincular</flux:button>
@@ -78,7 +51,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="px-4 py-12 text-center text-zinc-500">
+                            <td colspan="4" class="px-4 py-12 text-center text-zinc-500">
                                 No hay padres de familia registrados.
                             </td>
                         </tr>
@@ -113,11 +86,13 @@
 
                 <flux:separator text="Vínculo" />
 
-                <flux:select wire:model="parentesco" label="Parentesco">
-                    <option value="Padre">Padre</option>
-                    <option value="Madre">Madre</option>
-                    <option value="Tutor">Tutor legal</option>
-                </flux:select>
+                    <flux:select wire:model="parentesco" label="Parentesco">
+                        <option value="Padre">Padre</option>
+                        <option value="Madre">Madre</option>
+                        <option value="Tutor">Tutor legal</option>
+                        <option value="Hermano/a">Hermano/a</option>
+                        <option value="Abuelo/a">Abuelo/a</option>
+                    </flux:select>
 
                 @if(! $editId)
                     {{-- En creación: selector simple de alumno --}}

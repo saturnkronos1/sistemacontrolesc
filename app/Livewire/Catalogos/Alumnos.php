@@ -213,12 +213,14 @@ class Alumnos extends Component
                 $q->where('alumnos.matricula', 'like', "%{$this->search}%")
                     ->orWhere('personas.nombre', 'like', "%{$this->search}%")
                     ->orWhere('personas.apellido_paterno', 'like', "%{$this->search}%")
+                    ->orWhere('personas.curp', 'like', "%{$this->search}%")
                     ->orWhere(DB::raw("CONCAT(personas.apellido_paterno, ' ', personas.apellido_materno, ' ', personas.nombre)"), 'like', "%{$this->search}%");
             });
         }
 
         $sortField = match ($this->sortField) {
             'nombre_completo' => 'personas.apellido_paterno',
+            'curp' => 'personas.curp',
             'grado_id' => 'alumnos.grado_id',
             'grupo_id' => 'alumnos.grupo_id',
             'estatus' => 'alumnos.estatus',
@@ -246,7 +248,7 @@ class Alumnos extends Component
 
     public function crear()
     {
-        $this->resetModal();
+        $this->resetForm();
         $this->matricula = 'ALU'.now()->format('y').str_pad((Alumno::max('id') ?? 0) + 1, 4, '0', STR_PAD_LEFT);
         $this->showModal = true;
     }
@@ -549,9 +551,8 @@ class Alumnos extends Component
         }
     }
 
-    public function resetModal()
+    public function resetForm(): void
     {
-        $this->showModal = false;
         $this->editId = null;
         $this->reset([
             'nombre', 'apellido_paterno', 'apellido_materno', 'curp', 'telefono',
@@ -568,6 +569,12 @@ class Alumnos extends Component
             'tl_fecha_nacimiento', 'tl_domicilio',
             'credenciales',
         ]);
+    }
+
+    public function resetModal(): void
+    {
+        $this->resetForm();
+        $this->showModal = false;
     }
 
     /**

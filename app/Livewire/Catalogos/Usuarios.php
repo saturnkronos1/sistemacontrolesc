@@ -38,6 +38,8 @@ class Usuarios extends Component
 
     public string $search = '';
 
+    public string $rolFiltro = '';
+
     protected function rules()
     {
         $userId = $this->editId;
@@ -61,9 +63,19 @@ class Usuarios extends Component
         }
     }
 
+    public function updatedRolFiltro(): void
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
         $query = User::with('roles');
+
+        // Filtro por rol
+        if ($this->rolFiltro) {
+            $query->whereHas('roles', fn ($q) => $q->where('name', $this->rolFiltro));
+        }
 
         if ($this->search) {
             $query->where(function ($q) {
@@ -72,15 +84,30 @@ class Usuarios extends Component
             });
         }
 
+        // Ordenación especial para el campo 'rol' (requiere join con roles)
+        if ($this->sortField === 'rol') {
+            $query
+                ->leftJoin('model_has_roles', function ($join) {
+                    $join->on('users.id', '=', 'model_has_roles.model_id')
+                        ->where('model_has_roles.model_type', '=', 'App\Models\User');
+                })
+                ->leftJoin('roles', 'model_has_roles.role_id', '=', 'roles.id')
+                ->orderBy('roles.name', $this->sortDirection)
+                ->select('users.*')
+                ->groupBy('users.id');
+        } else {
+            $query->orderBy($this->sortField, $this->sortDirection);
+        }
+
         return view('livewire.catalogos.usuarios', [
-            'usuarios' => $query->orderBy($this->sortField, $this->sortDirection)->paginate(15),
+            'usuarios' => $query->paginate(10),
             'roles' => Role::all()->pluck('name'),
         ]);
     }
 
     public function crear()
     {
-        $this->resetModal();
+        $this->resetForm();
         $this->showModal = true;
     }
 
@@ -153,9 +180,8 @@ class Usuarios extends Component
         $this->dispatch('toast', message: 'Usuario eliminado.', type: 'success');
     }
 
-    public function resetModal()
+    public function resetForm(): void
     {
-        $this->showModal = false;
         $this->editId = null;
         $this->name = '';
         $this->email = '';
@@ -163,5 +189,11 @@ class Usuarios extends Component
         $this->password_confirmation = '';
         $this->rol = '';
         $this->foto_perfil = null;
+    }
+
+    public function resetModal(): void
+    {
+        $this->resetForm();
+        $this->showModal = false;
     }
 }

@@ -40,13 +40,13 @@
                                     <x-sort-indicator :field="'nombre'" :sort-field="$sortField" :sort-direction="$sortDirection" />
                                 </div>
                             </th>
-                            <th wire:click="sortBy('grado_id')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap hidden sm:table-cell">
+                            <th wire:click="sortBy('grado_id')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap max-sm:hidden">
                                 <div class="flex items-center gap-1">
                                     Grado
                                     <x-sort-indicator :field="'grado_id'" :sort-field="$sortField" :sort-direction="$sortDirection" />
                                 </div>
                             </th>
-                            <th wire:click="sortBy('ciclo_escolar_id')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap hidden sm:table-cell">
+                            <th wire:click="sortBy('ciclo_escolar_id')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap max-sm:hidden">
                                 <div class="flex items-center gap-1">
                                     Ciclo
                                     <x-sort-indicator :field="'ciclo_escolar_id'" :sort-field="$sortField" :sort-direction="$sortDirection" />
@@ -65,8 +65,8 @@
                         @forelse($grupos as $grupo)
                             <tr class="hover:bg-hover">
                                 <td class="px-4 py-3 text-sm font-medium">{{ $grupo->nombre }}</td>
-                                <td class="px-4 py-3 text-sm hidden sm:table-cell">{{ $grupo->grado?->nombre }}</td>
-                                <td class="px-4 py-3 text-sm hidden sm:table-cell">{{ $grupo->cicloEscolar?->nombre }}</td>
+                                <td class="px-4 py-3 text-sm max-sm:hidden">{{ $grupo->grado?->nombre }}</td>
+                                <td class="px-4 py-3 text-sm max-sm:hidden">{{ $grupo->cicloEscolar?->nombre }}</td>
                                 <td class="px-4 py-3 text-sm">
                                     @if($grupo->docente)
                                         <span class="inline-flex items-center rounded-full bg-violet-100 px-2.5 py-0.5 text-xs font-medium text-violet-800">

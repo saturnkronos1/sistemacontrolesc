@@ -90,7 +90,7 @@ class Grupos extends Component
 
     public function crear()
     {
-        $this->resetModal();
+        $this->resetForm();
         $cicloActivoId = app(CicloActivoService::class)->getId();
         if ($cicloActivoId) {
             $this->ciclo_escolar_id = $cicloActivoId;
@@ -133,13 +133,18 @@ class Grupos extends Component
         $this->dispatch('toast', message: 'Grupo eliminado.', type: 'success');
     }
 
-    public function resetModal()
+    public function resetForm(): void
     {
-        $this->showModal = false;
         $this->editId = null;
         $this->grado_id = '';
         $this->ciclo_escolar_id = '';
         $this->docente_id = '';
         $this->nombre = '';
+    }
+
+    public function resetModal(): void
+    {
+        $this->resetForm();
+        $this->showModal = false;
     }
 }

@@ -52,6 +52,12 @@
                                 <x-sort-indicator :field="'nombre_completo'" :sort-field="$sortField" :sort-direction="$sortDirection" />
                             </div>
                         </th>
+                        <th wire:click="sortBy('curp')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap hidden sm:table-cell">
+                            <div class="flex items-center gap-1">
+                                CURP
+                                <x-sort-indicator :field="'curp'" :sort-field="$sortField" :sort-direction="$sortDirection" />
+                            </div>
+                        </th>
                         <th wire:click="sortBy('grado_id')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap hidden sm:table-cell">
                             <div class="flex items-center gap-1">
                                 Grado
@@ -80,6 +86,7 @@
                             <td class="px-4 py-3 text-sm font-medium">
                                 {{ $alumno->persona?->apellido_paterno }} {{ $alumno->persona?->apellido_materno }}, {{ $alumno->persona?->nombre }}
                             </td>
+                            <td class="px-4 py-3 text-sm font-mono uppercase hidden sm:table-cell">{{ $alumno->persona?->curp }}</td>
                             <td class="px-4 py-3 text-sm hidden sm:table-cell">{{ $alumno->grado?->nombre }}</td>
                             <td class="px-4 py-3 text-sm hidden sm:table-cell">
                                 @if($alumno->grupo)
@@ -117,7 +124,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-4 py-12 text-center text-zinc-500">
+                            <td colspan="7" class="px-4 py-12 text-center text-zinc-500">
                                 No hay alumnos registrados.
                             </td>
                         </tr>

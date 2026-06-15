@@ -67,7 +67,7 @@ class CiclosEscolares extends Component
 
     public function crear()
     {
-        $this->resetModal();
+        $this->resetForm();
         $this->showModal = true;
     }
 
@@ -132,13 +132,18 @@ class CiclosEscolares extends Component
         $this->dispatch('toast', message: 'Ciclo escolar eliminado.', type: 'success');
     }
 
-    public function resetModal()
+    public function resetForm(): void
     {
-        $this->showModal = false;
         $this->editId = null;
         $this->nombre = '';
         $this->fecha_inicio = '';
         $this->fecha_fin = '';
         $this->estatus = 'pendiente';
+    }
+
+    public function resetModal(): void
+    {
+        $this->resetForm();
+        $this->showModal = false;
     }
 }

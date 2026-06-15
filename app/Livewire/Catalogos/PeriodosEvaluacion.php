@@ -83,7 +83,7 @@ class PeriodosEvaluacion extends Component
 
     public function crear()
     {
-        $this->resetModal();
+        $this->resetForm();
         $cicloActivoId = app(CicloActivoService::class)->getId();
         if ($cicloActivoId) {
             $this->ciclo_escolar_id = $cicloActivoId;
@@ -128,14 +128,19 @@ class PeriodosEvaluacion extends Component
         $this->dispatch('toast', message: 'Periodo eliminado.', type: 'success');
     }
 
-    public function resetModal()
+    public function resetForm(): void
     {
-        $this->showModal = false;
         $this->editId = null;
         $this->ciclo_escolar_id = '';
         $this->nombre = '';
         $this->orden = '';
         $this->fecha_inicio = '';
         $this->fecha_fin = '';
+    }
+
+    public function resetModal(): void
+    {
+        $this->resetForm();
+        $this->showModal = false;
     }
 }

@@ -8,9 +8,16 @@
                 </flux:button>
             </div>
 
-            {{-- Búsqueda --}}
-            <div class="mb-4 max-w-sm">
+            {{-- Búsqueda y filtros --}}
+            <div class="mb-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <flux:input wire:model.live="search" placeholder="Buscar por nombre o email..." icon="magnifying-glass" />
+
+                <flux:select wire:model.live="rolFiltro" placeholder="Todos los roles">
+                    <option value="">Todos los roles</option>
+                    @foreach($roles as $role)
+                        <option value="{{ $role }}">{{ $role }}</option>
+                    @endforeach
+                </flux:select>
             </div>
 
             <div class="overflow-x-auto rounded-lg border border-borde">
@@ -30,7 +37,12 @@
                                     <x-sort-indicator :field="'email'" :sort-field="$sortField" :sort-direction="$sortDirection" />
                                 </div>
                             </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">Rol</th>
+                            <th wire:click="sortBy('rol')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap">
+                                <div class="flex items-center gap-1">
+                                    Rol
+                                    <x-sort-indicator :field="'rol'" :sort-field="$sortField" :sort-direction="$sortDirection" />
+                                </div>
+                            </th>
                             <th class="px-4 py-3"></th>
                         </tr>
                     </thead>

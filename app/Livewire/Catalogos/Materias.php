@@ -62,7 +62,7 @@ class Materias extends Component
 
     public function crear()
     {
-        $this->resetModal();
+        $this->resetForm();
         $this->showModal = true;
     }
 
@@ -99,12 +99,17 @@ class Materias extends Component
         $this->dispatch('toast', message: 'Materia eliminada.', type: 'success');
     }
 
-    public function resetModal()
+    public function resetForm(): void
     {
-        $this->showModal = false;
         $this->editId = null;
         $this->grado_id = '';
         $this->nombre = '';
         $this->clave_materia = '';
+    }
+
+    public function resetModal(): void
+    {
+        $this->resetForm();
+        $this->showModal = false;
     }
 }

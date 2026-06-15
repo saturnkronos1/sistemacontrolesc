@@ -124,7 +124,7 @@ class PadresFamilia extends Component
 
     public function crear()
     {
-        $this->resetModal();
+        $this->resetForm();
         $this->showModal = true;
     }
 
@@ -318,9 +318,8 @@ class PadresFamilia extends Component
         $this->dispatch('toast', message: 'Padre de familia desvinculado exitosamente.', type: 'success');
     }
 
-    public function resetModal()
+    public function resetForm(): void
     {
-        $this->showModal = false;
         $this->editId = null;
         $this->reset([
             'nombre', 'apellido_paterno', 'apellido_materno', 'curp',
@@ -330,5 +329,11 @@ class PadresFamilia extends Component
         ]);
         $this->parentesco = 'Padre';
         $this->vinculos = [];
+    }
+
+    public function resetModal(): void
+    {
+        $this->resetForm();
+        $this->showModal = false;
     }
 }

@@ -117,7 +117,7 @@ class Docentes extends Component
 
     public function crear()
     {
-        $this->resetModal();
+        $this->resetForm();
         $this->showModal = true;
     }
 
@@ -204,9 +204,8 @@ class Docentes extends Component
         $this->dispatch('toast', message: 'Docente eliminado.', type: 'success');
     }
 
-    public function resetModal()
+    public function resetForm(): void
     {
-        $this->showModal = false;
         $this->editId = null;
         $this->editPersonaId = null;
         $this->curp = '';
@@ -222,5 +221,11 @@ class Docentes extends Component
         $this->email = '';
         $this->password = '';
         $this->password_confirmation = '';
+    }
+
+    public function resetModal(): void
+    {
+        $this->resetForm();
+        $this->showModal = false;
     }
 }
