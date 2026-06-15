@@ -6,21 +6,16 @@ use App\Models\Asistencia as AsistenciaModel;
 use App\Models\CicloEscolar;
 use App\Models\Grupo;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Carbon;
 use Livewire\Component;
-use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
-use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 
 class Asistencia extends Component
 {
-    use WithFileUploads;
     use WithPagination;
 
-    // ─── Modo consulta ───
-    public string $modo = 'pasar-lista';
-
     public $ciclo_escolar_id = '';
+
+    public $grupo_id = '';
 
     public $alumno_id = '';
 
@@ -32,31 +27,7 @@ class Asistencia extends Component
 
     public $resumen = [];
 
-    // ─── Pasar lista ───
-    public $grupo_id = '';
-
-    public string $fecha = '';
-
-    public $alumnos = [];
-
-    /** @var array<int, string> [alumno_id => estatus] */
-    public $estatusList = [];
-
-    /** @var array<int, string> [alumno_id => motivo] */
-    public $justificanteMotivos = [];
-
-    /** @var array<int, TemporaryUploadedFile|null> [alumno_id => UploadedFile] */
-    public $justificanteArchivos = [];
-
-    /** @var array<int, bool> [alumno_id => completado] */
-    public $justificanteCompletado = [];
-
-    public $cargado = false;
-
-    // ─── Docente auto-carga ───
     public bool $esDocente = false;
-
-    public bool $modoLectura = false;
 
     public function mount(): void
     {
@@ -64,27 +35,12 @@ class Asistencia extends Component
 
         $this->esDocente = $user->hasRole('Docente');
 
-        if ($user->hasRole('Superadmin') || $user->hasRole('Director') || $user->hasRole('Subdirector')) {
-            $this->modo = 'consulta';
-
-            $activo = CicloEscolar::activo()->first();
-            if ($activo) {
-                $this->ciclo_escolar_id = $activo->id;
-                $this->fecha_desde = $activo->fecha_inicio->format('Y-m-d');
-                $this->fecha_hasta = $activo->fecha_fin->format('Y-m-d');
-                $this->consultado = true;
-            }
-        }
-
-        $this->fecha = Carbon::today()->format('Y-m-d');
-
-        // Auto-carga para docente: seleccionar su primer grupo y cargar alumnos
-        if ($this->esDocente) {
-            $grupo = Grupo::where('docente_id', $user->id)->first();
-            if ($grupo) {
-                $this->grupo_id = $grupo->id;
-                $this->cargarAlumnos();
-            }
+        $activo = CicloEscolar::activo()->first();
+        if ($activo) {
+            $this->ciclo_escolar_id = $activo->id;
+            $this->fecha_desde = $activo->fecha_inicio->format('Y-m-d');
+            $this->fecha_hasta = $activo->fecha_fin->format('Y-m-d');
+            $this->consultado = true;
         }
     }
 
@@ -109,7 +65,7 @@ class Asistencia extends Component
             || $user->hasRole('Subdirector');
 
         $alumnosConsulta = collect();
-        if ($this->modo === 'consulta' && $this->grupo_id) {
+        if ($this->grupo_id) {
             $grupo = Grupo::find($this->grupo_id);
             if ($grupo) {
                 $alumnosConsulta = $grupo->alumnos()
@@ -124,9 +80,9 @@ class Asistencia extends Component
             }
         }
 
-        $resultados = null;
+        $resultados = collect();
 
-        if ($this->consultado && $this->modo === 'consulta' && $this->fecha_desde && $this->fecha_hasta) {
+        if ($this->consultado && $this->fecha_desde && $this->fecha_hasta) {
             $canQuery = $this->grupo_id || $this->ciclo_escolar_id;
             if ($canQuery) {
                 $resultados = $this->queryResultados()->paginate(15);
@@ -147,12 +103,9 @@ class Asistencia extends Component
             'grupos' => $grupos,
             'alumnosConsulta' => $alumnosConsulta,
             'esAdmin' => $esAdmin,
-            'esDocente' => $this->esDocente,
             'resultados' => $resultados,
         ]);
     }
-
-    // ─── Modo consulta ───
 
     protected function queryResultados()
     {
@@ -197,10 +150,6 @@ class Asistencia extends Component
 
     public function updatedGrupoId(): void
     {
-        if ($this->modo !== 'consulta') {
-            return;
-        }
-
         $this->alumno_id = '';
         $this->resetearConsulta();
     }
@@ -209,21 +158,6 @@ class Asistencia extends Component
     {
         $this->consultado = false;
         $this->resumen = [];
-    }
-
-    public function updatedModo(): void
-    {
-        $this->resetearConsulta();
-        $this->resetCarga();
-    }
-
-    public function updatedFecha(): void
-    {
-        // Al cambiar la fecha en modo docente, recargar automáticamente
-        if ($this->esDocente && $this->grupo_id && $this->fecha) {
-            $this->modoLectura = false;
-            $this->cargarAlumnos();
-        }
     }
 
     public function consultar()
@@ -274,173 +208,5 @@ class Asistencia extends Component
             fn () => print ($pdf->output()),
             $filename,
         );
-    }
-
-    // ─── Pasar lista ───
-
-    public function cambiarEstatus($alumnoId): void
-    {
-        $ciclo = [
-            'asistio' => 'falta',
-            'falta' => 'retardo',
-            'retardo' => 'pendiente',
-            'pendiente' => 'asistio',
-        ];
-
-        $this->estatusList[$alumnoId] = $ciclo[$this->estatusList[$alumnoId]] ?? 'asistio';
-
-        // Si ya no es pendiente, limpiar archivo subido temporal
-        if ($this->estatusList[$alumnoId] !== 'pendiente') {
-            unset($this->justificanteArchivos[$alumnoId]);
-        }
-    }
-
-    public function cargarAlumnos()
-    {
-        $this->validate([
-            'grupo_id' => 'required|exists:grupos,id',
-            'fecha' => 'required|date',
-        ]);
-
-        $grupo = Grupo::with('grado')->findOrFail($this->grupo_id);
-
-        $this->alumnos = $grupo->alumnos()
-            ->where('alumnos.estatus', 'activo')
-            ->with('persona')
-            ->join('personas', 'alumnos.persona_id', '=', 'personas.id')
-            ->orderBy('personas.apellido_paterno')
-            ->orderBy('personas.apellido_materno')
-            ->orderBy('personas.nombre')
-            ->select('alumnos.*')
-            ->get()
-            ->toArray();
-
-        // Cargar asistencias existentes
-        $existentes = AsistenciaModel::where('grupo_id', $this->grupo_id)
-            ->where('fecha', $this->fecha)
-            ->with('justificante')
-            ->get()
-            ->keyBy('alumno_id');
-
-        $this->estatusList = [];
-        $this->justificanteMotivos = [];
-        $this->justificanteArchivos = [];
-        $this->justificanteCompletado = [];
-
-        foreach ($this->alumnos as $alumno) {
-            $alumnoId = $alumno['id'];
-            $asis = $existentes->get($alumnoId);
-
-            if ($asis) {
-                if ($asis->estatus === 'justificado') {
-                    $this->estatusList[$alumnoId] = 'pendiente';
-                    $this->justificanteCompletado[$alumnoId] = true;
-                } else {
-                    $this->estatusList[$alumnoId] = $asis->estatus;
-                }
-
-                $this->justificanteMotivos[$alumnoId] = $asis?->justificante?->motivo ?? '';
-            } else {
-                $this->estatusList[$alumnoId] = 'asistio';
-                $this->justificanteMotivos[$alumnoId] = '';
-                $this->justificanteCompletado[$alumnoId] = false;
-            }
-        }
-
-        $this->cargado = true;
-
-        // Si el docente ya guardó asistencia para esta fecha → modo lectura
-        if ($this->esDocente && $existentes->isNotEmpty()) {
-            $this->modoLectura = true;
-        } else {
-            $this->modoLectura = false;
-        }
-    }
-
-    public function guardar()
-    {
-        $this->validate([
-            'estatusList.*' => 'required|in:asistio,falta,retardo,pendiente',
-            'justificanteMotivos.*' => 'nullable|string|max:500',
-            'justificanteArchivos.*' => 'nullable|file|mimes:pdf,jpg,png|max:10240',
-        ]);
-
-        // Validar que pendiente tenga motivo
-        foreach ($this->estatusList as $alumnoId => $estatus) {
-            if ($estatus === 'pendiente' && empty(trim($this->justificanteMotivos[$alumnoId] ?? ''))) {
-                $this->addError(
-                    "justificanteMotivos.{$alumnoId}",
-                    'El motivo es obligatorio cuando el estatus es Justificado.',
-                );
-
-                return;
-            }
-        }
-
-        $grupo = Grupo::findOrFail($this->grupo_id);
-
-        foreach ($this->alumnos as $alumno) {
-            $alumnoId = $alumno['id'];
-            $estatus = $this->estatusList[$alumnoId];
-
-            // Si es pendiente y subió archivo, guardar como justificado
-            $saveEstatus = $estatus;
-            if ($estatus === 'pendiente' && isset($this->justificanteArchivos[$alumnoId])) {
-                $saveEstatus = 'justificado';
-            }
-
-            $asistencia = AsistenciaModel::updateOrCreate(
-                [
-                    'alumno_id' => $alumnoId,
-                    'grupo_id' => $this->grupo_id,
-                    'fecha' => $this->fecha,
-                ],
-                [
-                    'estatus' => $saveEstatus,
-                ]
-            );
-
-            if ($estatus === 'pendiente') {
-                // Crear o actualizar justificante
-                $justificanteData = [
-                    'motivo' => $this->justificanteMotivos[$alumnoId] ?? '',
-                ];
-
-                if (isset($this->justificanteArchivos[$alumnoId])) {
-                    $file = $this->justificanteArchivos[$alumnoId];
-                    $extension = $file->getClientOriginalExtension();
-                    $filename = "{$alumnoId}_{$this->fecha}_{$asistencia->id}.{$extension}";
-                    $path = $file->storeAs('justificantes', $filename, 'public');
-                    $justificanteData['archivo_path'] = $path;
-                }
-
-                $asistencia->justificante()->updateOrCreate(
-                    ['asistencia_id' => $asistencia->id],
-                    $justificanteData
-                );
-            } elseif ($asistencia->justificante) {
-                // Si cambió a otro estatus, eliminar justificante
-                $asistencia->justificante()->delete();
-            }
-        }
-
-        $this->dispatch('toast', message: 'Asistencias guardadas exitosamente.', type: 'success');
-
-        $this->cargarAlumnos();
-
-        // Docente: después de guardar, bloquear edición en modo lectura
-        if ($this->esDocente) {
-            $this->modoLectura = true;
-        }
-    }
-
-    public function resetCarga(): void
-    {
-        $this->alumnos = [];
-        $this->estatusList = [];
-        $this->justificanteMotivos = [];
-        $this->justificanteArchivos = [];
-        $this->justificanteCompletado = [];
-        $this->cargado = false;
     }
 }

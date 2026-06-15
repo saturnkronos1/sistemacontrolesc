@@ -10,6 +10,7 @@ use App\Livewire\Catalogos\Docentes;
 use App\Livewire\Catalogos\Grupos;
 use App\Livewire\Catalogos\Materias;
 use App\Livewire\Catalogos\PadresFamilia;
+use App\Livewire\Catalogos\PasarLista;
 use App\Livewire\Catalogos\PeriodosEvaluacion;
 use App\Livewire\Catalogos\Reinscripciones;
 use App\Livewire\Catalogos\Reportes;
@@ -77,6 +78,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Asistencia
     Route::prefix('asistencia')->name('asistencia.')->group(function () {
         Route::get('/', Asistencia::class)->name('index');
+    });
+
+    // Pasar lista
+    Route::prefix('pasar-lista')->name('pasar-lista.')->group(function () {
+        Route::get('/', PasarLista::class)->name('index');
     });
 
     // Reinscripciones
