@@ -3,13 +3,17 @@
 namespace App\Livewire\Catalogos;
 
 use App\Models\Alumno;
+use App\Models\CicloEscolar;
 use App\Models\Grupo;
-use App\Support\CicloActivoService;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class Reinscripciones extends Component
 {
+    public $ciclo_escolar_id = '';
+
+    public $target_ciclo_escolar_id = '';
+
     public $source_grupo_id = '';
 
     public $target_grupo_id = '';
@@ -21,26 +25,74 @@ class Reinscripciones extends Component
 
     public $cargado = false;
 
+    public function mount(): void
+    {
+        $activo = CicloEscolar::activo()->first();
+        if ($activo) {
+            $this->ciclo_escolar_id = $activo->id;
+            $this->target_ciclo_escolar_id = $this->detectarSiguienteCiclo($activo->id)?->id ?? '';
+        }
+    }
+
     public function render()
     {
-        $grupos = Grupo::with('grado', 'cicloEscolar')
+        $ciclosEscolares = CicloEscolar::orderBy('fecha_inicio')->get();
+
+        // Source grupos — filtrados por ciclo origen
+        $sourceGrupos = Grupo::with('grado', 'cicloEscolar')
+            ->when($this->ciclo_escolar_id, fn ($q) => $q->where('ciclo_escolar_id', $this->ciclo_escolar_id))
             ->orderBy('grado_id')
             ->orderBy('nombre')
             ->get();
 
-        // Mostrar solo grupos del ciclo activo como fuente, y otros como destino
-        $cicloActivo = app(CicloActivoService::class)->get();
+        // Target grupos — filtrados por ciclo destino
+        $targetGrupos = Grupo::with('grado', 'cicloEscolar')
+            ->when($this->target_ciclo_escolar_id, fn ($q) => $q->where('ciclo_escolar_id', $this->target_ciclo_escolar_id))
+            ->orderBy('grado_id')
+            ->orderBy('nombre')
+            ->get();
 
         return view('livewire.catalogos.reinscripciones', [
-            'grupos' => $grupos,
-            'cicloActivo' => $cicloActivo,
+            'ciclosEscolares' => $ciclosEscolares,
+            'sourceGrupos' => $sourceGrupos,
+            'targetGrupos' => $targetGrupos,
         ]);
+    }
+
+    public function updatedCicloEscolarId(): void
+    {
+        $this->source_grupo_id = '';
+        $this->target_grupo_id = '';
+        $this->resetCarga();
+
+        // Re-detectar siguiente ciclo cuando cambia el origen
+        $this->target_ciclo_escolar_id = $this->detectarSiguienteCiclo($this->ciclo_escolar_id)?->id ?? '';
+    }
+
+    public function updatedTargetCicloEscolarId(): void
+    {
+        $this->target_grupo_id = '';
     }
 
     public function updatedSourceGrupoId(): void
     {
         $this->resetCarga();
         $this->target_grupo_id = '';
+    }
+
+    /**
+     * Find the next ciclo after the given one, ordered by fecha_inicio.
+     */
+    protected function detectarSiguienteCiclo(int $cicloId): ?CicloEscolar
+    {
+        $actual = CicloEscolar::find($cicloId);
+        if (! $actual) {
+            return null;
+        }
+
+        return CicloEscolar::where('fecha_inicio', '>', $actual->fecha_inicio)
+            ->orderBy('fecha_inicio')
+            ->first();
     }
 
     public function cargarAlumnos()
