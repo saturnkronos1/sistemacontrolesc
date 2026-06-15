@@ -33,8 +33,14 @@
 
             {{-- Filters --}}
             <div class="mb-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {{-- Grupo filter for concentrado, kardex, inasistencias --}}
+                {{-- Ciclo + Grupo for concentrado, kardex, inasistencias --}}
                 @if(in_array($reporte, ['concentrado', 'kardex', 'inasistencias']))
+                    <flux:select wire:model.live="ciclo_escolar_id" placeholder="Seleccionar ciclo escolar">
+                        @foreach($ciclosEscolares as $ciclo)
+                            <option value="{{ $ciclo->id }}">{{ $ciclo->nombre }}</option>
+                        @endforeach
+                    </flux:select>
+
                     <flux:select wire:model.live="grupo_id" placeholder="Seleccionar grupo">
                         @foreach($grupos as $grupo)
                             <option value="{{ $grupo->id }}">{{ $grupo->grado?->nombre }} - {{ $grupo->nombre }} ({{ $grupo->cicloEscolar?->nombre ?? 'Sin ciclo' }})</option>
@@ -67,8 +73,10 @@
 
                 {{-- Date filters for inasistencias --}}
                 @if($reporte === 'inasistencias')
-                    <flux:input type="date" wire:model.live="fecha_desde" placeholder="Fecha desde" />
-                    <flux:input type="date" wire:model.live="fecha_hasta" placeholder="Fecha hasta" />
+                    <div class="sm:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <flux:input type="date" wire:model.live="fecha_desde" placeholder="Fecha desde" />
+                        <flux:input type="date" wire:model.live="fecha_hasta" placeholder="Fecha hasta" />
+                    </div>
                 @endif
 
                 {{-- Search for alumnos-por-tutor --}}

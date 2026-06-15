@@ -19,6 +19,8 @@ class Reportes extends Component
     public string $reporte = 'concentrado';
 
     // ─── Filters comunes ───
+    public $ciclo_escolar_id = '';
+
     public $grupo_id = '';
 
     // Concentrado
@@ -69,15 +71,36 @@ class Reportes extends Component
     {
         $this->materias = collect();
         $this->periodos = collect();
+
+        $user = auth()->user();
+        if ($user->hasRole('Docente')) {
+            $grupo = Grupo::where('docente_id', $user->id)->with('cicloEscolar')->first();
+            if ($grupo) {
+                $this->ciclo_escolar_id = $grupo->ciclo_escolar_id;
+            }
+        } else {
+            $activo = CicloEscolar::activo()->first();
+            if ($activo) {
+                $this->ciclo_escolar_id = $activo->id;
+            }
+        }
     }
 
     public function render()
     {
         $user = auth()->user();
 
-        $grupos = $user->hasRole('Docente')
-            ? Grupo::where('docente_id', $user->id)->with('grado', 'cicloEscolar')->orderBy('grado_id')->get()
-            : Grupo::with('grado', 'cicloEscolar')->orderBy('grado_id')->get();
+        $ciclosEscolares = CicloEscolar::activo()->orderBy('nombre')->get();
+
+        $gruposQuery = $user->hasRole('Docente')
+            ? Grupo::where('docente_id', $user->id)
+            : Grupo::query();
+
+        if ($this->ciclo_escolar_id) {
+            $gruposQuery->where('ciclo_escolar_id', $this->ciclo_escolar_id);
+        }
+
+        $grupos = $gruposQuery->with('grado', 'cicloEscolar')->orderBy('grado_id')->get();
 
         $periodos = collect();
         $materias = collect();
@@ -112,6 +135,7 @@ class Reportes extends Component
         }
 
         return view('livewire.catalogos.reportes', [
+            'ciclosEscolares' => $ciclosEscolares,
             'grupos' => $grupos,
             'periodos' => $periodos,
             'materias' => $materias,
@@ -121,6 +145,14 @@ class Reportes extends Component
 
     public function updatedReporte(): void
     {
+        $this->resetCarga();
+    }
+
+    public function updatedCicloEscolarId(): void
+    {
+        $this->grupo_id = '';
+        $this->alumno_id = '';
+        $this->periodo_id = '';
         $this->resetCarga();
     }
 
