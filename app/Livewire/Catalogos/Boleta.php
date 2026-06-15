@@ -5,6 +5,7 @@ namespace App\Livewire\Catalogos;
 use App\Models\Alumno;
 use App\Models\BoletaObservacion;
 use App\Models\Calificacion;
+use App\Models\CicloEscolar;
 use App\Models\Grupo;
 use App\Models\Materia;
 use App\Models\PeriodoEvaluacion;
@@ -14,6 +15,8 @@ use Livewire\Component;
 
 class Boleta extends Component
 {
+    public $ciclo_escolar_id = '';
+
     public function mount(): void
     {
         $this->periodos = collect();
@@ -26,8 +29,14 @@ class Boleta extends Component
             $grupo = Grupo::where('docente_id', $user->id)->with('grado', 'cicloEscolar')->first();
             if ($grupo) {
                 $this->grupoUnico = $grupo;
+                $this->ciclo_escolar_id = $grupo->ciclo_escolar_id;
                 $this->grupo_id = $grupo->id;
                 $this->cargarAlumnosDelGrupo();
+            }
+        } else {
+            $activo = CicloEscolar::activo()->first();
+            if ($activo) {
+                $this->ciclo_escolar_id = $activo->id;
             }
         }
     }
@@ -66,14 +75,28 @@ class Boleta extends Component
     {
         $user = auth()->user();
 
+        $ciclosEscolares = CicloEscolar::activo()->orderBy('nombre')->get();
+
         // Docente: no necesita re-consultar grupos, ya lo hizo en mount
         $grupos = $this->esDocente
             ? collect()
-            : Grupo::with('grado', 'cicloEscolar')->orderBy('grado_id')->get();
+            : Grupo::with('grado', 'cicloEscolar')
+                ->when($this->ciclo_escolar_id, fn ($q) => $q->where('ciclo_escolar_id', $this->ciclo_escolar_id))
+                ->orderBy('grado_id')
+                ->get();
 
         return view('livewire.catalogos.boleta', [
+            'ciclosEscolares' => $ciclosEscolares,
             'grupos' => $grupos,
         ]);
+    }
+
+    public function updatedCicloEscolarId(): void
+    {
+        $this->grupo_id = '';
+        $this->alumno_id = '';
+        $this->alumnos = [];
+        $this->resetCarga();
     }
 
     public function cargarAlumnosDelGrupo(): void

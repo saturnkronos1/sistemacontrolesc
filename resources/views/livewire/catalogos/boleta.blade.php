@@ -3,14 +3,20 @@
         <flux:main>
             <x-page-header title="Boleta de Calificaciones" />
             {{-- Selectores --}}
-            <div class="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="mb-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
                 @if($esDocente && $grupoUnico)
-                    <div class="flex items-center gap-2 rounded-lg border border-borde bg-white px-4 py-2.5 text-sm">
+                    <div class="flex items-center gap-2 rounded-lg border border-borde bg-white px-4 py-2.5 text-sm sm:col-span-3">
                         <flux:icon name="academic-cap" class="h-5 w-5 text-texto-secundario" />
                         <span class="text-zinc-500">Grupo:</span>
                         <span class="font-medium">{{ $grupoUnico->grado?->nombre }} - {{ $grupoUnico->nombre }} ({{ $grupoUnico->cicloEscolar?->nombre ?? 'Sin ciclo' }})</span>
                     </div>
                 @elseif(!$esDocente)
+                    <flux:select wire:model.live="ciclo_escolar_id" placeholder="Seleccionar ciclo escolar">
+                        @foreach($ciclosEscolares as $ciclo)
+                            <option value="{{ $ciclo->id }}">{{ $ciclo->nombre }}</option>
+                        @endforeach
+                    </flux:select>
+
                     <flux:select wire:model.live="grupo_id" placeholder="Seleccionar grupo">
                         @foreach($grupos as $grupo)
                             <option value="{{ $grupo->id }}">{{ $grupo->grado?->nombre }} - {{ $grupo->nombre }} ({{ $grupo->cicloEscolar?->nombre ?? 'Sin ciclo' }})</option>
