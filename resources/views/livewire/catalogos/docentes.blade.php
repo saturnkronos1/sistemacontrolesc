@@ -3,7 +3,6 @@
         <flux:main>
             <x-page-header title="Docentes" />
             <div class="flex items-center justify-between mb-6">
-                <h1 class="text-2xl font-bold lg:hidden">Docentes</h1>
                 <flux:button wire:click="crear" variant="primary">
                     Nuevo Docente
                 </flux:button>
@@ -24,13 +23,13 @@
                                     <x-sort-indicator :field="'apellido_paterno'" :sort-field="$sortField" :sort-direction="$sortDirection" />
                                 </div>
                             </th>
-                            <th wire:click="sortBy('curp')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap">
+                            <th wire:click="sortBy('curp')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap hidden sm:table-cell">
                                 <div class="flex items-center gap-1">
                                     CURP
                                     <x-sort-indicator :field="'curp'" :sort-field="$sortField" :sort-direction="$sortDirection" />
                                 </div>
                             </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">
+                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase whitespace-nowrap hidden sm:table-cell">
                                 Teléfono
                             </th>
                             <th wire:click="sortBy('estatus')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap">
@@ -52,8 +51,8 @@
                                         {{ $docente->name }}
                                     @endif
                                 </td>
-                                <td class="px-4 py-3 text-sm font-mono">{{ $docente->persona?->curp ?? '—' }}</td>
-                                <td class="px-4 py-3 text-sm">{{ $docente->persona?->telefono ?? '—' }}</td>
+                                <td class="px-4 py-3 text-sm font-mono hidden sm:table-cell">{{ $docente->persona?->curp ?? '—' }}</td>
+                                <td class="px-4 py-3 text-sm hidden sm:table-cell">{{ $docente->persona?->telefono ?? '—' }}</td>
                                 <td class="px-4 py-3">
                                     @php
                                         $estatus = $docente->persona?->estatus ?? 'activo';

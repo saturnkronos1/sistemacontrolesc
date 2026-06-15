@@ -1,10 +1,6 @@
 <div>
     <flux:main>
         <x-page-header title="Asistencia" />
-        <div class="flex items-center justify-between mb-6">
-            <h1 class="text-2xl font-bold lg:hidden">Asistencia</h1>
-        </div>
-
         {{-- Tabs solo para roles admin --}}
         @if($esAdmin ?? false)
             <div class="mb-6 flex flex-wrap gap-2 border-b border-borde pb-2">
@@ -27,12 +23,13 @@
             {{-- ────── Pasar lista ────── --}}
             <div class="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 @if($esDocente)
-                    {{-- Docente: grupo auto-asignado, solo lectura --}}
-                    <flux:select wire:model.live="grupo_id" wire:key="pasar-lista-grupo" placeholder="Seleccionar grupo">
-                        @foreach($grupos as $grupo)
-                            <option value="{{ $grupo->id }}">{{ $grupo->grado?->nombre }} - {{ $grupo->nombre }} ({{ $grupo->cicloEscolar?->nombre ?? 'Sin ciclo' }})</option>
-                        @endforeach
-                    </flux:select>
+                    {{-- Docente: grupo ya cargado automáticamente --}}
+                    <div class="flex items-center gap-2 rounded-lg border border-borde bg-white px-4 py-2 text-sm text-texto">
+                        <flux:icon name="academic-cap" class="h-5 w-5 text-primary shrink-0" />
+                        <span>
+                            Grupo: <strong>{{ $grupos->first()?->grado?->nombre }} - {{ $grupos->first()?->nombre }}</strong>
+                        </span>
+                    </div>
                 @else
                     <flux:select wire:model.live="grupo_id" wire:key="pasar-lista-grupo" placeholder="Seleccionar grupo">
                         @foreach($grupos as $grupo)

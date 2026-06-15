@@ -2,30 +2,27 @@
     {{-- <x-layouts::app.sidebar> --}}
         <flux:main>
             <x-page-header title="Boleta de Calificaciones" />
-            <div class="flex items-center justify-between mb-6">
-                <h1 class="text-2xl font-bold lg:hidden">Boleta de Calificaciones</h1>
-            </div>
-
             {{-- Selectores --}}
-            <div class="mb-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <flux:select wire:model.live="grupo_id" placeholder="Seleccionar grupo">
-                    @foreach($grupos as $grupo)
-                        <option value="{{ $grupo->id }}">{{ $grupo->grado?->nombre }} - {{ $grupo->nombre }} ({{ $grupo->cicloEscolar?->nombre ?? 'Sin ciclo' }})</option>
-                    @endforeach
-                </flux:select>
+            <div class="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                @if($esDocente && $grupoUnico)
+                    <div class="flex items-center gap-2 rounded-lg border border-borde bg-white px-4 py-2.5 text-sm">
+                        <flux:icon name="academic-cap" class="h-5 w-5 text-texto-secundario" />
+                        <span class="text-zinc-500">Grupo:</span>
+                        <span class="font-medium">{{ $grupoUnico->grado?->nombre }} - {{ $grupoUnico->nombre }} ({{ $grupoUnico->cicloEscolar?->nombre ?? 'Sin ciclo' }})</span>
+                    </div>
+                @elseif(!$esDocente)
+                    <flux:select wire:model.live="grupo_id" placeholder="Seleccionar grupo">
+                        @foreach($grupos as $grupo)
+                            <option value="{{ $grupo->id }}">{{ $grupo->grado?->nombre }} - {{ $grupo->nombre }} ({{ $grupo->cicloEscolar?->nombre ?? 'Sin ciclo' }})</option>
+                        @endforeach
+                    </flux:select>
+                @endif
 
                 <flux:select wire:model.live="alumno_id" placeholder="Seleccionar alumno">
                     @foreach($alumnos as $alumno)
                         <option value="{{ $alumno['id'] }}">
                             {{ $alumno['persona']['apellido_paterno'] }} {{ $alumno['persona']['apellido_materno'] }}, {{ $alumno['persona']['nombre'] }} ({{ $alumno['matricula'] }})
                         </option>
-                    @endforeach
-                </flux:select>
-
-                <flux:select wire:model.live="periodo_id" placeholder="Todos los periodos">
-                    <option value="">Todos los periodos</option>
-                    @foreach($periodos ?? [] as $periodo)
-                        <option value="{{ $periodo->id }}">{{ $periodo->nombre }}</option>
                     @endforeach
                 </flux:select>
             </div>

@@ -2,42 +2,60 @@
     {{-- <x-layouts::app.sidebar> --}}
         <flux:main>
             <x-page-header title="Calificaciones" />
-            <div class="flex items-center justify-between mb-6">
-                <h1 class="text-2xl font-bold lg:hidden">Calificaciones</h1>
-            </div>
 
-            {{-- Selectores --}}
-            <div class="mb-4 grid grid-cols-1 sm:grid-cols-4 gap-4">
-                <flux:select wire:model.live="ciclo_escolar_id" placeholder="Seleccionar ciclo escolar">
-                    @foreach($ciclosEscolares as $ciclo)
-                        <option value="{{ $ciclo->id }}">{{ $ciclo->nombre }}</option>
-                    @endforeach
-                </flux:select>
+            @if($esDocente && $grupoUnico)
+                {{-- Docente: info del grupo asignado --}}
+                <div class="mb-4 rounded-lg bg-blue-50 border border-blue-200 px-4 py-3 text-sm text-blue-700">
+                    📚 Grupo asignado: <strong>{{ $grupoUnico->grado?->nombre }} - {{ $grupoUnico->nombre }}</strong>
+                    ({{ $grupoUnico->cicloEscolar?->nombre ?? 'Sin ciclo' }})
+                </div>
+                <div class="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <flux:select wire:model.live="materia_id" placeholder="Seleccionar materia">
+                        @foreach($materias as $materia)
+                            <option value="{{ $materia->id }}">{{ $materia->nombre }}</option>
+                        @endforeach
+                    </flux:select>
 
-                <flux:select wire:model.live="grupo_id" placeholder="Seleccionar grupo">
-                    @foreach($grupos as $grupo)
-                        <option value="{{ $grupo->id }}">{{ $grupo->grado?->nombre }} - {{ $grupo->nombre }} ({{ $grupo->cicloEscolar?->nombre ?? 'Sin ciclo' }})</option>
-                    @endforeach
-                </flux:select>
+                    <flux:select wire:model.live="periodo_id" placeholder="Seleccionar periodo">
+                        @foreach($periodos as $periodo)
+                            <option value="{{ $periodo->id }}">{{ $periodo->nombre }}</option>
+                        @endforeach
+                    </flux:select>
+                </div>
+            @else
+                {{-- Selectores --}}
+                <div class="mb-4 grid grid-cols-1 sm:grid-cols-4 gap-4">
+                    <flux:select wire:model.live="ciclo_escolar_id" placeholder="Seleccionar ciclo escolar">
+                        @foreach($ciclosEscolares as $ciclo)
+                            <option value="{{ $ciclo->id }}">{{ $ciclo->nombre }}</option>
+                        @endforeach
+                    </flux:select>
 
-                <flux:select wire:model.live="materia_id" placeholder="Seleccionar materia">
-                    @foreach($materias as $materia)
-                        <option value="{{ $materia->id }}">{{ $materia->nombre }}</option>
-                    @endforeach
-                </flux:select>
+                    <flux:select wire:model.live="grupo_id" placeholder="Seleccionar grupo">
+                        @foreach($grupos as $grupo)
+                            <option value="{{ $grupo->id }}">{{ $grupo->grado?->nombre }} - {{ $grupo->nombre }} ({{ $grupo->cicloEscolar?->nombre ?? 'Sin ciclo' }})</option>
+                        @endforeach
+                    </flux:select>
 
-                <flux:select wire:model.live="periodo_id" placeholder="Seleccionar periodo">
-                    @foreach($periodos as $periodo)
-                        <option value="{{ $periodo->id }}">{{ $periodo->nombre }}</option>
-                    @endforeach
-                </flux:select>
-            </div>
+                    <flux:select wire:model.live="materia_id" placeholder="Seleccionar materia">
+                        @foreach($materias as $materia)
+                            <option value="{{ $materia->id }}">{{ $materia->nombre }}</option>
+                        @endforeach
+                    </flux:select>
 
-            <div class="mb-6">
-                <flux:button wire:click="cargarAlumnos" variant="primary" :disabled="!$grupo_id || !$materia_id || !$periodo_id">
-                    Cargar alumnos
-                </flux:button>
-            </div>
+                    <flux:select wire:model.live="periodo_id" placeholder="Seleccionar periodo">
+                        @foreach($periodos as $periodo)
+                            <option value="{{ $periodo->id }}">{{ $periodo->nombre }}</option>
+                        @endforeach
+                    </flux:select>
+                </div>
+
+                <div class="mb-6">
+                    <flux:button wire:click="cargarAlumnos" variant="primary" :disabled="!$grupo_id || !$materia_id || !$periodo_id">
+                        Cargar alumnos
+                    </flux:button>
+                </div>
+            @endif
 
             @if($cargado)
                 <div class="overflow-x-auto rounded-lg border border-borde">

@@ -3,7 +3,6 @@
         <flux:main>
             <x-page-header title="Materias" />
             <div class="flex items-center justify-between mb-6">
-                <h1 class="text-2xl font-bold lg:hidden">Materias</h1>
                 <flux:button wire:click="crear" variant="primary">
                     Nueva Materia
                 </flux:button>
@@ -22,7 +21,7 @@
                 <table class="min-w-full divide-y divide-borde">
                     <thead class="bg-tabla-encabezado">
                         <tr>
-                            <th wire:click="sortBy('clave_materia')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap">
+                            <th wire:click="sortBy('clave_materia')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap hidden sm:table-cell">
                                 <div class="flex items-center gap-1">
                                     Clave
                                     <x-sort-indicator :field="'clave_materia'" :sort-field="$sortField" :sort-direction="$sortDirection" />
@@ -34,7 +33,7 @@
                                     <x-sort-indicator :field="'nombre'" :sort-field="$sortField" :sort-direction="$sortDirection" />
                                 </div>
                             </th>
-                            <th wire:click="sortBy('grado_id')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap">
+                            <th wire:click="sortBy('grado_id')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap hidden sm:table-cell">
                                 <div class="flex items-center gap-1">
                                     Grado
                                     <x-sort-indicator :field="'grado_id'" :sort-field="$sortField" :sort-direction="$sortDirection" />
@@ -46,9 +45,9 @@
                     <tbody class="divide-y divide-borde bg-white">
                         @forelse($materias as $materia)
                             <tr class="hover:bg-hover">
-                                <td class="px-4 py-3 text-sm font-mono">{{ $materia->clave_materia }}</td>
+                                <td class="px-4 py-3 text-sm font-mono hidden sm:table-cell">{{ $materia->clave_materia }}</td>
                                 <td class="px-4 py-3 text-sm font-medium">{{ $materia->nombre }}</td>
-                                <td class="px-4 py-3 text-sm">{{ $materia->grado?->nombre }}</td>
+                                <td class="px-4 py-3 text-sm hidden sm:table-cell">{{ $materia->grado?->nombre }}</td>
                                 <td class="px-4 py-3 text-right">
                                     <flux:button wire:click="editar({{ $materia->id }})" size="sm" inset="top bottom">Editar</flux:button>
                                     <flux:button wire:click="eliminar({{ $materia->id }})" size="sm" variant="danger" inset="top bottom" wire:confirm="¿Eliminar esta materia?">Eliminar</flux:button>

@@ -27,6 +27,25 @@ class Calificaciones extends Component
 
     public $cargado = false;
 
+    public bool $esDocente = false;
+
+    public ?Grupo $grupoUnico = null;
+
+    public function mount(): void
+    {
+        $user = auth()->user();
+        $this->esDocente = $user->hasRole('Docente');
+
+        if ($this->esDocente) {
+            $grupo = Grupo::where('docente_id', $user->id)->with('grado', 'cicloEscolar')->first();
+            if ($grupo) {
+                $this->grupoUnico = $grupo;
+                $this->grupo_id = $grupo->id;
+                $this->ciclo_escolar_id = $grupo->ciclo_escolar_id;
+            }
+        }
+    }
+
     public function render()
     {
         $user = auth()->user();
@@ -62,6 +81,8 @@ class Calificaciones extends Component
             'grupos' => $grupos,
             'materias' => $materias,
             'periodos' => $periodos,
+            'esDocente' => $this->esDocente,
+            'grupoUnico' => $this->grupoUnico,
         ]);
     }
 
@@ -79,11 +100,21 @@ class Calificaciones extends Component
     public function updatedMateriaId(): void
     {
         $this->resetNotas();
+
+        // Docente: auto-cargar alumnos al seleccionar materia (si ya tiene periodo)
+        if ($this->esDocente && $this->materia_id && $this->periodo_id) {
+            $this->cargarAlumnos();
+        }
     }
 
     public function updatedPeriodoId(): void
     {
         $this->resetNotas();
+
+        // Docente: auto-cargar alumnos al seleccionar periodo (si ya tiene materia)
+        if ($this->esDocente && $this->periodo_id && $this->materia_id) {
+            $this->cargarAlumnos();
+        }
     }
 
     public function cargarAlumnos()

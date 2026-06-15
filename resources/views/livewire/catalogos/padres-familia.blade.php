@@ -3,7 +3,6 @@
         <x-page-header title="Padres de Familia" />
 
         <div class="flex items-center justify-between mb-6">
-            <h1 class="text-2xl font-bold lg:hidden">Padres de Familia</h1>
             <flux:button wire:click="crear" variant="primary">
                 Nuevo Padre
             </flux:button>
@@ -24,13 +23,13 @@
                                 <x-sort-indicator :field="'apellido_paterno'" :sort-field="$sortField" :sort-direction="$sortDirection" />
                             </div>
                         </th>
-                        <th wire:click="sortBy('email')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap">
+                        <th wire:click="sortBy('email')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap hidden sm:table-cell">
                             <div class="flex items-center gap-1">
                                 Email
                                 <x-sort-indicator :field="'email'" :sort-field="$sortField" :sort-direction="$sortDirection" />
                             </div>
                         </th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">
+                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase whitespace-nowrap hidden sm:table-cell">
                             Teléfono
                         </th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">
@@ -39,7 +38,7 @@
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">
                             Hijos
                         </th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">
+                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase whitespace-nowrap hidden sm:table-cell">
                             Cuenta
                         </th>
                         <th class="px-4 py-3"></th>
@@ -51,8 +50,8 @@
                             <td class="px-4 py-3 text-sm font-medium">
                                 {{ $padre->nombreCompleto() }}
                             </td>
-                            <td class="px-4 py-3 text-sm">{{ $padre->email ?? '—' }}</td>
-                            <td class="px-4 py-3 text-sm">{{ $padre->telefono ?? '—' }}</td>
+                            <td class="px-4 py-3 text-sm hidden sm:table-cell">{{ $padre->email ?? '—' }}</td>
+                            <td class="px-4 py-3 text-sm hidden sm:table-cell">{{ $padre->telefono ?? '—' }}</td>
                             <td class="px-4 py-3 text-sm">
                                 @php
                                     $parentescos = $padre->familiares->pluck('parentesco')->unique()->implode(', ');
@@ -62,7 +61,7 @@
                             <td class="px-4 py-3 text-sm">
                                 {{ $padre->familiares->count() }}
                             </td>
-                            <td class="px-4 py-3 text-sm">
+                            <td class="px-4 py-3 text-sm hidden sm:table-cell">
                                 @if($padre->user)
                                     <span class="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 ">
                                         <svg class="size-3" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>

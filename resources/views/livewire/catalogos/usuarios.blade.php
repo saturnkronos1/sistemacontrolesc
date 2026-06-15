@@ -3,7 +3,6 @@
         <flux:main>
             <x-page-header title="Usuarios" />
             <div class="flex items-center justify-between mb-6">
-                <h1 class="text-2xl font-bold lg:hidden">Usuarios</h1>
                 <flux:button wire:click="crear" variant="primary">
                     Nuevo Usuario
                 </flux:button>
@@ -18,14 +17,14 @@
                 <table class="min-w-full divide-y divide-borde">
                     <thead class="bg-tabla-encabezado">
                         <tr>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">Foto</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase whitespace-nowrap hidden sm:table-cell">Foto</th>
                             <th wire:click="sortBy('name')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap">
                                 <div class="flex items-center gap-1">
                                     Nombre
                                     <x-sort-indicator :field="'name'" :sort-field="$sortField" :sort-direction="$sortDirection" />
                                 </div>
                             </th>
-                            <th wire:click="sortBy('email')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap">
+                            <th wire:click="sortBy('email')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap hidden sm:table-cell">
                                 <div class="flex items-center gap-1">
                                     Email
                                     <x-sort-indicator :field="'email'" :sort-field="$sortField" :sort-direction="$sortDirection" />
@@ -38,7 +37,7 @@
                     <tbody class="divide-y divide-borde bg-white">
                         @forelse($usuarios as $usuario)
                             <tr class="hover:bg-hover">
-                                <td class="px-4 py-3">
+                                <td class="px-4 py-3 hidden sm:table-cell">
                                     @php $photoUrl = $usuario->profilePhotoUrl(); @endphp
                                     @if($photoUrl)
                                         <img src="{{ $photoUrl }}" alt="{{ $usuario->name }}" class="h-8 w-8 rounded-full object-cover">
@@ -49,7 +48,7 @@
                                     @endif
                                 </td>
                                 <td class="px-4 py-3 text-sm font-medium">{{ $usuario->name }}</td>
-                                <td class="px-4 py-3 text-sm">{{ $usuario->email }}</td>
+                                <td class="px-4 py-3 text-sm hidden sm:table-cell">{{ $usuario->email }}</td>
                                 <td class="px-4 py-3 text-sm">
                                     @if($usuario->roles->isNotEmpty())
                                         <span class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 ">

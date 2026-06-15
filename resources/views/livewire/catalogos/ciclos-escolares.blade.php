@@ -3,7 +3,6 @@
         <flux:main>
             <x-page-header title="Ciclos Escolares" />
             <div class="flex items-center justify-between mb-6">
-                <h1 class="text-2xl font-bold lg:hidden">Ciclos Escolares</h1>
                 <flux:button wire:click="crear" variant="primary">
                     Nuevo Ciclo
                 </flux:button>
@@ -24,13 +23,13 @@
                                     <x-sort-indicator :field="'nombre'" :sort-field="$sortField" :sort-direction="$sortDirection" />
                                 </div>
                             </th>
-                            <th wire:click="sortBy('fecha_inicio')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap">
+                            <th wire:click="sortBy('fecha_inicio')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap hidden sm:table-cell">
                                 <div class="flex items-center gap-1">
                                     Inicio
                                     <x-sort-indicator :field="'fecha_inicio'" :sort-field="$sortField" :sort-direction="$sortDirection" />
                                 </div>
                             </th>
-                            <th wire:click="sortBy('fecha_fin')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap">
+                            <th wire:click="sortBy('fecha_fin')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap hidden sm:table-cell">
                                 <div class="flex items-center gap-1">
                                     Fin
                                     <x-sort-indicator :field="'fecha_fin'" :sort-field="$sortField" :sort-direction="$sortDirection" />
@@ -49,8 +48,8 @@
                         @forelse($ciclos as $ciclo)
                             <tr class="hover:bg-hover">
                                 <td class="px-4 py-3 text-sm font-medium">{{ $ciclo->nombre }}</td>
-                                <td class="px-4 py-3 text-sm">{{ $ciclo->fecha_inicio->format('d/m/Y') }}</td>
-                                <td class="px-4 py-3 text-sm">{{ $ciclo->fecha_fin->format('d/m/Y') }}</td>
+                                <td class="px-4 py-3 text-sm hidden sm:table-cell">{{ $ciclo->fecha_inicio->format('d/m/Y') }}</td>
+                                <td class="px-4 py-3 text-sm hidden sm:table-cell">{{ $ciclo->fecha_fin->format('d/m/Y') }}</td>
                                 <td class="px-4 py-3">
                                     @php
                                         $badge = match($ciclo->estatus) {

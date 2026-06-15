@@ -2,10 +2,6 @@
     {{-- <x-layouts::app.sidebar> --}}
         <flux:main>
             <x-page-header title="Reinscripciones" />
-            <div class="flex items-center justify-between mb-6">
-                <h1 class="text-2xl font-bold lg:hidden">Reinscripciones</h1>
-            </div>
-
             {{-- Selectores --}}
             <div class="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <flux:select wire:model.live="source_grupo_id" placeholder="Grupo de origen">
@@ -44,7 +40,7 @@
                                     <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase whitespace-nowrap w-10">
                                         <input type="checkbox" wire:click="toggleAll" {{ count($selected) === count($alumnos) && count($alumnos) > 0 ? 'checked' : '' }} class="rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500" />
                                     </th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">Matrícula</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase whitespace-nowrap hidden sm:table-cell">Matrícula</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">Nombre</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">Grado actual</th>
                                 </tr>
@@ -56,7 +52,7 @@
                                         <td class="px-4 py-3 text-center">
                                             <input type="checkbox" wire:model="selected.{{ $alumnoId }}" value="{{ $alumnoId }}" class="rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500" />
                                         </td>
-                                        <td class="px-4 py-3 text-sm font-mono">{{ $alumno['matricula'] }}</td>
+                                        <td class="px-4 py-3 text-sm font-mono hidden sm:table-cell">{{ $alumno['matricula'] }}</td>
                                         <td class="px-4 py-3 text-sm font-medium whitespace-nowrap">
                                             {{ $alumno['persona']['apellido_paterno'] }} {{ $alumno['persona']['apellido_materno'] }}, {{ $alumno['persona']['nombre'] }}
                                         </td>

@@ -18,17 +18,31 @@ class Boleta extends Component
     {
         $this->periodos = collect();
         $this->materias = collect();
+
+        $user = auth()->user();
+
+        if ($user->hasRole('Docente')) {
+            $this->esDocente = true;
+            $grupo = Grupo::where('docente_id', $user->id)->with('grado', 'cicloEscolar')->first();
+            if ($grupo) {
+                $this->grupoUnico = $grupo;
+                $this->grupo_id = $grupo->id;
+                $this->cargarAlumnosDelGrupo();
+            }
+        }
     }
 
     public $grupo_id = '';
 
     public $alumno_id = '';
 
-    public $periodo_id = ''; // '' = todos
-
     public $alumnos = [];
 
     public $cargado = false;
+
+    public bool $esDocente = false;
+
+    public ?Grupo $grupoUnico = null;
 
     /** @var array<string, mixed> */
     public $alumnoData = [];
@@ -52,8 +66,9 @@ class Boleta extends Component
     {
         $user = auth()->user();
 
-        $grupos = $user->hasRole('Docente')
-            ? Grupo::where('docente_id', $user->id)->with('grado', 'cicloEscolar')->orderBy('grado_id')->get()
+        // Docente: no necesita re-consultar grupos, ya lo hizo en mount
+        $grupos = $this->esDocente
+            ? collect()
             : Grupo::with('grado', 'cicloEscolar')->orderBy('grado_id')->get();
 
         return view('livewire.catalogos.boleta', [
@@ -61,7 +76,7 @@ class Boleta extends Component
         ]);
     }
 
-    public function updatedGrupoId(): void
+    public function cargarAlumnosDelGrupo(): void
     {
         $this->resetCarga();
         $this->alumno_id = '';
@@ -82,6 +97,11 @@ class Boleta extends Component
                     ->toArray();
             }
         }
+    }
+
+    public function updatedGrupoId(): void
+    {
+        $this->cargarAlumnosDelGrupo();
     }
 
     public function updatedAlumnoId(): void
@@ -114,10 +134,6 @@ class Boleta extends Component
         $query = Calificacion::where('alumno_id', $alumno->id)
             ->where('grupo_id', $alumno->grupo_id);
 
-        if ($this->periodo_id) {
-            $query->where('periodo_evaluacion_id', $this->periodo_id);
-        }
-
         $notas = $query->get();
 
         // Build matrix [materia_id][periodo_id] => calificacion
@@ -144,10 +160,6 @@ class Boleta extends Component
         $obsQuery = BoletaObservacion::where('alumno_id', $alumno->id)
             ->where('grupo_id', $alumno->grupo_id);
 
-        if ($this->periodo_id) {
-            $obsQuery->where('periodo_evaluacion_id', $this->periodo_id);
-        }
-
         $this->observaciones = $obsQuery->with('periodoEvaluacion')->get()->toArray();
 
         $this->cargado = true;
@@ -165,19 +177,16 @@ class Boleta extends Component
             'promedios' => $this->promedios,
             'observaciones' => $this->observaciones,
             'generated_at' => now()->format('d/m/Y H:i'),
-            'periodoSeleccionado' => $this->periodo_id
-                ? PeriodoEvaluacion::find($this->periodo_id)?->nombre
-                : 'Todos los periodos',
+            'periodoSeleccionado' => 'Todos los periodos',
         ];
 
         $pdf = Pdf::loadView('pdf.boleta', $data);
 
         $matricula = $this->alumnoData['matricula'] ?? 'alumno';
-        $suffix = $this->periodo_id ? '-periodo-'.$this->periodo_id : '';
 
         return response()->streamDownload(
             fn () => print ($pdf->output()),
-            "boleta-{$matricula}{$suffix}.pdf"
+            "boleta-{$matricula}.pdf"
         );
     }
 
