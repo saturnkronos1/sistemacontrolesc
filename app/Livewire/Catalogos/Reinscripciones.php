@@ -5,6 +5,7 @@ namespace App\Livewire\Catalogos;
 use App\Models\Alumno;
 use App\Models\CicloEscolar;
 use App\Models\Grupo;
+use App\Models\ReinscripcionLog;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
@@ -123,7 +124,7 @@ class Reinscripciones extends Component
         $this->validate([
             'target_grupo_id' => 'required|exists:grupos,id',
             'selected' => 'required|array|min:1',
-            'selected.*' => 'exists:alumnos,id',
+            'selected.*' => 'distinct|exists:alumnos,id',
         ]);
 
         $target = Grupo::with('grado', 'cicloEscolar')->findOrFail($this->target_grupo_id);
@@ -134,11 +135,28 @@ class Reinscripciones extends Component
             foreach ($this->selected as $alumnoId) {
                 $alumno = Alumno::find($alumnoId);
                 if ($alumno) {
+                    // Capture old values before update
+                    $fromGradoId = $alumno->getOriginal('grado_id');
+                    $fromGrupoId = $alumno->getOriginal('grupo_id');
+                    $fromCicloId = $alumno->getOriginal('ciclo_escolar_id');
+
                     $alumno->update([
                         'grado_id' => $target->grado_id,
                         'grupo_id' => $target->id,
                         'ciclo_escolar_id' => $target->ciclo_escolar_id,
                     ]);
+
+                    ReinscripcionLog::create([
+                        'alumno_id' => $alumno->id,
+                        'from_grado_id' => $fromGradoId,
+                        'from_grupo_id' => $fromGrupoId,
+                        'from_ciclo_escolar_id' => $fromCicloId,
+                        'to_grado_id' => $target->grado_id,
+                        'to_grupo_id' => $target->id,
+                        'to_ciclo_escolar_id' => $target->ciclo_escolar_id,
+                        'created_by' => auth()->id(),
+                    ]);
+
                     $count++;
                 }
             }
@@ -154,7 +172,7 @@ class Reinscripciones extends Component
         if (count($this->selected) === count($this->alumnos)) {
             $this->selected = [];
         } else {
-            $this->selected = collect($this->alumnos)->pluck('id')->mapWithKeys(fn ($id) => [$id => true])->toArray();
+            $this->selected = collect($this->alumnos)->pluck('id')->values()->toArray();
         }
     }
 

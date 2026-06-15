@@ -60,7 +60,7 @@
                                 @php $alumnoId = $alumno['id']; @endphp
                                 <tr class="hover:bg-hover">
                                     <td class="px-4 py-3 text-center">
-                                        <input type="checkbox" wire:model="selected.{{ $alumnoId }}" value="{{ $alumnoId }}" class="rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500" />
+                                        <input type="checkbox" wire:model="selected" value="{{ $alumnoId }}" class="rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500" />
                                     </td>
                                     <td class="px-4 py-3 text-sm font-mono hidden sm:table-cell">{{ $alumno['matricula'] }}</td>
                                     <td class="px-4 py-3 text-sm font-medium whitespace-nowrap">

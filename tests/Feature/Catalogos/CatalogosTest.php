@@ -1043,7 +1043,7 @@ test('reinscripciones reinscribe alumno a nuevo grupo', function () {
         ->test(Reinscripciones::class)
         ->set('source_grupo_id', $sourceGrupo->id)
         ->call('cargarAlumnos')
-        ->set('selected', [$alumno->id => true])
+        ->set('selected', [$alumno->id])
         ->set('target_grupo_id', $targetGrupo->id)
         ->call('reinscribir')
         ->assertOk();
@@ -1054,6 +1054,16 @@ test('reinscripciones reinscribe alumno a nuevo grupo', function () {
         'grupo_id' => $targetGrupo->id,
         'ciclo_escolar_id' => $cicloNuevo->id,
         'estatus' => 'activo',
+    ]);
+
+    $this->assertDatabaseHas('reinscripcion_logs', [
+        'alumno_id' => $alumno->id,
+        'from_grado_id' => $grado1->id,
+        'from_grupo_id' => $sourceGrupo->id,
+        'from_ciclo_escolar_id' => $cicloActivo->id,
+        'to_grado_id' => $grado2->id,
+        'to_grupo_id' => $targetGrupo->id,
+        'to_ciclo_escolar_id' => $cicloNuevo->id,
     ]);
 });
 
