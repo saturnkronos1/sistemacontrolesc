@@ -174,139 +174,57 @@
 
                 <flux:input wire:model="matricula" label="Matrícula" placeholder="ALU260001" class="font-mono" />
 
-                {{-- Sección de familia (toggle) --}}
+                {{-- Sección de tutor (toggle) --}}
                 <div class="border-t border-borde pt-4">
-                    <button type="button" wire:click="$toggle('showFamilia')" class="flex items-center gap-2 text-sm font-medium text-zinc-600  hover:text-zinc-900 ">
+                    <button type="button" wire:click="$toggle('showFamilia')" class="flex items-center gap-2 text-sm font-medium text-zinc-600 hover:text-zinc-900">
                         <svg class="w-4 h-4 transition-transform {{ $showFamilia ? 'rotate-90' : '' }}" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
                         </svg>
-                        {{ $showFamilia ? 'Ocultar' : 'Agregar' }} datos de padres / tutores
+                        {{ $showFamilia ? 'Ocultar' : 'Agregar' }} tutor del alumno
                     </button>
 
                     @if($showFamilia)
                         <div class="mt-4 space-y-4">
-                            {{-- Tipo de registro --}}
-                            <div class="flex gap-6">
-                                <label class="flex items-center gap-2 text-sm">
-                                    <flux:radio wire:model="tipo_registro" value="padres" />
-                                    Registrar padres
-                                </label>
-                                <label class="flex items-center gap-2 text-sm">
-                                    <flux:radio wire:model="tipo_registro" value="tutor_legal" />
-                                    Registrar tutor legal
-                                </label>
+                            <div class="rounded-lg border border-borde p-4 space-y-3">
+                                <h3 class="text-sm font-medium text-texto">Tutor designado</h3>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <flux:input wire:model="tutor_apellido_paterno" label="Apellido paterno" placeholder="García" />
+                                    <flux:input wire:model="tutor_apellido_materno" label="Apellido materno" placeholder="López" />
+                                </div>
+
+                                <flux:input wire:model="tutor_nombre" label="Nombre(s)" placeholder="José" />
+
+                                <flux:select wire:model="tutor_parentesco" label="Parentesco">
+                                    <option value="Padre">Padre</option>
+                                    <option value="Madre">Madre</option>
+                                    <option value="Abuelo/a">Abuelo/a</option>
+                                    <option value="Hermana/o">Hermana/o</option>
+                                    <option value="Tutor Legal">Tutor Legal</option>
+                                </flux:select>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <flux:input wire:model="tutor_telefono" label="Teléfono" type="tel" placeholder="5512345678" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)" />
+                                    <flux:input wire:model="tutor_telefono_2" label="Teléfono 2 (opcional)" type="tel" placeholder="5512345679" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)" />
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <flux:input wire:model="tutor_email" label="Email (opcional)" placeholder="correo@ejemplo.com" type="email" />
+                                    <flux:input wire:model="tutor_fecha_nacimiento" label="Fecha de nacimiento" type="date" />
+                                </div>
+
+                                <flux:input wire:model="tutor_domicilio" label="Domicilio" placeholder="Calle y número" />
+
+                                <flux:separator text="Cuenta de usuario del tutor" />
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <flux:input wire:model="tutor_user_email" label="Email de usuario" placeholder="tutor@correo.com" type="email" />
+                                    <flux:input wire:model="tutor_user_password" label="Contraseña" type="password" placeholder="{{ $editId ? 'Dejar vacío para mantener actual' : 'Mínimo 8 caracteres' }}" />
+                                </div>
                             </div>
-
-                            @if($tipo_registro === 'padres')
-                                {{-- Padre/Madre 1 --}}
-                                <div class="rounded-lg border border-borde p-4 space-y-3">
-                                    <h3 class="text-sm font-medium text-texto">Padre / Madre 1</h3>
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                        <flux:input wire:model="p1_apellido_paterno" label="Apellido paterno" placeholder="García" />
-                                        <flux:input wire:model="p1_apellido_materno" label="Apellido materno" placeholder="López" />
-                                    </div>
-                                    <flux:input wire:model="p1_nombre" label="Nombre(s)" placeholder="José" />
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                        <flux:select wire:model="p1_parentesco" label="Parentesco">
-                                            <option value="Padre">Padre</option>
-                                            <option value="Madre">Madre</option>
-                                        </flux:select>
-                                        <flux:input wire:model="p1_telefono" label="Teléfono" type="tel" placeholder="5512345678" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)" />
-                                    </div>
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                        <flux:input wire:model="p1_telefono_2" label="Teléfono 2 (opcional)" type="tel" placeholder="5512345679" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)" />
-                                        <flux:input wire:model="p1_email" label="Email (opcional)" placeholder="correo@ejemplo.com" type="email" />
-                                    </div>
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                        <flux:input wire:model="p1_fecha_nacimiento" label="Fecha de nacimiento" type="date" />
-                                        <flux:input wire:model="p1_domicilio" label="Domicilio" placeholder="Calle y número" />
-                                    </div>
-                                </div>
-
-                                {{-- Padre/Madre 2 (opcional) --}}
-                                @if($p2_activo)
-                                    <div class="rounded-lg border border-borde p-4 space-y-3 relative">
-                                        <div class="flex items-center justify-between">
-                                            <h3 class="text-sm font-medium text-texto">Padre / Madre 2</h3>
-                                            <button type="button" wire:click="quitarPadre2" class="text-xs text-red-500 hover:text-red-700">Eliminar</button>
-                                        </div>
-                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                            <flux:input wire:model="p2_apellido_paterno" label="Apellido paterno" placeholder="García" />
-                                            <flux:input wire:model="p2_apellido_materno" label="Apellido materno" placeholder="López" />
-                                        </div>
-                                        <flux:input wire:model="p2_nombre" label="Nombre(s)" placeholder="María" />
-                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                            <flux:select wire:model="p2_parentesco" label="Parentesco">
-                                                <option value="Madre">Madre</option>
-                                                <option value="Padre">Padre</option>
-                                            </flux:select>
-                                            <flux:input wire:model="p2_telefono" label="Teléfono" type="tel" placeholder="5512345678" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)" />
-                                        </div>
-                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                            <flux:input wire:model="p2_telefono_2" label="Teléfono 2 (opcional)" type="tel" placeholder="5512345679" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)" />
-                                            <flux:input wire:model="p2_email" label="Email (opcional)" placeholder="correo@ejemplo.com" type="email" />
-                                        </div>
-                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                            <flux:input wire:model="p2_fecha_nacimiento" label="Fecha de nacimiento" type="date" />
-                                            <flux:input wire:model="p2_domicilio" label="Domicilio" placeholder="Calle y número" />
-                                        </div>
-                                    </div>
-                                @else
-                                    <flux:button wire:click="agregarPadre2" size="sm" variant="ghost">
-                                        + Agregar padre / madre 2
-                                    </flux:button>
-                                @endif
-
-                                {{-- Tutor designado --}}
-                                <div class="rounded-lg bg-fondo-secundario/50 p-4 space-y-2">
-                                    <p class="text-sm font-medium text-texto">Tutor designado (se creará su cuenta de usuario)</p>
-                                    <div class="flex gap-6">
-                                        <label class="flex items-center gap-2 text-sm">
-                                            <flux:radio wire:model="tutor_designado" value="padre1" />
-                                            Padre / Madre 1
-                                        </label>
-                                        @if($p2_activo)
-                                            <label class="flex items-center gap-2 text-sm">
-                                                <flux:radio wire:model="tutor_designado" value="padre2" />
-                                                Padre / Madre 2
-                                            </label>
-                                        @endif
-                                    </div>
-                                </div>
-
-                            @else
-                                {{-- Tutor legal --}}
-                                <div class="rounded-lg border border-borde p-4 space-y-3">
-                                    <h3 class="text-sm font-medium text-texto">Tutor legal</h3>
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                        <flux:input wire:model="tl_apellido_paterno" label="Apellido paterno" placeholder="García" />
-                                        <flux:input wire:model="tl_apellido_materno" label="Apellido materno" placeholder="López" />
-                                    </div>
-                                    <flux:input wire:model="tl_nombre" label="Nombre(s)" placeholder="Roberto" />
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                        <flux:input wire:model="tl_telefono" label="Teléfono" type="tel" placeholder="5512345678" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)" />
-                                        <flux:input wire:model="tl_telefono_2" label="Teléfono 2 (opcional)" type="tel" placeholder="5512345679" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)" />
-                                    </div>
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                        <flux:input wire:model="tl_email" label="Email (opcional)" placeholder="correo@ejemplo.com" type="email" />
-                                        <flux:input wire:model="tl_fecha_nacimiento" label="Fecha de nacimiento" type="date" />
-                                    </div>
-                                    <flux:input wire:model="tl_domicilio" label="Domicilio" placeholder="Calle y número" />
-                                </div>
-                            @endif
                         </div>
                     @endif
                 </div>
-
-                {{-- Credenciales generadas --}}
-                @if($credenciales)
-                    <div class="rounded-lg     bg-yellow-50 border border-yellow-200 p-4 space-y-1">
-                        <p class="text-sm font-semibold text-yellow-800">⚠ Cuenta de tutor creada</p>
-                        <p class="text-sm text-yellow-700">Usuario: <span class="font-mono font-medium">{{ $credenciales['email'] }}</span></p>
-                        <p class="text-sm text-yellow-700">Contraseña: <span class="font-mono font-medium">{{ $credenciales['password'] }}</span></p>
-                        <p class="text-xs text-yellow-600 mt-1">Anote estas credenciales. No podrá volver a ver la contraseña.</p>
-                    </div>
-                @endif
 
                 <div class="flex justify-end gap-3 pt-2">
                     <flux:button wire:click="resetModal" variant="ghost">Cancelar</flux:button>

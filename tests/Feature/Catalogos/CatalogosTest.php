@@ -256,7 +256,7 @@ test('alumnos filters by estatus', function () {
 
 // ─── Alumnos: Family / Parents / Tutors ───
 
-test('alumnos creates alumno with one parent as tutor', function () {
+test('alumnos creates alumno with tutor (Padre)', function () {
     $user = User::factory()->create();
     $user->assignRole('Superadmin');
 
@@ -273,14 +273,14 @@ test('alumnos creates alumno with one parent as tutor', function () {
         ->set('grado_id', $grado->id)
         ->set('grupo_id', $grupo->id)
         ->set('showFamilia', true)
-        ->set('tipo_registro', 'padres')
-        ->set('p1_nombre', 'José')
-        ->set('p1_apellido_paterno', 'Pérez')
-        ->set('p1_apellido_materno', 'García')
-        ->set('p1_parentesco', 'Padre')
-        ->set('p1_telefono', '5512345678')
-        ->set('p1_email', 'jose@example.com')
-        ->set('tutor_designado', 'padre1')
+        ->set('tutor_nombre', 'José')
+        ->set('tutor_apellido_paterno', 'Pérez')
+        ->set('tutor_apellido_materno', 'García')
+        ->set('tutor_parentesco', 'Padre')
+        ->set('tutor_telefono', '5512345678')
+        ->set('tutor_email', 'jose@example.com')
+        ->set('tutor_user_email', 'jose@example.com')
+        ->set('tutor_user_password', 'secret123')
         ->call('guardar')
         ->assertOk();
 
@@ -288,7 +288,7 @@ test('alumnos creates alumno with one parent as tutor', function () {
     $alumno = Alumno::where('matricula', 'like', 'ALU%')->first();
     expect($alumno)->not->toBeNull();
 
-    // Verify persona for parent exists
+    // Verify persona for tutor exists
     $this->assertDatabaseHas('personas', [
         'nombre' => 'José',
         'apellido_paterno' => 'Pérez',
@@ -301,7 +301,7 @@ test('alumnos creates alumno with one parent as tutor', function () {
         'parentesco' => 'Padre',
     ]);
 
-    // Verify tutor user was auto-created
+    // Verify tutor user was created
     $this->assertDatabaseHas('users', [
         'email' => 'jose@example.com',
     ]);
@@ -310,7 +310,7 @@ test('alumnos creates alumno with one parent as tutor', function () {
     expect($tutorUser->hasRole('Tutor'))->toBeTrue();
 });
 
-test('alumnos creates alumno with two parents and designated tutor', function () {
+test('alumnos creates alumno with tutor (Abuelo/a)', function () {
     $user = User::factory()->create();
     $user->assignRole('Superadmin');
 
@@ -326,35 +326,29 @@ test('alumnos creates alumno with two parents and designated tutor', function ()
         ->set('grado_id', $grado->id)
         ->set('grupo_id', $grupo->id)
         ->set('showFamilia', true)
-        ->set('tipo_registro', 'padres')
-        ->set('p1_nombre', 'Carlos')
-        ->set('p1_apellido_paterno', 'García')
-        ->set('p1_parentesco', 'Padre')
-        ->set('p1_telefono', '5511111111')
-        ->set('p2_activo', true)
-        ->set('p2_nombre', 'Laura')
-        ->set('p2_apellido_paterno', 'García')
-        ->set('p2_parentesco', 'Madre')
-        ->set('p2_telefono', '5522222222')
-        ->set('tutor_designado', 'padre2')
+        ->set('tutor_nombre', 'Carlos')
+        ->set('tutor_apellido_paterno', 'García')
+        ->set('tutor_parentesco', 'Abuelo/a')
+        ->set('tutor_telefono', '5511111111')
+        ->set('tutor_user_email', 'carlos@example.com')
+        ->set('tutor_user_password', 'secret123')
         ->call('guardar')
         ->assertOk();
 
     $alumno = Alumno::where('matricula', 'like', 'ALU%')->latest()->first();
 
-    // Both parents in family
-    expect($alumno->familiares()->count())->toBe(2);
+    // One tutor in family
+    expect($alumno->familiares()->count())->toBe(1);
+    expect($alumno->familiares()->first()->parentesco)->toBe('Abuelo/a');
 
-    // Tutor user created for parent 2 (madre)
-    $tutorPersona = $alumno->familiares()
-        ->where('parentesco', 'Madre')
-        ->first()?->persona;
+    // Tutor user created
+    $tutorPersona = $alumno->familiares()->first()?->persona;
     expect($tutorPersona)->not->toBeNull();
     expect($tutorPersona->user)->not->toBeNull();
     expect($tutorPersona->user->hasRole('Tutor'))->toBeTrue();
 });
 
-test('alumnos creates alumno with legal tutor', function () {
+test('alumnos creates alumno with tutor (Tutor Legal)', function () {
     $user = User::factory()->create();
     $user->assignRole('Superadmin');
 
@@ -370,17 +364,19 @@ test('alumnos creates alumno with legal tutor', function () {
         ->set('grado_id', $grado->id)
         ->set('grupo_id', $grupo->id)
         ->set('showFamilia', true)
-        ->set('tipo_registro', 'tutor_legal')
-        ->set('tl_nombre', 'Roberto')
-        ->set('tl_apellido_paterno', 'Martínez')
-        ->set('tl_telefono', '5533333333')
-        ->set('tl_email', 'roberto@example.com')
+        ->set('tutor_nombre', 'Roberto')
+        ->set('tutor_apellido_paterno', 'Martínez')
+        ->set('tutor_parentesco', 'Tutor Legal')
+        ->set('tutor_telefono', '5533333333')
+        ->set('tutor_email', 'roberto@example.com')
+        ->set('tutor_user_email', 'roberto@example.com')
+        ->set('tutor_user_password', 'secret123')
         ->call('guardar')
         ->assertOk();
 
     $alumno = Alumno::where('matricula', 'like', 'ALU%')->latest()->first();
     expect($alumno->familiares()->count())->toBe(1);
-    expect($alumno->familiares()->first()->parentesco)->toBe('Tutor');
+    expect($alumno->familiares()->first()->parentesco)->toBe('Tutor Legal');
 
     // Tutor user created
     $this->assertDatabaseHas('users', [
@@ -405,29 +401,30 @@ test('alumnos edit preserves family data', function () {
         'matricula' => 'FAM001',
     ]);
 
-    // Add a parent with user account
-    $padre = Persona::factory()->create([
+    // Add a tutor with user account
+    $tutor = Persona::factory()->create([
         'nombre' => 'Papá',
         'apellido_paterno' => 'Test',
         'email' => 'papa@example.com',
     ]);
     AlumnoFamilia::factory()->create([
         'alumno_id' => $alumno->id,
-        'persona_id' => $padre->id,
+        'persona_id' => $tutor->id,
         'parentesco' => 'Padre',
     ]);
     $tutorUser = User::factory()->create([
         'name' => 'Papá Test',
         'email' => 'papa@example.com',
-        'persona_id' => $padre->id,
+        'persona_id' => $tutor->id,
     ]);
     $tutorUser->assignRole('Tutor');
 
     Livewire::actingAs($user)
         ->test(Alumnos::class)
         ->call('editar', $alumno->id)
-        ->assertSet('p1_nombre', 'Papá')
-        ->assertSet('p1_apellido_paterno', 'Test')
+        ->assertSet('tutor_nombre', 'Papá')
+        ->assertSet('tutor_apellido_paterno', 'Test')
+        ->assertSet('tutor_user_email', 'papa@example.com')
         ->assertSet('showFamilia', true);
 });
 
