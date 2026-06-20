@@ -90,7 +90,7 @@
             <div class="flex flex-col gap-6">
                 {{-- School icon --}}
                 <div class="flex justify-center">
-                    <img src="{{ asset('heroes/icon/ico1.png') }}" alt="Icono escolar" class="size-12 rounded-full object-cover">
+                    <img src="{{ asset('heroes/icon/ico1.png') }}" alt="Icono escolar" class="size-11 rounded-full object-cover">
                 </div>
 
                 <x-auth-header :title="__('Inicio de sesión')" :description="__('Ingresa tu correo y contraseña')" />
