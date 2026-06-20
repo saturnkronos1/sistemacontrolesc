@@ -17,6 +17,8 @@ class Docentes extends Component
 
     public $editId = null;
 
+    public int $modalKey = 0;
+
     public $editPersonaId = null;
 
     // Persona fields
@@ -118,6 +120,7 @@ class Docentes extends Component
     public function crear()
     {
         $this->resetForm();
+        $this->modalKey++;
         $this->showModal = true;
     }
 
@@ -141,6 +144,7 @@ class Docentes extends Component
         }
 
         $this->email = $user->email;
+        $this->modalKey++;
         $this->showModal = true;
     }
 

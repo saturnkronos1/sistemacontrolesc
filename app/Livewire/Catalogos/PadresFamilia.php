@@ -20,6 +20,8 @@ class PadresFamilia extends Component
 
     public $editId = null;
 
+    public int $modalKey = 0;
+
     // Persona fields
     public $nombre = '';
 
@@ -125,6 +127,7 @@ class PadresFamilia extends Component
     public function crear()
     {
         $this->resetForm();
+        $this->modalKey++;
         $this->showModal = true;
     }
 
@@ -159,6 +162,7 @@ class PadresFamilia extends Component
         // Cuenta de usuario existente
         $this->crear_cuenta = $persona->user !== null;
 
+        $this->modalKey++;
         $this->showModal = true;
     }
 

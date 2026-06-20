@@ -97,7 +97,7 @@
             </div>
 
             {{-- Modal --}}
-            <flux:modal wire:model="showModal" class="w-full max-w-lg">
+            <flux:modal wire:model="showModal" wire:key="modal-{{ $modalKey }}" class="w-full max-w-lg">
                 <div class="space-y-4">
                     <div>
                         <h2 class="text-lg font-semibold">{{ $editId ? 'Editar' : 'Nuevo' }} Grupo</h2>

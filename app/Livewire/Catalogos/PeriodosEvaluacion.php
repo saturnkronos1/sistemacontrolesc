@@ -16,6 +16,8 @@ class PeriodosEvaluacion extends Component
 
     public $editId = null;
 
+    public int $modalKey = 0;
+
     public $ciclo_escolar_id = '';
 
     public $nombre = '';
@@ -88,6 +90,7 @@ class PeriodosEvaluacion extends Component
         if ($cicloActivoId) {
             $this->ciclo_escolar_id = $cicloActivoId;
         }
+        $this->modalKey++;
         $this->showModal = true;
     }
 
@@ -100,6 +103,7 @@ class PeriodosEvaluacion extends Component
         $this->orden = $periodo->orden;
         $this->fecha_inicio = $periodo->fecha_inicio->format('Y-m-d');
         $this->fecha_fin = $periodo->fecha_fin->format('Y-m-d');
+        $this->modalKey++;
         $this->showModal = true;
     }
 

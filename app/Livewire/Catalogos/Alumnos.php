@@ -22,6 +22,8 @@ class Alumnos extends Component
 
     public $editId = null;
 
+    public int $modalKey = 0;
+
     // ─── Persona fields (alumno) ───
 
     public $nombre = '';
@@ -146,8 +148,8 @@ class Alumnos extends Component
         if ($this->showFamilia) {
             if ($this->tipo_registro === 'padres') {
                 $rules = array_merge($rules, [
-                    'p1_nombre' => 'required|string|max:100',
-                    'p1_apellido_paterno' => 'required|string|max:100',
+                    'p1_nombre' => 'nullable|string|max:100',
+                    'p1_apellido_paterno' => 'nullable|string|max:100',
                     'p1_apellido_materno' => 'nullable|string|max:100',
                     'p1_parentesco' => 'required|in:Padre,Madre',
                     'p1_telefono' => 'nullable|digits:10',
@@ -250,6 +252,7 @@ class Alumnos extends Component
     {
         $this->resetForm();
         $this->matricula = 'ALU'.now()->format('y').str_pad((Alumno::max('id') ?? 0) + 1, 4, '0', STR_PAD_LEFT);
+        $this->modalKey++;
         $this->showModal = true;
     }
 
@@ -301,7 +304,7 @@ class Alumnos extends Component
                 }
 
                 // Determine which parent is the designated tutor (has user account)
-                $tutor = $padres->first(fn ($f) => $f->persona->user);
+                $tutor = $padres->first(fn ($f) => $f->persona?->user);
                 if ($tutor) {
                     $this->tutor_designado = $tutor->is($padre1) ? 'padre1' : 'padre2';
                 }
@@ -309,6 +312,7 @@ class Alumnos extends Component
         }
 
         $this->credenciales = null;
+        $this->modalKey++;
         $this->showModal = true;
     }
 

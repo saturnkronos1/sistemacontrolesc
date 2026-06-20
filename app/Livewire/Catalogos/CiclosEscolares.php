@@ -15,6 +15,8 @@ class CiclosEscolares extends Component
 
     public $editId = null;
 
+    public int $modalKey = 0;
+
     public $nombre = '';
 
     public $fecha_inicio = '';
@@ -68,6 +70,7 @@ class CiclosEscolares extends Component
     public function crear()
     {
         $this->resetForm();
+        $this->modalKey++;
         $this->showModal = true;
     }
 
@@ -79,6 +82,7 @@ class CiclosEscolares extends Component
         $this->fecha_inicio = $ciclo->fecha_inicio->format('Y-m-d');
         $this->fecha_fin = $ciclo->fecha_fin->format('Y-m-d');
         $this->estatus = $ciclo->estatus;
+        $this->modalKey++;
         $this->showModal = true;
     }
 

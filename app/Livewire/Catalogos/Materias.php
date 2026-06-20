@@ -15,6 +15,8 @@ class Materias extends Component
 
     public $editId = null;
 
+    public int $modalKey = 0;
+
     public $grado_id = '';
 
     public $nombre = '';
@@ -63,6 +65,7 @@ class Materias extends Component
     public function crear()
     {
         $this->resetForm();
+        $this->modalKey++;
         $this->showModal = true;
     }
 
@@ -73,6 +76,7 @@ class Materias extends Component
         $this->grado_id = $materia->grado_id;
         $this->nombre = $materia->nombre;
         $this->clave_materia = $materia->clave_materia;
+        $this->modalKey++;
         $this->showModal = true;
     }
 

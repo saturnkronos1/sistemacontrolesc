@@ -20,6 +20,8 @@ class Usuarios extends Component
 
     public $editId = null;
 
+    public int $modalKey = 0;
+
     public $name = '';
 
     public $email = '';
@@ -108,6 +110,7 @@ class Usuarios extends Component
     public function crear()
     {
         $this->resetForm();
+        $this->modalKey++;
         $this->showModal = true;
     }
 
@@ -118,6 +121,7 @@ class Usuarios extends Component
         $this->name = $user->name;
         $this->email = $user->email;
         $this->rol = $user->roles->first()?->name ?? '';
+        $this->modalKey++;
         $this->showModal = true;
     }
 

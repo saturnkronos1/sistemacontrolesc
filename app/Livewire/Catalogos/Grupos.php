@@ -18,6 +18,8 @@ class Grupos extends Component
 
     public $editId = null;
 
+    public int $modalKey = 0;
+
     public $grado_id = '';
 
     public $ciclo_escolar_id = '';
@@ -95,6 +97,7 @@ class Grupos extends Component
         if ($cicloActivoId) {
             $this->ciclo_escolar_id = $cicloActivoId;
         }
+        $this->modalKey++;
         $this->showModal = true;
     }
 
@@ -106,6 +109,7 @@ class Grupos extends Component
         $this->ciclo_escolar_id = $grupo->ciclo_escolar_id;
         $this->docente_id = $grupo->docente_id;
         $this->nombre = $grupo->nombre;
+        $this->modalKey++;
         $this->showModal = true;
     }
 
