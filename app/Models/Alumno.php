@@ -69,4 +69,25 @@ class Alumno extends Model
     {
         return $this->hasMany(BoletaObservacion::class);
     }
+
+    /**
+     * Scope para listar alumnos activos con JOIN a personas y orden nominal.
+     *
+     * Reemplaza el patrón repetido en 7+ Livewire components:
+     *   ->where('alumnos.estatus', 'activo')
+     *   ->with('persona')
+     *   ->join('personas', ...)
+     *     ->orderBy(...)
+     *   ->select('alumnos.*')
+     */
+    public function scopeActivosConPersona($query): void
+    {
+        $query->where('alumnos.estatus', 'activo')
+            ->with('persona')
+            ->join('personas', 'alumnos.persona_id', '=', 'personas.id')
+            ->orderBy('personas.apellido_paterno')
+            ->orderBy('personas.apellido_materno')
+            ->orderBy('personas.nombre')
+            ->select('alumnos.*');
+    }
 }

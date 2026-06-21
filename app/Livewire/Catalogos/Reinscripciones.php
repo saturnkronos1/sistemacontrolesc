@@ -6,7 +6,10 @@ use App\Models\Alumno;
 use App\Models\CicloEscolar;
 use App\Models\Grupo;
 use App\Models\ReinscripcionLog;
+use App\Support\CicloActivoService;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 class Reinscripciones extends Component
@@ -28,35 +31,45 @@ class Reinscripciones extends Component
 
     public function mount(): void
     {
-        $activo = CicloEscolar::activo()->first();
+        $activo = app(CicloActivoService::class)->get();
         if ($activo) {
             $this->ciclo_escolar_id = $activo->id;
             $this->target_ciclo_escolar_id = $this->detectarSiguienteCiclo($activo->id)?->id ?? '';
         }
     }
 
-    public function render()
+    #[Computed]
+    public function ciclosEscolares(): Collection
     {
-        $ciclosEscolares = CicloEscolar::orderBy('fecha_inicio')->get();
+        return CicloEscolar::orderBy('fecha_inicio')->get();
+    }
 
-        // Source grupos — filtrados por ciclo origen
-        $sourceGrupos = Grupo::with('grado', 'cicloEscolar')
+    #[Computed]
+    public function sourceGrupos(): Collection
+    {
+        return Grupo::with('grado', 'cicloEscolar')
             ->when($this->ciclo_escolar_id, fn ($q) => $q->where('ciclo_escolar_id', $this->ciclo_escolar_id))
             ->orderBy('grado_id')
             ->orderBy('nombre')
             ->get();
+    }
 
-        // Target grupos — filtrados por ciclo destino
-        $targetGrupos = Grupo::with('grado', 'cicloEscolar')
+    #[Computed]
+    public function targetGrupos(): Collection
+    {
+        return Grupo::with('grado', 'cicloEscolar')
             ->when($this->target_ciclo_escolar_id, fn ($q) => $q->where('ciclo_escolar_id', $this->target_ciclo_escolar_id))
             ->orderBy('grado_id')
             ->orderBy('nombre')
             ->get();
+    }
 
+    public function render()
+    {
         return view('livewire.catalogos.reinscripciones', [
-            'ciclosEscolares' => $ciclosEscolares,
-            'sourceGrupos' => $sourceGrupos,
-            'targetGrupos' => $targetGrupos,
+            'ciclosEscolares' => $this->ciclosEscolares,
+            'sourceGrupos' => $this->sourceGrupos,
+            'targetGrupos' => $this->targetGrupos,
         ]);
     }
 
@@ -105,13 +118,8 @@ class Reinscripciones extends Component
         $grupo = Grupo::with('grado', 'cicloEscolar')->findOrFail($this->source_grupo_id);
 
         $this->alumnos = $grupo->alumnos()
-            ->where('alumnos.estatus', 'activo')
-            ->with('persona', 'grado')
-            ->join('personas', 'alumnos.persona_id', '=', 'personas.id')
-            ->orderBy('personas.apellido_paterno')
-            ->orderBy('personas.apellido_materno')
-            ->orderBy('personas.nombre')
-            ->select('alumnos.*')
+            ->activosConPersona()
+            ->with('grado')
             ->get()
             ->toArray();
 

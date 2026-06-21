@@ -18,7 +18,7 @@
                     </flux:select>
                 </div>
                 <div class="max-w-sm flex-1">
-                    <flux:input wire:model.live="search" placeholder="Buscar por nombre u orden..." icon="magnifying-glass" />
+                    <flux:input wire:model.live.debounce.300ms="search" placeholder="Buscar por nombre u orden..." icon="magnifying-glass" />
                 </div>
             </div>
 

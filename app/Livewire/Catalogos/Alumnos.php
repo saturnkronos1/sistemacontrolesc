@@ -9,7 +9,9 @@ use App\Models\Grupo;
 use App\Models\Persona;
 use App\Models\User;
 use App\Support\CicloActivoService;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -147,6 +149,26 @@ class Alumnos extends Component
         }
     }
 
+    #[Computed]
+    public function grados(): Collection
+    {
+        return Grado::orderBy('nombre')->get();
+    }
+
+    #[Computed]
+    public function grupos(): Collection
+    {
+        $cicloActivoId = app(CicloActivoService::class)->getId();
+
+        return $this->filtro_grado
+            ? Grupo::where('grado_id', $this->filtro_grado)
+                ->where('ciclo_escolar_id', $cicloActivoId)
+                ->orderBy('nombre')->get()
+            : Grupo::with('grado')
+                ->where('ciclo_escolar_id', $cicloActivoId)
+                ->orderBy('grado_id')->orderBy('nombre')->get();
+    }
+
     public function render()
     {
         $query = Alumno::with('persona', 'grado', 'grupo')
@@ -186,20 +208,10 @@ class Alumnos extends Component
 
         $query->orderBy($sortField, $this->sortDirection);
 
-        $cicloActivoId = app(CicloActivoService::class)->getId();
-
-        $grupos = $this->filtro_grado
-            ? Grupo::where('grado_id', $this->filtro_grado)
-                ->where('ciclo_escolar_id', $cicloActivoId)
-                ->orderBy('nombre')->get()
-            : Grupo::with('grado')
-                ->where('ciclo_escolar_id', $cicloActivoId)
-                ->orderBy('grado_id')->orderBy('nombre')->get();
-
         return view('livewire.catalogos.alumnos', [
             'alumnos' => $query->paginate(15),
-            'grados' => Grado::orderBy('nombre')->get(),
-            'grupos' => $grupos,
+            'grados' => $this->grados,
+            'grupos' => $this->grupos,
         ]);
     }
 

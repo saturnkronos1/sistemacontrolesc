@@ -32,7 +32,7 @@
                 </flux:select>
             </div>
             <div class="max-w-sm flex-1">
-                <flux:input wire:model.live="search" placeholder="Buscar por matrícula, nombre o apellido..." icon="magnifying-glass" />
+                <flux:input wire:model.live.debounce.300ms="search" placeholder="Buscar por matrícula, nombre o apellido..." icon="magnifying-glass" />
             </div>
         </div>
 

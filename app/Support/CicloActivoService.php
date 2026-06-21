@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use App\Models\CicloEscolar;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
 class CicloActivoService
@@ -40,6 +41,19 @@ class CicloActivoService
         return Cache::remember(self::CACHE_KEY, self::CACHE_TTL, function () {
             return CicloEscolar::activo()->value('id');
         });
+    }
+
+    /**
+     * Get all active school cycles, ordered by name.
+     *
+     * Used in Livewire render() for filter selects across multiple components.
+     * Not cached since the list is cheap to query and could change between renders.
+     *
+     * @return Collection<int, CicloEscolar>
+     */
+    public function getAll(): Collection
+    {
+        return CicloEscolar::activo()->orderBy('nombre')->get();
     }
 
     /**

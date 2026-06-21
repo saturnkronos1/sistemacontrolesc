@@ -3,9 +3,11 @@
 namespace App\Livewire\Catalogos;
 
 use App\Models\Asistencia as AsistenciaModel;
-use App\Models\CicloEscolar;
 use App\Models\Grupo;
+use App\Support\CicloActivoService;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Collection;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -35,7 +37,7 @@ class Asistencia extends Component
 
         $this->esDocente = $user->hasRole('Docente');
 
-        $activo = CicloEscolar::activo()->first();
+        $activo = app(CicloActivoService::class)->get();
         if ($activo) {
             $this->ciclo_escolar_id = $activo->id;
             $this->fecha_desde = $activo->fecha_inicio->format('Y-m-d');
@@ -44,42 +46,51 @@ class Asistencia extends Component
         }
     }
 
-    public function render()
+    #[Computed]
+    public function ciclosEscolares(): Collection
+    {
+        return app(CicloActivoService::class)->getAll();
+    }
+
+    #[Computed]
+    public function grupos(): Collection
     {
         $user = auth()->user();
-
-        $ciclosEscolares = CicloEscolar::activo()->orderBy('nombre')->get();
-
-        $gruposQuery = $user->hasRole('Docente')
+        $query = $user->hasRole('Docente')
             ? Grupo::where('docente_id', $user->id)
             : Grupo::query();
 
         if ($this->ciclo_escolar_id) {
-            $gruposQuery->where('ciclo_escolar_id', $this->ciclo_escolar_id);
+            $query->where('ciclo_escolar_id', $this->ciclo_escolar_id);
         }
 
-        $grupos = $gruposQuery->with('grado', 'cicloEscolar')->orderBy('grado_id')->get();
+        return $query->with('grado', 'cicloEscolar')->orderBy('grado_id')->get();
+    }
 
-        $esAdmin = $user->hasRole('Superadmin')
-            || $user->hasRole('Director')
-            || $user->hasRole('Subdirector');
+    #[Computed]
+    public function esAdmin(): bool
+    {
+        return auth()->user()->hasRole('Superadmin')
+            || auth()->user()->hasRole('Director')
+            || auth()->user()->hasRole('Subdirector');
+    }
 
-        $alumnosConsulta = collect();
-        if ($this->grupo_id) {
-            $grupo = Grupo::find($this->grupo_id);
-            if ($grupo) {
-                $alumnosConsulta = $grupo->alumnos()
-                    ->where('alumnos.estatus', 'activo')
-                    ->with('persona')
-                    ->join('personas', 'alumnos.persona_id', '=', 'personas.id')
-                    ->orderBy('personas.apellido_paterno')
-                    ->orderBy('personas.apellido_materno')
-                    ->orderBy('personas.nombre')
-                    ->select('alumnos.*')
-                    ->get();
-            }
+    #[Computed]
+    public function alumnosConsulta(): Collection
+    {
+        if (! $this->grupo_id) {
+            return collect();
         }
 
+        $grupo = Grupo::find($this->grupo_id);
+
+        return $grupo
+            ? $grupo->alumnos()->activosConPersona()->get()
+            : collect();
+    }
+
+    public function render()
+    {
         $resultados = collect();
 
         if ($this->consultado && $this->fecha_desde && $this->fecha_hasta) {
@@ -99,10 +110,10 @@ class Asistencia extends Component
         }
 
         return view('livewire.catalogos.asistencia', [
-            'ciclosEscolares' => $ciclosEscolares,
-            'grupos' => $grupos,
-            'alumnosConsulta' => $alumnosConsulta,
-            'esAdmin' => $esAdmin,
+            'ciclosEscolares' => $this->ciclosEscolares,
+            'grupos' => $this->grupos,
+            'alumnosConsulta' => $this->alumnosConsulta,
+            'esAdmin' => $this->esAdmin,
             'resultados' => $resultados,
         ]);
     }

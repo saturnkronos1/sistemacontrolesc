@@ -10,7 +10,7 @@
 
             {{-- Búsqueda --}}
             <div class="mb-4 max-w-sm">
-                <flux:input wire:model.live="search" placeholder="Buscar por nombre, CURP o email..." icon="magnifying-glass" />
+                <flux:input wire:model.live.debounce.300ms="search" placeholder="Buscar por nombre, CURP o email..." icon="magnifying-glass" />
             </div>
 
             <div class="overflow-x-auto rounded-lg border border-borde">

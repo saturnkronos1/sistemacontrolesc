@@ -81,7 +81,7 @@
 
                 {{-- Search for alumnos-por-tutor --}}
                 @if($reporte === 'alumnos-por-tutor')
-                    <flux:input wire:model.live="search" placeholder="Buscar por nombre del tutor..." />
+                    <flux:input wire:model.live.debounce.300ms="search" placeholder="Buscar por nombre del tutor..." />
                     <div></div>
                     <div></div>
                 @endif

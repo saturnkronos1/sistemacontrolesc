@@ -3,9 +3,11 @@
 namespace App\Livewire\Catalogos;
 
 use App\Models\Asistencia as AsistenciaModel;
-use App\Models\CicloEscolar;
 use App\Models\Grupo;
+use App\Support\CicloActivoService;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
@@ -55,34 +57,41 @@ class PasarLista extends Component
                 $this->cargarAlumnos();
             }
         } else {
-            $activo = CicloEscolar::activo()->first();
+            $activo = app(CicloActivoService::class)->get();
             if ($activo) {
                 $this->ciclo_escolar_id = $activo->id;
             }
         }
     }
 
-    public function render()
+    #[Computed]
+    public function ciclosEscolares(): Collection
+    {
+        return app(CicloActivoService::class)->getAll();
+    }
+
+    #[Computed]
+    public function grupos(): Collection
     {
         $user = auth()->user();
-
-        $ciclosEscolares = CicloEscolar::activo()->orderBy('nombre')->get();
-
-        $gruposQuery = $user->hasRole('Docente')
+        $query = $user->hasRole('Docente')
             ? Grupo::where('docente_id', $user->id)
             : Grupo::query();
 
         if ($this->ciclo_escolar_id) {
-            $gruposQuery->where('ciclo_escolar_id', $this->ciclo_escolar_id);
+            $query->where('ciclo_escolar_id', $this->ciclo_escolar_id);
         }
 
-        $grupos = $gruposQuery->with('grado', 'cicloEscolar')
+        return $query->with('grado', 'cicloEscolar')
             ->orderBy('grado_id')
             ->get();
+    }
 
+    public function render()
+    {
         return view('livewire.catalogos.pasar-lista', [
-            'ciclosEscolares' => $ciclosEscolares,
-            'grupos' => $grupos,
+            'ciclosEscolares' => $this->ciclosEscolares,
+            'grupos' => $this->grupos,
         ]);
     }
 
@@ -119,13 +128,7 @@ class PasarLista extends Component
         $grupo = Grupo::with('grado')->findOrFail($this->grupo_id);
 
         $this->alumnos = $grupo->alumnos()
-            ->where('alumnos.estatus', 'activo')
-            ->with('persona')
-            ->join('personas', 'alumnos.persona_id', '=', 'personas.id')
-            ->orderBy('personas.apellido_paterno')
-            ->orderBy('personas.apellido_materno')
-            ->orderBy('personas.nombre')
-            ->select('alumnos.*')
+            ->activosConPersona()
             ->get()
             ->toArray();
 

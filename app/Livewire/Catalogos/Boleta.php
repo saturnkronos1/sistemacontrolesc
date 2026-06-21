@@ -5,12 +5,13 @@ namespace App\Livewire\Catalogos;
 use App\Models\Alumno;
 use App\Models\BoletaObservacion;
 use App\Models\Calificacion;
-use App\Models\CicloEscolar;
 use App\Models\Grupo;
 use App\Models\Materia;
 use App\Models\PeriodoEvaluacion;
+use App\Support\CicloActivoService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Collection;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 class Boleta extends Component
@@ -34,7 +35,7 @@ class Boleta extends Component
                 $this->cargarAlumnosDelGrupo();
             }
         } else {
-            $activo = CicloEscolar::activo()->first();
+            $activo = app(CicloActivoService::class)->get();
             if ($activo) {
                 $this->ciclo_escolar_id = $activo->id;
             }
@@ -71,23 +72,30 @@ class Boleta extends Component
     /** @var array<int, float|null> [periodo_id => promedio] */
     public $promedios = [];
 
+    #[Computed]
+    public function ciclosEscolares(): Collection
+    {
+        return app(CicloActivoService::class)->getAll();
+    }
+
+    #[Computed]
+    public function grupos(): Collection
+    {
+        if ($this->esDocente) {
+            return collect();
+        }
+
+        return Grupo::with('grado', 'cicloEscolar')
+            ->when($this->ciclo_escolar_id, fn ($q) => $q->where('ciclo_escolar_id', $this->ciclo_escolar_id))
+            ->orderBy('grado_id')
+            ->get();
+    }
+
     public function render()
     {
-        $user = auth()->user();
-
-        $ciclosEscolares = CicloEscolar::activo()->orderBy('nombre')->get();
-
-        // Docente: no necesita re-consultar grupos, ya lo hizo en mount
-        $grupos = $this->esDocente
-            ? collect()
-            : Grupo::with('grado', 'cicloEscolar')
-                ->when($this->ciclo_escolar_id, fn ($q) => $q->where('ciclo_escolar_id', $this->ciclo_escolar_id))
-                ->orderBy('grado_id')
-                ->get();
-
         return view('livewire.catalogos.boleta', [
-            'ciclosEscolares' => $ciclosEscolares,
-            'grupos' => $grupos,
+            'ciclosEscolares' => $this->ciclosEscolares,
+            'grupos' => $this->grupos,
         ]);
     }
 
@@ -109,13 +117,7 @@ class Boleta extends Component
             $grupo = Grupo::with('grado')->find($this->grupo_id);
             if ($grupo) {
                 $this->alumnos = $grupo->alumnos()
-                    ->where('alumnos.estatus', 'activo')
-                    ->with('persona')
-                    ->join('personas', 'alumnos.persona_id', '=', 'personas.id')
-                    ->orderBy('personas.apellido_paterno')
-                    ->orderBy('personas.apellido_materno')
-                    ->orderBy('personas.nombre')
-                    ->select('alumnos.*')
+                    ->activosConPersona()
                     ->get()
                     ->toArray();
             }

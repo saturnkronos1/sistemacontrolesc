@@ -316,7 +316,7 @@ test('alumnos-por-tutor loads tutor data', function () {
     Livewire::actingAs($user)
         ->test(Reportes::class)
         ->set('reporte', 'alumnos-por-tutor')
-        ->call('cargar')
+        ->set('search', 'López')
         ->assertSet('cargado', true)
         ->assertSee('López')
         ->assertSee('Madre')
@@ -367,7 +367,6 @@ test('alumnos-por-tutor filters by tutor name', function () {
         ->test(Reportes::class)
         ->set('reporte', 'alumnos-por-tutor')
         ->set('search', 'López')
-        ->call('cargar')
         ->assertSet('cargado', true)
         ->assertSee('López')
         ->assertDontSee('Pérez');

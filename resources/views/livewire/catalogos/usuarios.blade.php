@@ -10,7 +10,7 @@
 
             {{-- Búsqueda y filtros --}}
             <div class="mb-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <flux:input wire:model.live="search" placeholder="Buscar por nombre o email..." icon="magnifying-glass" />
+                <flux:input wire:model.live.debounce.300ms="search" placeholder="Buscar por nombre o email..." icon="magnifying-glass" />
 
                 <flux:select wire:model.live="rolFiltro" placeholder="Todos los roles">
                     <option value="">Todos los roles</option>
