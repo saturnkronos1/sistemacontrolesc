@@ -2,12 +2,11 @@
 
 use App\Livewire\Catalogos\PasarLista;
 use App\Models\Alumno;
-use App\Models\Asistencia;
-use App\Models\AsistenciaJustificante;
 use App\Models\CicloEscolar;
 use App\Models\Grado;
 use App\Models\Grupo;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Livewire\Livewire;
 
 beforeEach(function () {
@@ -115,7 +114,7 @@ test('cargarAlumnos loads existing attendance', function () {
         ->for($grado)
         ->create(['grupo_id' => $grupo->id, 'ciclo_escolar_id' => $ciclo->id]);
 
-    \Illuminate\Support\Facades\DB::table('asistencias')->insert([
+    DB::table('asistencias')->insert([
         'alumno_id' => $alumno->id,
         'grupo_id' => $grupo->id,
         'fecha' => now()->format('Y-m-d'),
@@ -186,7 +185,7 @@ test('guardar saves attendance and shows success', function () {
         ->assertDispatched('toast');
 
     $this->assertTrue(
-        \Illuminate\Support\Facades\DB::table('asistencias')
+        DB::table('asistencias')
             ->where('alumno_id', $alumno->id)
             ->where('grupo_id', $grupo->id)
             ->where('estatus', 'falta')

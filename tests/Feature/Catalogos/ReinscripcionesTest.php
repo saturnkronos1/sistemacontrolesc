@@ -5,7 +5,6 @@ use App\Models\Alumno;
 use App\Models\CicloEscolar;
 use App\Models\Grado;
 use App\Models\Grupo;
-use App\Models\ReinscripcionLog;
 use App\Models\User;
 use Livewire\Livewire;
 

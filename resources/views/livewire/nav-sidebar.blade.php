@@ -21,7 +21,7 @@
                         'text-white/70 hover:bg-white/10 hover:text-white' => !$isActive,
                     ])
                 >
-                    {!! $item['svg'] !!}
+                    <flux:icon name="{{ $item['icon'] }}" class="w-5 h-5 shrink-0" />
                     <span>{{ __($item['label']) }}</span>
                 </a>
             @endforeach

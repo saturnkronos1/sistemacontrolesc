@@ -3,7 +3,6 @@
 use App\Livewire\Catalogos\Calificaciones;
 use App\Models\Alumno;
 use App\Models\Calificacion as CalificacionModel;
-use App\Models\CalificacionLog;
 use App\Models\CicloEscolar;
 use App\Models\Grado;
 use App\Models\Grupo;
@@ -73,8 +72,8 @@ test('grupos computed filters by ciclo_escolar_id', function () {
     Livewire::actingAs($user)
         ->test(Calificaciones::class)
         ->set('ciclo_escolar_id', $ciclo1->id)
-        ->assertSee("1° - A (2025-2026)")
-        ->assertDontSee("2024-2025");
+        ->assertSee('1° - A (2025-2026)')
+        ->assertDontSee('2024-2025');
 });
 
 // ─── Materias & Periodos ───
