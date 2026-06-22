@@ -172,7 +172,17 @@ class Calificaciones extends Component
     public function guardar()
     {
         $this->validate([
-            'notas.*' => 'nullable|numeric|min:0|max:10',
+            'notas.*' => [
+                'nullable',
+                'numeric',
+                'min:6',
+                'max:10',
+                'regex:/^\d+(\.\d{1,2})?$/',
+            ],
+        ], [
+            'notas.*.min' => 'Cada calificación debe ser al menos 6.0.',
+            'notas.*.max' => 'Cada calificación debe ser máximo 10.0.',
+            'notas.*.regex' => 'Cada calificación puede tener hasta 2 decimales (ej: 7.50, 8.25).',
         ]);
 
         $userId = auth()->id();

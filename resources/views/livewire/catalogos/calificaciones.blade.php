@@ -64,7 +64,7 @@
                             <tr>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">#</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">Nombre</th>
-                                <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">Calificación</th>
+                                <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">Calificación <span class="text-zinc-400 font-normal">(6.0 - 10.0)</span></th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-borde bg-white">
@@ -77,12 +77,29 @@
                                     <td class="px-4 py-3 text-center">
                                         <input
                                             type="number"
-                                            step="0.5"
-                                            min="0"
+                                            step="0.01"
+                                            min="6"
                                             max="10"
                                             wire:model="notas.{{ $alumno['id'] }}"
                                             class="w-24 rounded-md border-borde text-center text-sm font-mono shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                             placeholder="—"
+                                            onkeydown="
+                                                if (!/[\d.]|Backspace|Tab|Arrow|Delete|Home|End/.test(event.key)) {
+                                                    event.preventDefault();
+                                                }
+                                                if (event.key === '.' && this.value.includes('.')) {
+                                                    event.preventDefault();
+                                                }
+                                                if (this.value.includes('.') && this.value.split('.')[1].length >= 2 && !['Backspace','Delete','Tab','Arrow'].includes(event.key)) {
+                                                    event.preventDefault();
+                                                }
+                                            "
+                                            oninput="
+                                                if (this.value.startsWith('0') && this.value.length > 1 && this.value[1] !== '.') {
+                                                    this.value = this.value.replace(/^0+/, '');
+                                                }
+                                                if (parseFloat(this.value) > 10) this.value = '10';
+                                            "
                                         />
                                     </td>
                                 </tr>
