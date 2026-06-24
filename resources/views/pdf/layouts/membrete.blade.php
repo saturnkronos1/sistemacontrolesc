@@ -6,18 +6,17 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'DejaVu Sans', sans-serif;
-            font-size: 8pt;
+            font-family: 'Arial', 'DejaVu Sans', sans-serif;
+            font-size: 9pt;
             color: #1a1a1a;
-            /* Espacio inferior para que el footer fixed no solape contenido */
-            padding: 0 0 70px 0;
+            padding: 0 0 75px 0;
         }
         .header-img {
             width: 100%;
             display: block;
         }
         .content {
-            padding: 15px 20px;
+            padding: 12px 20px;
         }
         .footer {
             position: fixed;
@@ -33,62 +32,65 @@
         }
         .footer-text {
             font-size: 7pt;
+            font-family: 'Arial', 'DejaVu Sans', sans-serif;
             color: #4b5563;
             padding: 2px 0 5px 0;
             background: #ffffff;
         }
+        /* ─── Tablas con bordes visibles (spec #9) ─── */
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 12px;
-            font-size: 7.5pt;
+            margin-bottom: 10px;
+        }
+        table, th, td {
+            border: 1px solid #000000;
         }
         th {
-            background-color: #2563eb;
-            color: #ffffff;
-            padding: 5px 6px;
+            background-color: #ffffff;
+            color: #000000;
+            padding: 5px 4px;
             text-align: center;
-            font-weight: 600;
-        }
-        th:first-child {
-            text-align: left;
+            font-weight: 700;
+            font-size: 7.5pt;
         }
         td {
-            padding: 4px 6px;
-            border-bottom: 1px solid #e5e7eb;
+            background-color: #ffffff;
+            color: #000000;
+            padding: 4px 4px;
             text-align: center;
+            font-size: 7.5pt;
         }
         td:first-child {
             text-align: left;
             font-weight: 500;
         }
-        .nota-alta { color: #059669; }
-        .nota-baja { color: #dc2626; }
+        .nota-alta { color: #000000; font-weight: 700; }
+        .nota-baja { color: #000000; font-weight: 700; }
         .promedio-row td {
-            background-color: #f0f5ff;
+            background-color: #ffffff;
             font-weight: 700;
         }
-        .info-grid {
-            margin-bottom: 12px;
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            padding: 10px;
-        }
-        .info-row {
-            margin-bottom: 3px;
-            font-size: 8pt;
-        }
-        .info-label {
+        /* ─── Datos en líneas ─── */
+        .data-line {
+            border-bottom: 1px solid #000;
+            display: inline-block;
+            min-width: 180px;
+            padding: 0 4px 1px 4px;
             font-weight: 600;
-            color: #6b7280;
         }
-        .section-title {
-            font-size: 11pt;
-            font-weight: 700;
-            color: #2563eb;
-            margin-bottom: 8px;
-            padding-bottom: 4px;
-            border-bottom: 1px solid #e5e7eb;
+        .data-line-sm {
+            min-width: 100px;
+        }
+        .label-data {
+            font-weight: 600;
+            color: #000;
+        }
+        .sig-line {
+            border-bottom: 1px solid #000;
+            display: inline-block;
+            min-width: 200px;
+            margin-top: 4px;
         }
     </style>
     @stack('styles')

@@ -6,6 +6,7 @@ use App\Models\Calificacion;
 use App\Models\Grupo;
 use App\Models\Materia;
 use App\Models\PeriodoEvaluacion;
+use App\Models\User;
 use App\Support\MembreteHelper;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Collection;
@@ -80,6 +81,8 @@ class ConcentradoService
     {
         $grupo = Grupo::with('grado', 'cicloEscolar')->find($grupoId);
 
+        $director = User::role('Director')->first();
+
         $data = array_merge(MembreteHelper::data(), [
             'titulo' => 'Concentrado de Calificaciones',
             'grupo' => $grupo,
@@ -92,14 +95,16 @@ class ConcentradoService
                 ? PeriodoEvaluacion::find($periodoId)?->nombre
                 : 'Todos los periodos',
             'generated_at' => now()->format('d/m/Y H:i'),
+            'director' => $director?->name ?? '—',
         ]);
 
         $pdf = Pdf::loadView('pdf.concentrado', $data);
+        $pdf->setPaper('letter', 'portrait');
         $grupoNombre = $grupo ? "{$grupo->grado?->nombre}-{$grupo->nombre}" : 'grupo';
 
         return response()->streamDownload(
             fn () => print ($pdf->output()),
-            "concentrado-{$grupoNombre}.pdf"
+            "calificaciones-{$grupoNombre}.pdf"
         );
     }
 }
