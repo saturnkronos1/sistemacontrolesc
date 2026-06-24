@@ -41,7 +41,7 @@ class NavSidebar extends Component
                     'visible' => $user?->can('catalogos.listar'),
                 ],
                 [
-                    'label' => 'Materias',
+                    'label' => 'Campos Formativos',
                     'route' => 'materias.index',
                     'route_prefix' => 'materias',
                     'params' => [],

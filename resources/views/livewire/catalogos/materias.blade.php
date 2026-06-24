@@ -1,10 +1,10 @@
 <div>
     {{-- <x-layouts::app.sidebar> --}}
         <flux:main>
-            <x-page-header title="Materias" />
+            <x-page-header title="Campos Formativos" />
             <div class="flex items-center justify-between mb-6">
                 <flux:button wire:click="crear" variant="primary">
-                    Nueva Materia
+                    Nuevo Campo Formativo
                 </flux:button>
             </div>
 
@@ -50,13 +50,13 @@
                                 <td class="px-4 py-3 text-sm hidden sm:table-cell">{{ $materia->grado?->nombre }}</td>
                                 <td class="px-4 py-3 text-right">
                                     <flux:button wire:click="editar({{ $materia->id }})" size="sm" inset="top bottom">Editar</flux:button>
-                                    <flux:button wire:click="eliminar({{ $materia->id }})" size="sm" variant="danger" inset="top bottom" wire:confirm="¿Eliminar esta materia?">Eliminar</flux:button>
+                                    <flux:button wire:click="eliminar({{ $materia->id }})" size="sm" variant="danger" inset="top bottom" wire:confirm="¿Eliminar este campo formativo?">Eliminar</flux:button>
                                 </td>
                             </tr>
                         @empty
                             <tr>
                                 <td colspan="4" class="px-4 py-12 text-center text-zinc-500">
-                                    No hay materias registradas.
+                                    No hay campos formativos registrados.
                                 </td>
                             </tr>
                         @endforelse
@@ -72,7 +72,7 @@
             <flux:modal wire:model="showModal" wire:key="modal-{{ $modalKey }}" class="w-full max-w-lg">
                 <div class="space-y-4">
                     <div>
-                        <h2 class="text-lg font-semibold">{{ $editId ? 'Editar' : 'Nueva' }} Materia</h2>
+                        <h2 class="text-lg font-semibold">{{ $editId ? 'Editar' : 'Nuevo' }} Campo Formativo</h2>
                     </div>
 
                     <flux:select wire:model="grado_id" label="Grado">
@@ -83,7 +83,7 @@
 
                     <flux:input wire:model="nombre" label="Nombre" placeholder="Ej: Matemáticas I" />
 
-                    <flux:input wire:model="clave_materia" label="Clave de materia" placeholder="Ej: MAT-101" />
+                    <flux:input wire:model="clave_materia" label="Clave del campo formativo" placeholder="Ej: MAT-101" />
 
                     <div class="flex justify-end gap-3 pt-2">
                         <flux:button wire:click="resetModal" variant="ghost">Cancelar</flux:button>

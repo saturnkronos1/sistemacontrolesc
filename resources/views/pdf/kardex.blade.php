@@ -119,7 +119,7 @@
         <table>
             <thead>
                 <tr>
-                    <th style="width: 30%;">Materia</th>
+                    <th style="width: 30%;">Campo Formativo</th>
                     @foreach($cicloItem['periodos'] as $periodo)
                         <th>{{ $periodo->nombre }}</th>
                     @endforeach

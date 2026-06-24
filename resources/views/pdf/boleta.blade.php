@@ -151,7 +151,7 @@
     <table>
         <thead>
             <tr>
-                <th style="width: 35%;">Materia</th>
+                <th style="width: 35%;">Campo Formativo</th>
                 @foreach($periodos as $periodo)
                     <th>{{ $periodo->nombre }}</th>
                 @endforeach

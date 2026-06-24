@@ -74,7 +74,7 @@
                     <table class="min-w-full divide-y divide-borde">
                         <thead class="bg-tabla-encabezado">
                             <tr>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">Materia</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">Campo Formativo</th>
                                 @foreach($periodos as $periodo)
                                     <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase whitespace-nowrap">{{ $periodo->nombre }}</th>
                                 @endforeach

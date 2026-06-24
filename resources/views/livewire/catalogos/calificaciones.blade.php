@@ -10,7 +10,7 @@
                     ({{ $grupoUnico->cicloEscolar?->nombre ?? 'Sin ciclo' }})
                 </div>
                 <div class="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <flux:select wire:model.live="materia_id" placeholder="Seleccionar materia">
+                    <flux:select wire:model.live="materia_id" placeholder="Seleccionar campo formativo">
                         @foreach($materias as $materia)
                             <option value="{{ $materia->id }}">{{ $materia->nombre }}</option>
                         @endforeach
@@ -37,7 +37,7 @@
                         @endforeach
                     </flux:select>
 
-                    <flux:select wire:model.live="materia_id" placeholder="Seleccionar materia">
+                    <flux:select wire:model.live="materia_id" placeholder="Seleccionar campo formativo">
                         @foreach($materias as $materia)
                             <option value="{{ $materia->id }}">{{ $materia->nombre }}</option>
                         @endforeach
