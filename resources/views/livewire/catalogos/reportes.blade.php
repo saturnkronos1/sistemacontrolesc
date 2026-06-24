@@ -61,7 +61,7 @@
 
                 {{-- Alumno filter for kardex --}}
                 @if($reporte === 'kardex')
-                    <flux:select wire:model="alumno_id" placeholder="Seleccionar alumno">
+                    <flux:select wire:model.live="alumno_id" placeholder="Seleccionar alumno">
                         @foreach($alumnosSelect as $alumno)
                             <option value="{{ $alumno['id'] }}">
                                 {{ $alumno['persona']['apellido_paterno'] }} {{ $alumno['persona']['apellido_materno'] }}, {{ $alumno['persona']['nombre'] }} ({{ $alumno['matricula'] }})
