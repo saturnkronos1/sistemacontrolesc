@@ -1,122 +1,49 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="utf-8">
-    <title>Boleta de Calificaciones</title>
+@extends('pdf.layouts.membrete')
+
+@section('title', 'Boleta de Calificaciones')
+
+@push('styles')
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'DejaVu Sans', sans-serif;
-            font-size: 10pt;
-            color: #1a1a1a;
-            padding: 30px;
-        }
-        .header {
+        .boleta-header {
             text-align: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
             border-bottom: 2px solid #2563eb;
         }
-        .header h1 {
-            font-size: 16pt;
+        .boleta-header h1 {
+            font-size: 14pt;
             color: #2563eb;
             margin-bottom: 4px;
         }
-        .header p {
-            font-size: 9pt;
+        .boleta-header p {
+            font-size: 8pt;
             color: #6b7280;
         }
-        .info-grid {
-            margin-bottom: 20px;
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            padding: 12px;
-        }
-        .info-row {
-            display: flex;
-            margin-bottom: 4px;
-            font-size: 9pt;
-        }
-        .info-label {
-            width: 140px;
-            color: #6b7280;
-            font-weight: 600;
-        }
-        .info-value {
-            flex: 1;
-        }
-        .section-title {
-            font-size: 11pt;
-            font-weight: 700;
-            color: #2563eb;
-            margin-bottom: 8px;
-            padding-bottom: 4px;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 16px;
-            font-size: 9pt;
-        }
-        th {
-            background-color: #2563eb;
-            color: #ffffff;
-            padding: 8px 10px;
-            text-align: center;
-            font-weight: 600;
-        }
-        th:first-child {
-            text-align: left;
-        }
-        td {
-            padding: 6px 10px;
-            border-bottom: 1px solid #e5e7eb;
-            text-align: center;
-        }
-        td:first-child {
-            text-align: left;
-            font-weight: 500;
-        }
-        .materia-row td {
-            background-color: #ffffff;
-        }
-        .promedio-row td {
-            background-color: #f0f5ff;
-            font-weight: 700;
-        }
-        .promedio-general td {
-            background-color: #dbeafe;
-            font-weight: 700;
-        }
-        .nota-alta { color: #059669; }
-        .nota-baja { color: #dc2626; }
         .observaciones {
             border: 1px solid #e5e7eb;
             border-radius: 6px;
-            padding: 12px;
-            margin-bottom: 20px;
+            padding: 10px;
+            margin-bottom: 15px;
         }
         .obs-item {
-            margin-bottom: 6px;
-            font-size: 9pt;
+            margin-bottom: 5px;
+            font-size: 8pt;
         }
         .obs-periodo {
             font-weight: 600;
             color: #2563eb;
         }
-        .footer {
+        .timestamp {
             text-align: center;
-            font-size: 8pt;
+            font-size: 7pt;
             color: #9ca3af;
-            margin-top: 30px;
-            padding-top: 10px;
-            border-top: 1px solid #e5e7eb;
+            margin-top: 15px;
         }
     </style>
-</head>
-<body>
-    <div class="header">
+@endpush
+
+@section('content')
+    <div class="boleta-header">
         <h1>Boleta de Calificaciones</h1>
         <p>Sistema de Control Escolar</p>
     </div>
@@ -124,25 +51,23 @@
     <div class="info-grid">
         <div class="info-row">
             <span class="info-label">Matrícula:</span>
-            <span class="info-value">{{ $alumno['matricula'] ?? '—' }}</span>
+            {{ $alumno['matricula'] ?? '—' }}
         </div>
         <div class="info-row">
             <span class="info-label">Nombre:</span>
-            <span class="info-value">
-                {{ $alumno['persona']['apellido_paterno'] ?? '' }} {{ $alumno['persona']['apellido_materno'] ?? '' }}, {{ $alumno['persona']['nombre'] ?? '' }}
-            </span>
+            {{ $alumno['persona']['apellido_paterno'] ?? '' }} {{ $alumno['persona']['apellido_materno'] ?? '' }}, {{ $alumno['persona']['nombre'] ?? '' }}
         </div>
         <div class="info-row">
             <span class="info-label">Grado y Grupo:</span>
-            <span class="info-value">{{ $alumno['grado']['nombre'] ?? '—' }} - {{ $alumno['grupo']['nombre'] ?? '—' }}</span>
+            {{ $alumno['grado']['nombre'] ?? '—' }} - {{ $alumno['grupo']['nombre'] ?? '—' }}
         </div>
         <div class="info-row">
             <span class="info-label">Ciclo Escolar:</span>
-            <span class="info-value">{{ $alumno['grupo']['ciclo_escolar']['nombre'] ?? '—' }}</span>
+            {{ $alumno['grupo']['ciclo_escolar']['nombre'] ?? '—' }}
         </div>
         <div class="info-row">
             <span class="info-label">Periodo:</span>
-            <span class="info-value">{{ $periodoSeleccionado }}</span>
+            {{ $periodoSeleccionado }}
         </div>
     </div>
 
@@ -151,7 +76,7 @@
     <table>
         <thead>
             <tr>
-                <th style="width: 35%;">Campo Formativo</th>
+                <th style="width: 30%;">Campo Formativo</th>
                 @foreach($periodos as $periodo)
                     <th>{{ $periodo->nombre }}</th>
                 @endforeach
@@ -160,7 +85,7 @@
         </thead>
         <tbody>
             @foreach($materias as $materia)
-                <tr class="materia-row">
+                <tr>
                     <td>{{ $materia->nombre }}</td>
                     @foreach($periodos as $periodo)
                         <td>
@@ -187,7 +112,7 @@
             @endforeach
         </tbody>
         <tfoot>
-            <tr class="promedio-general">
+            <tr class="promedio-row">
                 <td>Promedio General</td>
                 @foreach($periodos as $periodo)
                     <td>
@@ -226,8 +151,7 @@
         </div>
     @endif
 
-    <div class="footer">
-        Generado el {{ $generated_at }} — Sistema de Control Escolar
+    <div class="timestamp">
+        Generado el {{ $generated_at }}
     </div>
-</body>
-</html>
+@endsection

@@ -8,6 +8,7 @@ use App\Models\BoletaObservacion;
 use App\Models\Calificacion;
 use App\Models\Materia;
 use App\Models\PeriodoEvaluacion;
+use App\Support\MembreteHelper;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Collection;
 use Livewire\Component;
@@ -120,7 +121,7 @@ class TutorDashboard extends Component
         $alumno = Alumno::with('persona', 'grado', 'grupo', 'grupo.cicloEscolar')
             ->findOrFail($this->alumnoId);
 
-        $data = [
+        $data = array_merge(MembreteHelper::data(), [
             'alumno' => $alumno->toArray(),
             'materias' => $this->materias,
             'periodos' => $this->periodos,
@@ -131,7 +132,7 @@ class TutorDashboard extends Component
             'periodoSeleccionado' => $this->periodo_id
                 ? PeriodoEvaluacion::find($this->periodo_id)?->nombre
                 : 'Todos los periodos',
-        ];
+        ]);
 
         $pdf = Pdf::loadView('pdf.boleta', $data);
 

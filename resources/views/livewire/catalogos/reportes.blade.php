@@ -50,7 +50,7 @@
 
                 {{-- Periodo filter for concentrado --}}
                 @if($reporte === 'concentrado')
-                    <flux:select wire:model.live="periodo_id" placeholder="Todos los periodos">
+                    <flux:select wire:model.live="periodo_id">
                         <option value="">Todos los periodos</option>
                         @foreach($periodos as $periodo)
                             <option value="{{ $periodo->id }}">{{ $periodo->nombre }}</option>
@@ -154,6 +154,53 @@
                                     </tr>
                                 @endforeach
                             </tbody>
+                            @if(count($alumnos) > 1)
+                                @php
+                                    $promediosCampo = [];
+                                    foreach ($materias as $materia) {
+                                        $notasCampo = collect($alumnos)->map(function ($a) use ($calificaciones, $materia, $periodos) {
+                                            $val = $calificaciones[$a['id']][$materia->id] ?? [];
+                                            $notas = collect($periodos->toArray())->map(fn($p) => $val[$p['id']] ?? null)->filter();
+                                            return $notas->count() > 0 ? $notas->avg() : null;
+                                        })->filter();
+                                        $promediosCampo[$materia->id] = $notasCampo->count() > 0 ? round($notasCampo->avg(), 1) : null;
+                                    }
+                                    $promedioGeneral = collect($promedios)->filter()->avg();
+                                    $promedioGeneral = $promedioGeneral ? round($promedioGeneral, 1) : null;
+                                @endphp
+                                <tfoot class="bg-tabla-encabezado/60 border-t-2 border-borde">
+                                    <tr class="font-semibold">
+                                        <td class="px-4 py-3 text-sm text-zinc-600">Promedio por Campo Formativo</td>
+                                        @foreach($materias as $materia)
+                                            <td class="px-4 py-3 text-center text-sm font-mono">
+                                                @if(($promediosCampo[$materia->id] ?? null) !== null)
+                                                    <span class="{{ $promediosCampo[$materia->id] >= 6 ? 'text-green-600' : 'text-red-600' }}">
+                                                        {{ number_format($promediosCampo[$materia->id], 1) }}
+                                                    </span>
+                                                @else
+                                                    <span class="text-zinc-300">—</span>
+                                                @endif
+                                            </td>
+                                        @endforeach
+                                        <td class="px-4 py-3 text-center text-sm font-mono text-zinc-300">—</td>
+                                    </tr>
+                                    <tr class="font-semibold">
+                                        <td class="px-4 py-3 text-sm text-zinc-600">Promedio General</td>
+                                        @foreach($materias as $materia)
+                                            <td class="px-4 py-3 text-center text-sm font-mono text-zinc-300">—</td>
+                                        @endforeach
+                                        <td class="px-4 py-3 text-center text-sm font-mono">
+                                            @if($promedioGeneral !== null)
+                                                <span class="{{ $promedioGeneral >= 6 ? 'text-green-600' : 'text-red-600' }}">
+                                                    {{ number_format($promedioGeneral, 1) }}
+                                                </span>
+                                            @else
+                                                <span class="text-zinc-300">—</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            @endif
                         </table>
                     </div>
                 @else

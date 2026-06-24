@@ -9,6 +9,7 @@ use App\Models\Grupo;
 use App\Models\Materia;
 use App\Models\PeriodoEvaluacion;
 use App\Support\CicloActivoService;
+use App\Support\MembreteHelper;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Computed;
@@ -194,7 +195,7 @@ class Boleta extends Component
     {
         $this->cargar(); // asegurar datos actualizados
 
-        $data = [
+        $data = array_merge(MembreteHelper::data(), [
             'alumno' => $this->alumnoData,
             'materias' => $this->materias,
             'periodos' => $this->periodos,
@@ -203,7 +204,7 @@ class Boleta extends Component
             'observaciones' => $this->observaciones,
             'generated_at' => now()->format('d/m/Y H:i'),
             'periodoSeleccionado' => 'Todos los periodos',
-        ];
+        ]);
 
         $pdf = Pdf::loadView('pdf.boleta', $data);
 

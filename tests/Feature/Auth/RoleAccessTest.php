@@ -55,15 +55,15 @@ test('sidebar shows materias only when user has catalogos permission', function 
     $response = $this->actingAs($user)->get(route('dashboard'));
 
     $response->assertSee('Catálogos');
-    $response->assertSee('Materias');
+    $response->assertSee('Campos Formativos');
 });
 
-test('sidebar hides materias from user without catalogos permission', function () {
+test('sidebar hides campos formativos from user without catalogos permission', function () {
     $user = User::factory()->create();
 
     $this->actingAs($user)
         ->get(route('dashboard'))
-        ->assertDontSee('Materias');
+        ->assertDontSee('Campos Formativos');
 });
 
 // ─── Superadmin: ve todos los módulos ───
@@ -77,7 +77,7 @@ test('superadmin sees all menu items', function () {
     $expected = [
         'Dashboard',
         'Catálogos',
-        'Materias',
+        'Campos Formativos',
         'Usuarios',
         'Grupos',
         'Alumnos',
@@ -124,7 +124,7 @@ test('tutor sees only tutor-related modules', function () {
     $response->assertSee('Boleta');
 
     $response->assertDontSee('Catálogos');
-    $response->assertDontSee('Materias');
+    $response->assertDontSee('Campos Formativos');
     $response->assertDontSee('Usuarios');
     $response->assertDontSee('Grupos');
     $response->assertDontSee('Alumnos');

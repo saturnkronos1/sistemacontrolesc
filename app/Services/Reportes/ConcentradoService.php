@@ -6,6 +6,7 @@ use App\Models\Calificacion;
 use App\Models\Grupo;
 use App\Models\Materia;
 use App\Models\PeriodoEvaluacion;
+use App\Support\MembreteHelper;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Collection;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -79,7 +80,7 @@ class ConcentradoService
     {
         $grupo = Grupo::with('grado', 'cicloEscolar')->find($grupoId);
 
-        $data = [
+        $data = array_merge(MembreteHelper::data(), [
             'titulo' => 'Concentrado de Calificaciones',
             'grupo' => $grupo,
             'alumnos' => $alumnos,
@@ -91,7 +92,7 @@ class ConcentradoService
                 ? PeriodoEvaluacion::find($periodoId)?->nombre
                 : 'Todos los periodos',
             'generated_at' => now()->format('d/m/Y H:i'),
-        ];
+        ]);
 
         $pdf = Pdf::loadView('pdf.concentrado', $data);
         $grupoNombre = $grupo ? "{$grupo->grado?->nombre}-{$grupo->nombre}" : 'grupo';

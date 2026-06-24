@@ -7,6 +7,7 @@ use App\Models\Calificacion;
 use App\Models\CicloEscolar;
 use App\Models\Materia;
 use App\Models\PeriodoEvaluacion;
+use App\Support\MembreteHelper;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -76,12 +77,12 @@ class KardexService
     {
         $result = $this->cargar($alumnoId);
 
-        $data = [
+        $data = array_merge(MembreteHelper::data(), [
             'titulo' => 'Kardex del Alumno',
             'alumno' => $result['alumnoData'],
             'ciclos' => $result['kardexData'],
             'generated_at' => now()->format('d/m/Y H:i'),
-        ];
+        ]);
 
         $pdf = Pdf::loadView('pdf.kardex', $data);
         $matricula = $result['alumnoData']['matricula'] ?? 'alumno';
