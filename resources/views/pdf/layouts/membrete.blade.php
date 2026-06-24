@@ -9,7 +9,8 @@
             font-family: 'DejaVu Sans', sans-serif;
             font-size: 8pt;
             color: #1a1a1a;
-            padding: 0;
+            /* Espacio inferior para que el footer fixed no solape contenido */
+            padding: 0 0 70px 0;
         }
         .header-img {
             width: 100%;
@@ -24,6 +25,7 @@
             left: 0;
             right: 0;
             text-align: center;
+            z-index: 1000;
         }
         .footer-img {
             width: 100%;
@@ -33,6 +35,7 @@
             font-size: 7pt;
             color: #4b5563;
             padding: 2px 0 5px 0;
+            background: #ffffff;
         }
         table {
             width: 100%;
