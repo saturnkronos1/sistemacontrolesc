@@ -42,6 +42,13 @@ class Usuarios extends Component
 
     public string $rolFiltro = '';
 
+    public function updated($propertyName): void
+    {
+        if ($propertyName === 'name') {
+            $this->name = mb_strtoupper($this->name);
+        }
+    }
+
     protected function rules()
     {
         $userId = $this->editId;

@@ -87,6 +87,19 @@ class Alumnos extends Component
 
     public string $search = '';
 
+    public function updated($propertyName): void
+    {
+        $uppercase = [
+            'nombre', 'apellido_paterno', 'apellido_materno', 'curp',
+            'tutor_nombre', 'tutor_apellido_paterno', 'tutor_apellido_materno',
+            'tutor_domicilio',
+        ];
+
+        if (in_array($propertyName, $uppercase, true)) {
+            $this->$propertyName = mb_strtoupper($this->$propertyName);
+        }
+    }
+
     protected function rules()
     {
         $alumnoId = $this->editId;

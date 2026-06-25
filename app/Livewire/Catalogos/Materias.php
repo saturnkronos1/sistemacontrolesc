@@ -29,6 +29,15 @@ class Materias extends Component
 
     public string $sortDirection = 'asc';
 
+    public function updated($propertyName): void
+    {
+        $uppercase = ['nombre', 'clave_materia'];
+
+        if (in_array($propertyName, $uppercase, true)) {
+            $this->$propertyName = mb_strtoupper($this->$propertyName);
+        }
+    }
+
     protected function rules()
     {
         return [

@@ -46,7 +46,7 @@
                             <tr class="hover:bg-hover">
                                 <td class="px-4 py-3 text-sm font-medium whitespace-nowrap">
                                     @if($docente->persona)
-                                        {{ $docente->persona->apellido_paterno }} {{ $docente->persona->apellido_materno }}, {{ $docente->persona->nombre }}
+                                        {{ $docente->persona->apellido_paterno }} {{ $docente->persona->apellido_materno }} {{ $docente->persona->nombre }}
                                     @else
                                         {{ $docente->name }}
                                     @endif
@@ -100,15 +100,15 @@
 
                     {{-- CURP y Cédula --}}
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <flux:input wire:model="curp" label="CURP" placeholder="18 caracteres" maxlength="18" class="font-mono uppercase" />
+                        <flux:input wire:model="curp" label="CURP" placeholder="18 caracteres" maxlength="18" class="font-mono uppercase" oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 18)" />
                         <flux:input wire:model="cedula" label="Cédula profesional" placeholder="Cédula" maxlength="50" />
                     </div>
 
                     {{-- Nombres y apellidos --}}
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <flux:input wire:model="nombres" label="Nombres *" placeholder="Nombre(s)" />
-                        <flux:input wire:model="apellido_paterno" label="Apellido paterno *" placeholder="Apellido paterno" />
-                        <flux:input wire:model="apellido_materno" label="Apellido materno" placeholder="Apellido materno" />
+                        <flux:input wire:model="nombres" label="Nombres *" placeholder="Nombre(s)" oninput="this.value = this.value.toUpperCase()" />
+                        <flux:input wire:model="apellido_paterno" label="Apellido paterno *" placeholder="Apellido paterno" oninput="this.value = this.value.toUpperCase()" />
+                        <flux:input wire:model="apellido_materno" label="Apellido materno" placeholder="Apellido materno" oninput="this.value = this.value.toUpperCase()" />
                     </div>
 
                     {{-- Teléfono y correo --}}
@@ -127,7 +127,7 @@
                     </div>
 
                     {{-- Dirección --}}
-                    <flux:textarea wire:model="direccion" label="Dirección" placeholder="Dirección completa" />
+                    <flux:textarea wire:model="direccion" label="Dirección" placeholder="Dirección completa" oninput="this.value = this.value.toUpperCase()" />
 
                     <flux:separator text="Datos de la cuenta" />
 

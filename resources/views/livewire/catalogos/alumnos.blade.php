@@ -84,7 +84,7 @@
                         <tr class="hover:bg-hover">
                             <td class="px-4 py-3 text-sm font-mono hidden sm:table-cell">{{ $alumno->matricula }}</td>
                             <td class="px-4 py-3 text-sm font-medium">
-                                {{ $alumno->persona?->apellido_paterno }} {{ $alumno->persona?->apellido_materno }}, {{ $alumno->persona?->nombre }}
+                                {{ $alumno->persona?->apellido_paterno }} {{ $alumno->persona?->apellido_materno }} {{ $alumno->persona?->nombre }}
                             </td>
                             <td class="px-4 py-3 text-sm font-mono uppercase hidden sm:table-cell">{{ $alumno->persona?->curp }}</td>
                             <td class="px-4 py-3 text-sm hidden sm:table-cell">{{ $alumno->grado?->nombre }}</td>
@@ -146,14 +146,14 @@
 
                 {{-- Datos del alumno --}}
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <flux:input wire:model="apellido_paterno" label="Apellido paterno" placeholder="García" />
-                    <flux:input wire:model="apellido_materno" label="Apellido materno" placeholder="López" />
+                    <flux:input wire:model="apellido_paterno" label="Apellido paterno" placeholder="García" oninput="this.value = this.value.toUpperCase()" />
+                    <flux:input wire:model="apellido_materno" label="Apellido materno" placeholder="López" oninput="this.value = this.value.toUpperCase()" />
                 </div>
 
-                <flux:input wire:model="nombre" label="Nombre(s)" placeholder="Juan Carlos" />
+                <flux:input wire:model="nombre" label="Nombre(s)" placeholder="Juan Carlos" oninput="this.value = this.value.toUpperCase()" />
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <flux:input wire:model="curp" label="CURP" placeholder="GARC123456HDFRRN08" maxlength="18" class="font-mono uppercase" />
+                    <flux:input wire:model="curp" label="CURP" placeholder="GARC123456HDFRRN08" maxlength="18" class="font-mono uppercase" oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 18)" />
                     <flux:input wire:model="telefono" label="Teléfono" type="tel" placeholder="5512345678" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)" />
                 </div>
 
@@ -189,11 +189,11 @@
                                 <h3 class="text-sm font-medium text-texto">Tutor designado</h3>
 
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                    <flux:input wire:model="tutor_apellido_paterno" label="Apellido paterno" placeholder="García" />
-                                    <flux:input wire:model="tutor_apellido_materno" label="Apellido materno" placeholder="López" />
+                                    <flux:input wire:model="tutor_apellido_paterno" label="Apellido paterno" placeholder="García" oninput="this.value = this.value.toUpperCase()" />
+                                    <flux:input wire:model="tutor_apellido_materno" label="Apellido materno" placeholder="López" oninput="this.value = this.value.toUpperCase()" />
                                 </div>
 
-                                <flux:input wire:model="tutor_nombre" label="Nombre(s)" placeholder="José" />
+                                <flux:input wire:model="tutor_nombre" label="Nombre(s)" placeholder="José" oninput="this.value = this.value.toUpperCase()" />
 
                                 <flux:select wire:model="tutor_parentesco" label="Parentesco">
                                     <option value="Padre">Padre</option>
@@ -213,7 +213,7 @@
                                     <flux:input wire:model="tutor_fecha_nacimiento" label="Fecha de nacimiento" type="date" />
                                 </div>
 
-                                <flux:input wire:model="tutor_domicilio" label="Domicilio" placeholder="Calle y número" />
+                                <flux:input wire:model="tutor_domicilio" label="Domicilio" placeholder="Calle y número" oninput="this.value = this.value.toUpperCase()" />
 
                                 <flux:separator text="Cuenta de usuario del tutor" />
 

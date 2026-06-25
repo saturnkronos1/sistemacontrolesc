@@ -81,9 +81,9 @@
                         @endforeach
                     </flux:select>
 
-                    <flux:input wire:model="nombre" label="Nombre" placeholder="Ej: Matemáticas I" />
+                    <flux:input wire:model="nombre" label="Nombre" placeholder="Ej: Matemáticas I" oninput="this.value = this.value.toUpperCase()" />
 
-                    <flux:input wire:model="clave_materia" label="Clave del campo formativo" placeholder="Ej: MAT-101" />
+                    <flux:input wire:model="clave_materia" label="Clave del campo formativo" placeholder="Ej: MAT-101" oninput="this.value = this.value.toUpperCase()" />
 
                     <div class="flex justify-end gap-3 pt-2">
                         <flux:button wire:click="resetModal" variant="ghost">Cancelar</flux:button>

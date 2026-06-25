@@ -77,8 +77,8 @@ test('creates a parent without linking to student', function () {
         ->assertOk();
 
     $this->assertDatabaseHas('personas', [
-        'nombre' => 'María',
-        'apellido_paterno' => 'López',
+        'nombre' => 'MARÍA',
+        'apellido_paterno' => 'LÓPEZ',
     ]);
 });
 
@@ -99,7 +99,7 @@ test('creates a parent linked to a student', function () {
         ->assertOk();
 
     // Verify parent was created
-    $persona = Persona::where('nombre', 'Carlos')->first();
+    $persona = Persona::where('nombre', 'CARLOS')->first();
     expect($persona)->not->toBeNull();
 
     // Verify link exists
@@ -165,7 +165,7 @@ test('edits a parent', function () {
 
     $this->assertDatabaseHas('personas', [
         'id' => $persona->id,
-        'nombre' => 'Actualizado',
+        'nombre' => 'ACTUALIZADO',
         'telefono' => '9999999999',
     ]);
 });

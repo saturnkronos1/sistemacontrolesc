@@ -64,7 +64,7 @@
                     <flux:select wire:model.live="alumno_id" placeholder="Seleccionar alumno">
                         @foreach($alumnosSelect as $alumno)
                             <option value="{{ $alumno['id'] }}">
-                                {{ $alumno['persona']['apellido_paterno'] }} {{ $alumno['persona']['apellido_materno'] }}, {{ $alumno['persona']['nombre'] }} ({{ $alumno['matricula'] }})
+                                {{ $alumno['persona']['apellido_paterno'] }} {{ $alumno['persona']['apellido_materno'] }} {{ $alumno['persona']['nombre'] }} ({{ $alumno['matricula'] }})
                             </option>
                         @endforeach
                     </flux:select>
@@ -124,7 +124,7 @@
                                 @foreach($alumnos as $alumno)
                                     <tr class="hover:bg-hover">
                                         <td class="px-4 py-3 text-sm font-medium whitespace-nowrap">
-                                            {{ $alumno['persona']['apellido_paterno'] }} {{ $alumno['persona']['apellido_materno'] }}, {{ $alumno['persona']['nombre'] }}
+                                            {{ $alumno['persona']['apellido_paterno'] }} {{ $alumno['persona']['apellido_materno'] }} {{ $alumno['persona']['nombre'] }}
                                         </td>
                                         @foreach($materias as $materia)
                                             <td class="px-4 py-3 text-center text-sm font-mono">
@@ -227,7 +227,7 @@
                         </div>
                         <div class="sm:col-span-2">
                             <span class="text-zinc-500">Nombre:</span>
-                            <span class="ml-1 font-medium">{{ $alumnoData['persona']['apellido_paterno'] ?? '' }} {{ $alumnoData['persona']['apellido_materno'] ?? '' }}, {{ $alumnoData['persona']['nombre'] ?? '' }}</span>
+                            <span class="ml-1 font-medium">{{ $alumnoData['persona']['apellido_paterno'] ?? '' }} {{ $alumnoData['persona']['apellido_materno'] ?? '' }} {{ $alumnoData['persona']['nombre'] ?? '' }}</span>
                         </div>
                     </div>
                 </div>
@@ -316,7 +316,7 @@
                             <tbody class="divide-y divide-borde bg-white">
                                 @foreach($inasistenciasData as $item)
                                     <tr class="hover:bg-hover">
-                                        <td class="px-4 py-3 text-sm font-medium whitespace-nowrap">{{ $item['persona']['apellido_paterno'] }} {{ $item['persona']['apellido_materno'] }}, {{ $item['persona']['nombre'] }}</td>
+                                        <td class="px-4 py-3 text-sm font-medium whitespace-nowrap">{{ $item['persona']['apellido_paterno'] }} {{ $item['persona']['apellido_materno'] }} {{ $item['persona']['nombre'] }}</td>
                                         <td class="px-4 py-3 text-center text-sm font-mono text-green-600">{{ $item['asistio'] }}</td>
                                         <td class="px-4 py-3 text-center text-sm font-mono text-red-600">{{ $item['falta'] }}</td>
                                         <td class="px-4 py-3 text-center text-sm font-mono text-amber-600">{{ $item['retardo'] }}</td>
@@ -362,7 +362,7 @@
                                         <td class="px-4 py-3 text-sm">
                                             @foreach($tutor['children'] as $child)
                                                 <span class="inline-block mr-2 mb-1 rounded bg-zinc-100 px-2 py-0.5 text-xs ">
-                                                    {{ $child['alumno']?->persona?->apellido_paterno ?? '' }} {{ $child['alumno']?->persona?->apellido_materno ?? '' }}, {{ $child['alumno']?->persona?->nombre ?? '' }}
+                                                    {{ $child['alumno']?->persona?->apellido_paterno ?? '' }} {{ $child['alumno']?->persona?->apellido_materno ?? '' }} {{ $child['alumno']?->persona?->nombre ?? '' }}
                                                     @if($child['parentesco'])
                                                         <span class="text-zinc-400">({{ $child['parentesco'] }})</span>
                                                     @endif

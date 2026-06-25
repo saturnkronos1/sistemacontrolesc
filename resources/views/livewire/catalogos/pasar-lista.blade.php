@@ -62,7 +62,7 @@
                             <tr class="hover:bg-hover">
                                 <td class="px-4 py-3 text-sm text-zinc-500">{{ $loop->iteration }}</td>
                                 <td class="px-4 py-3 text-sm font-medium whitespace-nowrap">
-                                    {{ $alumno['persona']['apellido_paterno'] }} {{ $alumno['persona']['apellido_materno'] }}, {{ $alumno['persona']['nombre'] }}
+                                    {{ $alumno['persona']['apellido_paterno'] }} {{ $alumno['persona']['apellido_materno'] }} {{ $alumno['persona']['nombre'] }}
                                 </td>
                                 <td class="px-4 py-3 text-center">
                                     @if($modoLectura)

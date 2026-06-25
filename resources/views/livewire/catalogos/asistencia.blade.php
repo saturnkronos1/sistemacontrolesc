@@ -17,7 +17,7 @@
 
             <flux:select wire:model.live="alumno_id" placeholder="Todos los alumnos">
                 @foreach($alumnosConsulta as $alumno)
-                    <option value="{{ $alumno->id }}">{{ $alumno->persona->apellido_paterno }} {{ $alumno->persona->apellido_materno }}, {{ $alumno->persona->nombre }}</option>
+                    <option value="{{ $alumno->id }}">{{ $alumno->persona->apellido_paterno }} {{ $alumno->persona->apellido_materno }} {{ $alumno->persona->nombre }}</option>
                 @endforeach
             </flux:select>
 
@@ -71,7 +71,7 @@
                                 <td class="px-4 py-3 text-sm text-zinc-500">{{ $loop->iteration }}</td>
                                 <td class="px-4 py-3 text-sm whitespace-nowrap">{{ $item->fecha->format('d/m/Y') }}</td>
                                 <td class="px-4 py-3 text-sm font-medium whitespace-nowrap">
-                                    {{ $item->alumno?->persona?->apellido_paterno }} {{ $item->alumno?->persona?->apellido_materno }}, {{ $item->alumno?->persona?->nombre }}
+                                    {{ $item->alumno?->persona?->apellido_paterno }} {{ $item->alumno?->persona?->apellido_materno }} {{ $item->alumno?->persona?->nombre }}
                                 </td>
                                 <td class="px-4 py-3 text-sm text-zinc-600">
                                     {{ $item->grupo?->grado?->nombre }} - {{ $item->grupo?->nombre }}

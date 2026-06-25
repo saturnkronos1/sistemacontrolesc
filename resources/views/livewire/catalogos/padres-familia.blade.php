@@ -72,17 +72,17 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <flux:input wire:model="nombre" label="Nombre *" placeholder="Nombre(s)" />
-                    <flux:input wire:model="apellido_paterno" label="Apellido Paterno *" placeholder="Apellido paterno" />
-                    <flux:input wire:model="apellido_materno" label="Apellido Materno" placeholder="Apellido materno" />
-                    <flux:input wire:model="curp" label="CURP" placeholder="18 caracteres" maxlength="18" />
+                    <flux:input wire:model="nombre" label="Nombre *" placeholder="Nombre(s)" oninput="this.value = this.value.toUpperCase()" />
+                    <flux:input wire:model="apellido_paterno" label="Apellido Paterno *" placeholder="Apellido paterno" oninput="this.value = this.value.toUpperCase()" />
+                    <flux:input wire:model="apellido_materno" label="Apellido Materno" placeholder="Apellido materno" oninput="this.value = this.value.toUpperCase()" />
+                    <flux:input wire:model="curp" label="CURP" placeholder="18 caracteres" maxlength="18" oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 18)" />
                     <flux:input wire:model="telefono" label="Teléfono" type="tel" placeholder="10 dígitos" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)" />
                     <flux:input wire:model="telefono_2" label="Teléfono 2" type="tel" placeholder="Teléfono adicional" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)" />
                     <flux:input wire:model="email" label="Email" type="email" placeholder="correo@ejemplo.com" />
                     <flux:input wire:model="fecha_nacimiento" label="Fecha de Nacimiento" type="date" />
                 </div>
 
-                <flux:textarea wire:model="domicilio" label="Domicilio" placeholder="Dirección completa" />
+                <flux:textarea wire:model="domicilio" label="Domicilio" placeholder="Dirección completa" oninput="this.value = this.value.toUpperCase()" />
 
                 <flux:separator text="Vínculo" />
 

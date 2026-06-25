@@ -63,6 +63,18 @@ class PadresFamilia extends Component
 
     public string $search = '';
 
+    public function updated($propertyName): void
+    {
+        $uppercase = [
+            'nombre', 'apellido_paterno', 'apellido_materno', 'curp',
+            'domicilio',
+        ];
+
+        if (in_array($propertyName, $uppercase, true)) {
+            $this->$propertyName = mb_strtoupper($this->$propertyName);
+        }
+    }
+
     protected function rules()
     {
         $personaId = $this->editId;

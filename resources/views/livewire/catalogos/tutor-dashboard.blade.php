@@ -19,7 +19,7 @@
                                 <div class="flex items-start justify-between mb-3">
                                     <div>
                                         <h3 class="text-lg font-semibold">
-                                            {{ $alumno->persona->apellido_paterno }} {{ $alumno->persona->apellido_materno }}, {{ $alumno->persona->nombre }}
+                                            {{ $alumno->persona->apellido_paterno }} {{ $alumno->persona->apellido_materno }} {{ $alumno->persona->nombre }}
                                         </h3>
                                         <p class="text-sm text-zinc-500">
                                             {{ $familia->parentesco }} · Matrícula: {{ $alumno->matricula }}
@@ -64,7 +64,7 @@
                 </div>
 
                 <div class="mb-6 rounded-lg border border-borde bg-white p-4 ">
-                    <h2 class="text-lg font-semibold mb-1">{{ $alumnoData['persona']['apellido_paterno'] ?? '' }} {{ $alumnoData['persona']['apellido_materno'] ?? '' }}, {{ $alumnoData['persona']['nombre'] ?? '' }}</h2>
+                    <h2 class="text-lg font-semibold mb-1">{{ $alumnoData['persona']['apellido_paterno'] ?? '' }} {{ $alumnoData['persona']['apellido_materno'] ?? '' }} {{ $alumnoData['persona']['nombre'] ?? '' }}</h2>
                     <p class="text-sm text-zinc-500">
                         {{ $alumnoData['matricula'] ?? '' }} · {{ $alumnoData['grado']['nombre'] ?? '' }} - {{ $alumnoData['grupo']['nombre'] ?? '' }}
                     </p>
@@ -187,7 +187,7 @@
                 </div>
 
                 <div class="mb-6 rounded-lg border border-borde bg-white p-4 ">
-                    <h2 class="text-lg font-semibold mb-1">{{ $alumnoData['persona']['apellido_paterno'] ?? '' }} {{ $alumnoData['persona']['apellido_materno'] ?? '' }}, {{ $alumnoData['persona']['nombre'] ?? '' }}</h2>
+                    <h2 class="text-lg font-semibold mb-1">{{ $alumnoData['persona']['apellido_paterno'] ?? '' }} {{ $alumnoData['persona']['apellido_materno'] ?? '' }} {{ $alumnoData['persona']['nombre'] ?? '' }}</h2>
                     <p class="text-sm text-zinc-500">
                         {{ $alumnoData['matricula'] ?? '' }} · {{ $alumnoData['grado']['nombre'] ?? '' }} - {{ $alumnoData['grupo']['nombre'] ?? '' }}
                     </p>

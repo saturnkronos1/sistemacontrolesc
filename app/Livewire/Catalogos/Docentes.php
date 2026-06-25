@@ -55,6 +55,18 @@ class Docentes extends Component
 
     public string $search = '';
 
+    public function updated($propertyName): void
+    {
+        $uppercase = [
+            'nombres', 'apellido_paterno', 'apellido_materno', 'curp',
+            'direccion',
+        ];
+
+        if (in_array($propertyName, $uppercase, true)) {
+            $this->$propertyName = mb_strtoupper($this->$propertyName);
+        }
+    }
+
     protected function rules()
     {
         $userId = $this->editId;

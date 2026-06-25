@@ -290,8 +290,8 @@ test('alumnos creates alumno with tutor (Padre)', function () {
 
     // Verify persona for tutor exists
     $this->assertDatabaseHas('personas', [
-        'nombre' => 'José',
-        'apellido_paterno' => 'Pérez',
+        'nombre' => 'JOSÉ',
+        'apellido_paterno' => 'PÉREZ',
         'email' => 'jose@example.com',
     ]);
 

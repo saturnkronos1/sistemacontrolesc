@@ -27,7 +27,7 @@
                 <flux:select wire:model.live="alumno_id" placeholder="Seleccionar alumno">
                     @foreach($alumnos as $alumno)
                         <option value="{{ $alumno['id'] }}">
-                            {{ $alumno['persona']['apellido_paterno'] }} {{ $alumno['persona']['apellido_materno'] }}, {{ $alumno['persona']['nombre'] }} ({{ $alumno['matricula'] }})
+                            {{ $alumno['persona']['apellido_paterno'] }} {{ $alumno['persona']['apellido_materno'] }} {{ $alumno['persona']['nombre'] }} ({{ $alumno['matricula'] }})
                         </option>
                     @endforeach
                 </flux:select>
@@ -51,7 +51,7 @@
                         <div class="sm:col-span-2">
                             <span class="text-zinc-500">Nombre:</span>
                             <span class="ml-1 font-medium">
-                                {{ $alumnoData['persona']['apellido_paterno'] ?? '' }} {{ $alumnoData['persona']['apellido_materno'] ?? '' }}, {{ $alumnoData['persona']['nombre'] ?? '' }}
+                                {{ $alumnoData['persona']['apellido_paterno'] ?? '' }} {{ $alumnoData['persona']['apellido_materno'] ?? '' }} {{ $alumnoData['persona']['nombre'] ?? '' }}
                             </span>
                         </div>
                         <div>
