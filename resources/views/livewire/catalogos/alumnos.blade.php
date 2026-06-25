@@ -214,13 +214,6 @@
                                 </div>
 
                                 <flux:input wire:model="tutor_domicilio" label="Domicilio" placeholder="CALLE Y NÚMERO" oninput="this.value = this.value.toUpperCase()" />
-
-                                <flux:separator text="Cuenta de usuario del tutor" />
-
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                    <flux:input wire:model="tutor_user_email" label="Email de usuario" placeholder="tutor@correo.com" type="email" />
-                                    <flux:input wire:model="tutor_user_password" label="Contraseña" type="password" placeholder="{{ $editId ? 'Dejar vacío para mantener actual' : 'Mínimo 8 caracteres' }}" />
-                                </div>
                             </div>
                         </div>
                     @endif

@@ -279,8 +279,6 @@ test('alumnos creates alumno with tutor (Padre)', function () {
         ->set('tutor_parentesco', 'Padre')
         ->set('tutor_telefono', '5512345678')
         ->set('tutor_email', 'jose@example.com')
-        ->set('tutor_user_email', 'jose@example.com')
-        ->set('tutor_user_password', 'secret123')
         ->call('guardar')
         ->assertOk();
 
@@ -300,14 +298,6 @@ test('alumnos creates alumno with tutor (Padre)', function () {
         'alumno_id' => $alumno->id,
         'parentesco' => 'Padre',
     ]);
-
-    // Verify tutor user was created
-    $this->assertDatabaseHas('users', [
-        'email' => 'jose@example.com',
-    ]);
-    $tutorUser = User::where('email', 'jose@example.com')->first();
-    expect($tutorUser)->not->toBeNull();
-    expect($tutorUser->hasRole('Tutor'))->toBeTrue();
 });
 
 test('alumnos creates alumno with tutor (Abuelo/a)', function () {
@@ -330,8 +320,6 @@ test('alumnos creates alumno with tutor (Abuelo/a)', function () {
         ->set('tutor_apellido_paterno', 'García')
         ->set('tutor_parentesco', 'Abuelo/a')
         ->set('tutor_telefono', '5511111111')
-        ->set('tutor_user_email', 'carlos@example.com')
-        ->set('tutor_user_password', 'secret123')
         ->call('guardar')
         ->assertOk();
 
@@ -340,12 +328,6 @@ test('alumnos creates alumno with tutor (Abuelo/a)', function () {
     // One tutor in family
     expect($alumno->familiares()->count())->toBe(1);
     expect($alumno->familiares()->first()->parentesco)->toBe('Abuelo/a');
-
-    // Tutor user created
-    $tutorPersona = $alumno->familiares()->first()?->persona;
-    expect($tutorPersona)->not->toBeNull();
-    expect($tutorPersona->user)->not->toBeNull();
-    expect($tutorPersona->user->hasRole('Tutor'))->toBeTrue();
 });
 
 test('alumnos creates alumno with tutor (Tutor Legal)', function () {
@@ -369,19 +351,12 @@ test('alumnos creates alumno with tutor (Tutor Legal)', function () {
         ->set('tutor_parentesco', 'Tutor Legal')
         ->set('tutor_telefono', '5533333333')
         ->set('tutor_email', 'roberto@example.com')
-        ->set('tutor_user_email', 'roberto@example.com')
-        ->set('tutor_user_password', 'secret123')
         ->call('guardar')
         ->assertOk();
 
     $alumno = Alumno::where('matricula', 'like', 'ALU%')->latest()->first();
     expect($alumno->familiares()->count())->toBe(1);
     expect($alumno->familiares()->first()->parentesco)->toBe('Tutor Legal');
-
-    // Tutor user created
-    $this->assertDatabaseHas('users', [
-        'email' => 'roberto@example.com',
-    ]);
 });
 
 test('alumnos edit preserves family data', function () {
@@ -424,7 +399,6 @@ test('alumnos edit preserves family data', function () {
         ->call('editar', $alumno->id)
         ->assertSet('tutor_nombre', 'Papá')
         ->assertSet('tutor_apellido_paterno', 'Test')
-        ->assertSet('tutor_user_email', 'papa@example.com')
         ->assertSet('showFamilia', true);
 });
 

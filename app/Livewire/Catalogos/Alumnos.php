@@ -7,7 +7,6 @@ use App\Models\AlumnoFamilia;
 use App\Models\Grado;
 use App\Models\Grupo;
 use App\Models\Persona;
-use App\Models\User;
 use App\Support\CicloActivoService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -67,12 +66,6 @@ class Alumnos extends Component
 
     public $tutor_domicilio = '';
 
-    // Tutor user credentials (set by user in the form)
-
-    public $tutor_user_email = '';
-
-    public $tutor_user_password = '';
-
     // ─── Filters ───
 
     public $filtro_grado = '';
@@ -119,22 +112,6 @@ class Alumnos extends Component
         ];
 
         if ($this->showFamilia) {
-            $passwordRules = ['nullable', 'string', 'min:8'];
-            $userEmailUnique = '|unique:users,email';
-
-            if ($alumnoId) {
-                $alumno = Alumno::with('familiares.persona.user')->find($alumnoId);
-                $existingUser = $alumno?->familiares->first()?->persona?->user;
-
-                if ($existingUser) {
-                    $userEmailUnique = '|unique:users,email,'.$existingUser->id;
-                } else {
-                    $passwordRules = ['required', 'string', 'min:8'];
-                }
-            } else {
-                $passwordRules = ['required', 'string', 'min:8'];
-            }
-
             $rules = array_merge($rules, [
                 'tutor_nombre' => 'required|string|max:100',
                 'tutor_apellido_paterno' => 'required|string|max:100',
@@ -144,8 +121,6 @@ class Alumnos extends Component
                 'tutor_telefono_2' => 'nullable|digits:10',
                 'tutor_email' => 'nullable|email|max:100',
                 'tutor_fecha_nacimiento' => 'nullable|date',
-                'tutor_user_email' => 'required|email|max:255'.$userEmailUnique,
-                'tutor_user_password' => $passwordRules,
             ]);
         }
 
@@ -258,10 +233,6 @@ class Alumnos extends Component
             $this->showFamilia = true;
             $this->cargarPersonaAProperties($familiar->persona, 'tutor_');
             $this->tutor_parentesco = $familiar->parentesco;
-
-            if ($familiar->persona?->user) {
-                $this->tutor_user_email = $familiar->persona->user->email;
-            }
         }
 
         $this->credenciales = null;
@@ -323,7 +294,7 @@ class Alumnos extends Component
     }
 
     /**
-     * Save the tutor and create/update their user account.
+     * Save or update the tutor's persona and family link.
      */
     private function guardarFamilia(Alumno $alumno): void
     {
@@ -361,27 +332,6 @@ class Alumnos extends Component
             'persona_id' => $tutorPersona->id,
             'parentesco' => $this->tutor_parentesco,
         ]);
-
-        // Handle user account for the tutor
-        if ($tutorPersona->user) {
-            $userData = [
-                'name' => trim("{$this->tutor_nombre} {$this->tutor_apellido_paterno}"),
-                'email' => $this->tutor_user_email,
-            ];
-            if ($this->tutor_user_password) {
-                $userData['password'] = bcrypt($this->tutor_user_password);
-            }
-            $tutorPersona->user->update($userData);
-        } else {
-            $user = User::create([
-                'name' => trim("{$this->tutor_nombre} {$this->tutor_apellido_paterno}"),
-                'email' => $this->tutor_user_email,
-                'password' => bcrypt($this->tutor_user_password),
-                'persona_id' => $tutorPersona->id,
-                'email_verified_at' => now(),
-            ]);
-            $user->assignRole('Tutor');
-        }
     }
 
     public function darBaja($id)
@@ -415,7 +365,6 @@ class Alumnos extends Component
             'tutor_nombre', 'tutor_apellido_paterno', 'tutor_apellido_materno',
             'tutor_parentesco', 'tutor_telefono', 'tutor_telefono_2',
             'tutor_email', 'tutor_fecha_nacimiento', 'tutor_domicilio',
-            'tutor_user_email', 'tutor_user_password',
         ]);
     }
 
