@@ -106,9 +106,9 @@
 
                     {{-- Nombres y apellidos --}}
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <flux:input wire:model="nombres" label="Nombres *" placeholder="Nombre(s)" oninput="this.value = this.value.toUpperCase()" />
-                        <flux:input wire:model="apellido_paterno" label="Apellido paterno *" placeholder="Apellido paterno" oninput="this.value = this.value.toUpperCase()" />
-                        <flux:input wire:model="apellido_materno" label="Apellido materno" placeholder="Apellido materno" oninput="this.value = this.value.toUpperCase()" />
+                        <flux:input wire:model="nombres" label="Nombres *" placeholder="NOMBRE(S)" oninput="this.value = this.value.toUpperCase()" />
+                        <flux:input wire:model="apellido_paterno" label="Apellido paterno *" placeholder="APELLIDO PATERNO" oninput="this.value = this.value.toUpperCase()" />
+                        <flux:input wire:model="apellido_materno" label="Apellido materno" placeholder="APELLIDO MATERNO" oninput="this.value = this.value.toUpperCase()" />
                     </div>
 
                     {{-- Teléfono y correo --}}
@@ -127,7 +127,7 @@
                     </div>
 
                     {{-- Dirección --}}
-                    <flux:textarea wire:model="direccion" label="Dirección" placeholder="Dirección completa" oninput="this.value = this.value.toUpperCase()" />
+                    <flux:textarea wire:model="direccion" label="Dirección" placeholder="DIRECCIÓN COMPLETA" oninput="this.value = this.value.toUpperCase()" />
 
                     <flux:separator text="Datos de la cuenta" />
 

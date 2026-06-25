@@ -81,7 +81,7 @@
                         @endforeach
                     </flux:select>
 
-                    <flux:input wire:model="nombre" label="Nombre" placeholder="Ej: Matemáticas I" oninput="this.value = this.value.toUpperCase()" />
+                    <flux:input wire:model="nombre" label="Nombre" placeholder="EJ: MATEMÁTICAS I" oninput="this.value = this.value.toUpperCase()" />
 
                     <flux:input wire:model="clave_materia" label="Clave del campo formativo" placeholder="Ej: MAT-101" oninput="this.value = this.value.toUpperCase()" />
 

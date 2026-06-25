@@ -100,7 +100,7 @@
                         <h2 class="text-lg font-semibold">{{ $editId ? 'Editar' : 'Nuevo' }} Usuario</h2>
                     </div>
 
-                    <flux:input wire:model="name" label="Nombre" placeholder="Nombre completo" oninput="this.value = this.value.toUpperCase()" />
+                    <flux:input wire:model="name" label="Nombre" placeholder="NOMBRE COMPLETO" oninput="this.value = this.value.toUpperCase()" />
 
                     <flux:input wire:model="email" label="Email" type="email" placeholder="correo@ejemplo.com" />
 
