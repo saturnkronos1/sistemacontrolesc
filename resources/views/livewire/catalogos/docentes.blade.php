@@ -32,6 +32,9 @@
                             <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase whitespace-nowrap hidden sm:table-cell">
                                 Teléfono
                             </th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase whitespace-nowrap hidden sm:table-cell">
+                                Grupo
+                            </th>
                             <th wire:click="sortBy('estatus')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap">
                                 <div class="flex items-center gap-1">
                                     Estatus
@@ -53,6 +56,17 @@
                                 </td>
                                 <td class="px-4 py-3 text-sm font-mono hidden sm:table-cell">{{ $docente->persona?->curp ?? '—' }}</td>
                                 <td class="px-4 py-3 text-sm hidden sm:table-cell">{{ $docente->persona?->telefono ?? '—' }}</td>
+                                <td class="px-4 py-3 text-sm hidden sm:table-cell">
+                                    @if($docente->grupos->isNotEmpty())
+                                        @foreach($docente->grupos as $grupo)
+                                            <span class="inline-flex items-center rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-texto mr-1">
+                                                {{ $grupo->grado?->nombre }} - {{ $grupo->nombre }}
+                                            </span>
+                                        @endforeach
+                                    @else
+                                        <span class="text-zinc-400">—</span>
+                                    @endif
+                                </td>
                                 <td class="px-4 py-3">
                                     @php
                                         $estatus = $docente->persona?->estatus ?? 'activo';
@@ -78,7 +92,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-4 py-12 text-center text-zinc-500">
+                                <td colspan="6" class="px-4 py-12 text-center text-zinc-500">
                                     No hay docentes registrados.
                                 </td>
                             </tr>

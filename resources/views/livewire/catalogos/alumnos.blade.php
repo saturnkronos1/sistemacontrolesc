@@ -58,7 +58,7 @@
                                 <x-sort-indicator :field="'curp'" :sort-field="$sortField" :sort-direction="$sortDirection" />
                             </div>
                         </th>
-                        <th wire:click="sortBy('grado_id')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap hidden sm:table-cell">
+                        <th wire:click="sortBy('grado_id')" class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase cursor-pointer select-none hover:text-texto whitespace-nowrap">
                             <div class="flex items-center gap-1">
                                 Grado
                                 <x-sort-indicator :field="'grado_id'" :sort-field="$sortField" :sort-direction="$sortDirection" />
@@ -87,7 +87,7 @@
                                 {{ $alumno->persona?->apellido_paterno }} {{ $alumno->persona?->apellido_materno }} {{ $alumno->persona?->nombre }}
                             </td>
                             <td class="px-4 py-3 text-sm font-mono uppercase hidden sm:table-cell">{{ $alumno->persona?->curp }}</td>
-                            <td class="px-4 py-3 text-sm hidden sm:table-cell">{{ $alumno->grado?->nombre }}</td>
+                            <td class="px-4 py-3 text-sm">{{ $alumno->grado?->nombre }}</td>
                             <td class="px-4 py-3 text-sm hidden sm:table-cell">
                                 @if($alumno->grupo)
                                     <span class="inline-flex items-center rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-texto">

@@ -141,16 +141,6 @@ class NavSidebar extends Component
                     'visible' => $user?->can('reportes.concentrado'),
                 ],
             ],
-            'Tutor' => [
-                [
-                    'label' => 'Tutor Dashboard',
-                    'route' => 'tutor.dashboard',
-                    'route_prefix' => 'tutor',
-                    'params' => [],
-                    'icon' => 'academic-cap',
-                    'visible' => $user?->can('tutor.dashboard'),
-                ],
-            ],
         ];
 
         // Pre-filter: remove non-visible items so they don't leak into the Livewire snapshot

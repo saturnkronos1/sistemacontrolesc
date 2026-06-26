@@ -102,7 +102,7 @@ class Docentes extends Component
     {
         $query = User::role('Docente')
             ->select('users.*')
-            ->with('persona')
+            ->with('persona', 'grupos.grado')
             ->leftJoin('personas', 'users.persona_id', '=', 'personas.id');
 
         if ($this->search) {
