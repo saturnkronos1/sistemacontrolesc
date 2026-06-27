@@ -146,13 +146,13 @@
                     <tr>
                         <th class="top-header" style="width: 25px;" rowspan="3">N/P</th>
                         <th class="top-header" style="width: 22%;" rowspan="3">NOMBRE(S)</th>
-                        <th class="top-header" colspan="{{ $materias->count() * 4 }}">CAMPOS FORMATIVOS</th>
+                        <th class="top-header" colspan="{{ $materias->count() * 3 }}">CAMPOS FORMATIVOS</th>
                         <th class="top-header" style="width: 50px;" rowspan="3">PROM.<br>GRAL.</th>
                     </tr>
                     {{-- Fila 2: nombres de materias --}}
                     <tr>
                         @foreach($materias as $materia)
-                            <th colspan="4" style="padding: 5px 2px; font-size: 6pt; font-weight: 600;">{{ $materia->nombre }}</th>
+                            <th colspan="3" style="padding: 5px 2px; font-size: 6pt; font-weight: 600;">{{ $materia->nombre }}</th>
                         @endforeach
                     </tr>
                     {{-- Fila 3: sub-columnas de periodos --}}
@@ -161,7 +161,6 @@
                             <th style="padding: 3px 2px; font-size: 5.5pt;">1T</th>
                             <th style="padding: 3px 2px; font-size: 5.5pt;">2T</th>
                             <th style="padding: 3px 2px; font-size: 5.5pt;">3T</th>
-                            <th style="padding: 3px 2px; font-size: 5.5pt;">PROM</th>
                         @endforeach
                     </tr>
                 @else
@@ -199,19 +198,10 @@
                                     $p1 = $val[$periodos[0]->id] ?? null;
                                     $p2 = $val[$periodos[1]->id] ?? null;
                                     $p3 = $val[$periodos[2]->id] ?? null;
-                                    $notasAlumno = collect([$p1, $p2, $p3])->filter();
-                                    $promMateria = $notasAlumno->count() > 0 ? round($notasAlumno->avg(), 1) : null;
                                 @endphp
                                 <td style="font-size: 7pt;">{{ $p1 !== null ? number_format($p1, 1) : '—' }}</td>
                                 <td style="font-size: 7pt;">{{ $p2 !== null ? number_format($p2, 1) : '—' }}</td>
                                 <td style="font-size: 7pt;">{{ $p3 !== null ? number_format($p3, 1) : '—' }}</td>
-                                <td class="promedio-cell" style="font-size: 7pt;">
-                                    @if($promMateria !== null)
-                                        <span class="{{ $promMateria >= 6 ? 'nota-alta' : 'nota-baja' }}">{{ number_format($promMateria, 1) }}</span>
-                                    @else
-                                        —
-                                    @endif
-                                </td>
                             @endforeach
                         @else
                             @foreach($materias as $materia)
@@ -255,10 +245,22 @@
                 @endphp
                 <tfoot>
                     @if($modoMultiple)
-                        {{-- Solo Promedio General en modo FINAL --}}
+                        {{-- Promedio por Campo Formativo --}}
+                        <tr class="promedio-row">
+                            <td colspan="2" class="promedio-label">PROMEDIO POR CAMPO FORMATIVO</td>
+                            @foreach($materias as $materia)
+                                <td colspan="3">
+                                    @if(($promediosCampo[$materia->id] ?? null) !== null)
+                                        <span class="{{ $promediosCampo[$materia->id] >= 6 ? 'nota-alta' : 'nota-baja' }}">{{ number_format($promediosCampo[$materia->id], 1) }}</span>
+                                    @endif
+                                </td>
+                            @endforeach
+                            <td></td>
+                        </tr>
+                        {{-- Promedio General --}}
                         <tr class="promedio-row">
                             <td colspan="2" class="promedio-label"></td>
-                            <td colspan="{{ $materias->count() * 4 }}" style="text-align: center; font-weight: 700; font-size: 7.5pt;">
+                            <td colspan="{{ $materias->count() * 3 }}" style="text-align: center; font-weight: 700; font-size: 7.5pt;">
                                 PROMEDIO GENERAL
                             </td>
                             <td class="promedio-cell">
