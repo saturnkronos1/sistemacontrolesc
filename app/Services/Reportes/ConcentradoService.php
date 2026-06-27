@@ -92,9 +92,9 @@ class ConcentradoService
             'calificaciones' => $calificaciones,
             'promedios' => $promedios,
             'modoMultiple' => is_null($periodoId) && $periodos->count() > 1,
-            'periodoSeleccionado' => $periodoId
-                ? PeriodoEvaluacion::find($periodoId)?->nombre
-                : 'Todos los periodos',
+            'periodoSeleccionado' => is_null($periodoId) && $periodos->count() > 1
+                ? 'FINAL'
+                : (PeriodoEvaluacion::find($periodoId)?->nombre ?? '—'),
             'generated_at' => now()->format('d/m/Y H:i'),
             'director' => $director?->name ?? '—',
         ]);

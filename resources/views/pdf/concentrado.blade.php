@@ -111,29 +111,31 @@
         <p>CICLO ESCOLAR: {{ $grupo?->cicloEscolar?->nombre ?? '—' }}</p>
     </div>
 
-    {{-- 2. Datos generales en dos columnas --}}
-    <div class="data-row">
-        <div class="data-col">
-            <div class="data-item">
-                <span class="label-data">ESCUELA:</span>
-                <span class="line-value" style="min-width: 200px;">{{ $escuela }}</span>
-            </div>
-            <div class="data-item">
-                <span class="label-data">GRADO:</span>
-                <span class="line-value" style="min-width: 120px;">{{ $grupo?->grado?->nombre ?? '—' }}</span>
-            </div>
-        </div>
-        <div class="data-col">
-            <div class="data-item">
-                <span class="label-data">C.C.T.:</span>
-                <span class="line-value" style="min-width: 120px;">{{ $cct }}</span>
-            </div>
-            <div class="data-item">
-                <span class="label-data">GRUPO:</span>
-                <span class="line-value" style="min-width: 120px;">{{ $grupo?->nombre ?? '—' }}</span>
-            </div>
-        </div>
-    </div>
+    {{-- 2. Datos generales en dos columnas (tabla para DomPDF) --}}
+    <table style="margin-bottom: 10px; border: none;">
+        <tr style="border: none;">
+            <td style="width: 50%; border: none; padding: 0; vertical-align: top;">
+                <div class="data-item">
+                    <span class="label-data">ESCUELA:</span>
+                    <span class="line-value" style="min-width: 200px;">{{ $escuela }}</span>
+                </div>
+                <div class="data-item" style="margin-top: 6px;">
+                    <span class="label-data">GRADO:</span>
+                    <span class="line-value" style="min-width: 120px;">{{ $grupo?->grado?->nombre ?? '—' }}</span>
+                </div>
+            </td>
+            <td style="width: 50%; border: none; padding: 0; vertical-align: top;">
+                <div class="data-item">
+                    <span class="label-data">C.C.T.:</span>
+                    <span class="line-value" style="min-width: 120px;">{{ $cct }}</span>
+                </div>
+                <div class="data-item" style="margin-top: 6px;">
+                    <span class="label-data">GRUPO:</span>
+                    <span class="line-value" style="min-width: 120px;">{{ $grupo?->nombre ?? '—' }}</span>
+                </div>
+            </td>
+        </tr>
+    </table>
 
     {{-- 3. Tabla principal --}}
     <div class="table-wrap">
@@ -252,33 +254,9 @@
                     $promedioGeneral = $promedioGeneral ? round($promedioGeneral, 1) : null;
                 @endphp
                 <tfoot>
-                    {{-- Promedio por Campo Formativo --}}
-                    <tr class="promedio-row">
-                        @if($modoMultiple)
-                            <td colspan="2" class="promedio-label">PROMEDIO POR CAMPO FORMATIVO</td>
-                            @foreach($materias as $materia)
-                                <td colspan="4">
-                                    @if(($promediosCampo[$materia->id] ?? null) !== null)
-                                        <span class="{{ $promediosCampo[$materia->id] >= 6 ? 'nota-alta' : 'nota-baja' }}">{{ number_format($promediosCampo[$materia->id], 1) }}</span>
-                                    @endif
-                                </td>
-                            @endforeach
-                            <td></td>
-                        @else
-                            <td colspan="2" class="promedio-label">PROMEDIO POR CAMPO FORMATIVO</td>
-                            @foreach($materias as $materia)
-                                <td>
-                                    @if(($promediosCampo[$materia->id] ?? null) !== null)
-                                        <span class="{{ $promediosCampo[$materia->id] >= 6 ? 'nota-alta' : 'nota-baja' }}">{{ number_format($promediosCampo[$materia->id], 1) }}</span>
-                                    @endif
-                                </td>
-                            @endforeach
-                            <td></td>
-                        @endif
-                    </tr>
-                    {{-- Promedio General --}}
-                    <tr class="promedio-row">
-                        @if($modoMultiple)
+                    @if($modoMultiple)
+                        {{-- Solo Promedio General en modo FINAL --}}
+                        <tr class="promedio-row">
                             <td colspan="2" class="promedio-label"></td>
                             <td colspan="{{ $materias->count() * 4 }}" style="text-align: center; font-weight: 700; font-size: 7.5pt;">
                                 PROMEDIO GENERAL
@@ -288,7 +266,22 @@
                                     <span class="{{ $promedioGeneral >= 6 ? 'nota-alta' : 'nota-baja' }}">{{ number_format($promedioGeneral, 1) }}</span>
                                 @endif
                             </td>
-                        @else
+                        </tr>
+                    @else
+                        {{-- Promedio por Campo Formativo --}}
+                        <tr class="promedio-row">
+                            <td colspan="2" class="promedio-label">PROMEDIO POR CAMPO FORMATIVO</td>
+                            @foreach($materias as $materia)
+                                <td>
+                                    @if(($promediosCampo[$materia->id] ?? null) !== null)
+                                        <span class="{{ $promediosCampo[$materia->id] >= 6 ? 'nota-alta' : 'nota-baja' }}">{{ number_format($promediosCampo[$materia->id], 1) }}</span>
+                                    @endif
+                                </td>
+                            @endforeach
+                            <td></td>
+                        </tr>
+                        {{-- Promedio General --}}
+                        <tr class="promedio-row">
                             <td colspan="2" class="promedio-label"></td>
                             <td colspan="{{ $materias->count() }}" style="text-align: center; font-weight: 700; font-size: 7.5pt;">
                                 PROMEDIO GENERAL
@@ -298,8 +291,8 @@
                                     <span class="{{ $promedioGeneral >= 6 ? 'nota-alta' : 'nota-baja' }}">{{ number_format($promedioGeneral, 1) }}</span>
                                 @endif
                             </td>
-                        @endif
-                    </tr>
+                        </tr>
+                    @endif
                 </tfoot>
             @endif
         </table>
