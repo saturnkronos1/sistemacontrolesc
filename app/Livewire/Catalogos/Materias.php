@@ -102,14 +102,14 @@ class Materias extends Component
             ]
         );
 
-        $this->dispatch('toast', message: 'Materia guardada exitosamente.', type: 'success');
+        $this->dispatch('toast', message: 'Campo formativo guardado exitosamente.', type: 'success');
         $this->resetModal();
     }
 
     public function eliminar($id)
     {
         Materia::findOrFail($id)->delete();
-        $this->dispatch('toast', message: 'Materia eliminada.', type: 'success');
+        $this->dispatch('toast', message: 'Campo formativo eliminado.', type: 'success');
     }
 
     public function resetForm(): void
