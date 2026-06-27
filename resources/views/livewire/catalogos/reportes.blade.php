@@ -12,22 +12,10 @@
                     Concentrado
                 </flux:button>
                 <flux:button
-                    wire:click="$set('reporte', 'kardex')"
-                    :variant="$reporte === 'kardex' ? 'primary' : 'ghost'"
-                >
-                    Kardex
-                </flux:button>
-                <flux:button
                     wire:click="$set('reporte', 'inasistencias')"
                     :variant="$reporte === 'inasistencias' ? 'primary' : 'ghost'"
                 >
                     Inasistencias
-                </flux:button>
-                <flux:button
-                    wire:click="$set('reporte', 'alumnos-por-tutor')"
-                    :variant="$reporte === 'alumnos-por-tutor' ? 'primary' : 'ghost'"
-                >
-                    Alumnos por Tutor
                 </flux:button>
             </div>
 

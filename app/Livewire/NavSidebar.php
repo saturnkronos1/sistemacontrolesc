@@ -125,14 +125,6 @@ class NavSidebar extends Component
             ],
             'Reportes' => [
                 [
-                    'label' => 'Boleta',
-                    'route' => 'boleta.index',
-                    'route_prefix' => 'boleta',
-                    'params' => [],
-                    'icon' => 'document-text',
-                    'visible' => $user?->can('boleta.generar'),
-                ],
-                [
                     'label' => 'Reportes',
                     'route' => 'reportes.index',
                     'route_prefix' => 'reportes',
