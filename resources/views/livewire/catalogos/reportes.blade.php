@@ -62,8 +62,8 @@
                 {{-- Date filters for inasistencias --}}
                 @if($reporte === 'inasistencias')
                     <div class="sm:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <flux:input type="date" wire:model.live="fecha_desde" placeholder="Fecha desde" />
-                        <flux:input type="date" wire:model.live="fecha_hasta" placeholder="Fecha hasta" />
+                        <flux:input type="date" wire:model="fecha_desde" placeholder="Fecha desde" />
+                        <flux:input type="date" wire:model="fecha_hasta" placeholder="Fecha hasta" />
                     </div>
                 @endif
 

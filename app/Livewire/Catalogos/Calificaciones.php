@@ -187,14 +187,21 @@ class Calificaciones extends Component
 
         $userId = auth()->id();
 
+        // 1 query — no N+1
+        $existentes = Calificacion::where('grupo_id', $this->grupo_id)
+            ->where('materia_id', $this->materia_id)
+            ->where('periodo_evaluacion_id', $this->periodo_id)
+            ->get()
+            ->keyBy('alumno_id');
+
+        $nuevas = [];
+        $logs = [];
+
         foreach ($this->notas as $alumnoId => $calificacion) {
             $calificacion = $calificacion === '' ? null : (float) $calificacion;
 
-            $existente = Calificacion::where('alumno_id', $alumnoId)
-                ->where('grupo_id', $this->grupo_id)
-                ->where('materia_id', $this->materia_id)
-                ->where('periodo_evaluacion_id', $this->periodo_id)
-                ->first();
+            /** @var Calificacion|null $existente */
+            $existente = $existentes->get($alumnoId);
 
             if ($existente) {
                 $oldValue = $existente->calificacion;
@@ -202,29 +209,50 @@ class Calificaciones extends Component
                 if ($oldValue != $calificacion) {
                     $existente->update(['calificacion' => $calificacion]);
 
-                    CalificacionLog::create([
+                    $logs[] = [
                         'calificacion_id' => $existente->id,
                         'user_id' => $userId,
                         'old_calificacion' => $oldValue,
                         'new_calificacion' => $calificacion,
-                    ]);
+                    ];
                 }
             } elseif ($calificacion !== null) {
-                $nueva = Calificacion::create([
+                $nuevas[] = [
                     'alumno_id' => $alumnoId,
                     'grupo_id' => $this->grupo_id,
                     'materia_id' => $this->materia_id,
                     'periodo_evaluacion_id' => $this->periodo_id,
                     'calificacion' => $calificacion,
-                ]);
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+        }
 
-                CalificacionLog::create([
-                    'calificacion_id' => $nueva->id,
+        // Batch insert nuevas calificaciones
+        if (! empty($nuevas)) {
+            Calificacion::insert($nuevas);
+
+            // Recuperar IDs insertados para logs
+            $insertados = Calificacion::where('grupo_id', $this->grupo_id)
+                ->where('materia_id', $this->materia_id)
+                ->where('periodo_evaluacion_id', $this->periodo_id)
+                ->whereIn('alumno_id', array_column($nuevas, 'alumno_id'))
+                ->get(['id', 'alumno_id', 'calificacion']);
+
+            foreach ($insertados as $model) {
+                $logs[] = [
+                    'calificacion_id' => $model->id,
                     'user_id' => $userId,
                     'old_calificacion' => null,
-                    'new_calificacion' => $calificacion,
-                ]);
+                    'new_calificacion' => $model->calificacion,
+                ];
             }
+        }
+
+        // Batch insert logs
+        if (! empty($logs)) {
+            CalificacionLog::insert($logs);
         }
 
         $this->dispatch('toast', message: 'Calificaciones guardadas exitosamente.', type: 'success');

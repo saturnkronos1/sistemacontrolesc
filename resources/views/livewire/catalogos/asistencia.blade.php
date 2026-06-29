@@ -21,8 +21,8 @@
                 @endforeach
             </flux:select>
 
-            <flux:input type="date" wire:model.live="fecha_desde" label="Fecha desde" />
-            <flux:input type="date" wire:model.live="fecha_hasta" label="Fecha hasta" />
+            <flux:input type="date" wire:model="fecha_desde" label="Fecha desde" />
+            <flux:input type="date" wire:model="fecha_hasta" label="Fecha hasta" />
         </div>
 
         <div class="mb-6">

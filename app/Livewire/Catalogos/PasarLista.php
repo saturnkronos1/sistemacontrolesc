@@ -193,6 +193,15 @@ class PasarLista extends Component
 
         $grupo = Grupo::findOrFail($this->grupo_id);
 
+        // 1 query — no N+1
+        $existentes = AsistenciaModel::with('justificante')
+            ->where('grupo_id', $this->grupo_id)
+            ->where('fecha', $this->fecha)
+            ->get()
+            ->keyBy('alumno_id');
+
+        $nuevas = [];
+
         foreach ($this->alumnos as $alumno) {
             $alumnoId = $alumno['id'];
             $estatus = $this->estatusList[$alumnoId];
@@ -202,16 +211,20 @@ class PasarLista extends Component
                 $saveEstatus = 'justificado';
             }
 
-            $asistencia = AsistenciaModel::updateOrCreate(
-                [
+            $asistencia = $existentes->get($alumnoId);
+
+            if ($asistencia) {
+                if ($asistencia->estatus !== $saveEstatus) {
+                    $asistencia->update(['estatus' => $saveEstatus]);
+                }
+            } else {
+                $asistencia = AsistenciaModel::create([
                     'alumno_id' => $alumnoId,
                     'grupo_id' => $this->grupo_id,
                     'fecha' => $this->fecha,
-                ],
-                [
                     'estatus' => $saveEstatus,
-                ]
-            );
+                ]);
+            }
 
             if ($estatus === 'pendiente') {
                 $justificanteData = [
@@ -230,7 +243,7 @@ class PasarLista extends Component
                     ['asistencia_id' => $asistencia->id],
                     $justificanteData
                 );
-            } elseif ($asistencia->justificante) {
+            } elseif ($asistencia->relationLoaded('justificante') && $asistencia->justificante) {
                 $asistencia->justificante()->delete();
             }
         }

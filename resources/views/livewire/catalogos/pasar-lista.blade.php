@@ -24,7 +24,7 @@
                 </flux:select>
             @endif
 
-            <flux:input type="date" wire:model.live="fecha" label="Fecha" />
+            <flux:input type="date" wire:model="fecha" label="Fecha" />
         </div>
 
         @if(!$esDocente)

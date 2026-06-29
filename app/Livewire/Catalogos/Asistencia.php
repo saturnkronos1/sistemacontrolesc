@@ -98,14 +98,7 @@ class Asistencia extends Component
             if ($canQuery) {
                 $resultados = $this->queryResultados()->paginate(15);
 
-                $all = $this->queryResumen()->get();
-                $this->resumen = [
-                    'asistio' => $all->where('estatus', 'asistio')->count(),
-                    'falta' => $all->where('estatus', 'falta')->count(),
-                    'retardo' => $all->where('estatus', 'retardo')->count(),
-                    'justificado' => $all->whereIn('estatus', ['pendiente', 'justificado'])->count(),
-                    'total' => $all->count(),
-                ];
+                $this->resumen();
             }
         }
 
@@ -140,15 +133,27 @@ class Asistencia extends Component
             ->orderBy('personas.nombre');
     }
 
-    protected function queryResumen()
+    protected function resumen()
     {
-        return AsistenciaModel::query()
+        $query = AsistenciaModel::query()
+            ->selectRaw('estatus, COUNT(*) as total')
             ->whereBetween('fecha', [$this->fecha_desde, $this->fecha_hasta])
             ->when($this->grupo_id, fn ($q) => $q->where('grupo_id', $this->grupo_id))
             ->when(! $this->grupo_id && $this->ciclo_escolar_id, fn ($q) => $q
                 ->whereHas('grupo', fn ($q) => $q->where('ciclo_escolar_id', $this->ciclo_escolar_id))
             )
-            ->when($this->alumno_id, fn ($q) => $q->where('alumno_id', $this->alumno_id));
+            ->when($this->alumno_id, fn ($q) => $q->where('alumno_id', $this->alumno_id))
+            ->groupBy('estatus');
+
+        $stats = $query->get()->keyBy('estatus');
+
+        $this->resumen = [
+            'asistio' => (int) ($stats['asistio']->total ?? 0),
+            'falta' => (int) ($stats['falta']->total ?? 0),
+            'retardo' => (int) ($stats['retardo']->total ?? 0),
+            'justificado' => (int) ($stats['pendiente']->total ?? 0) + (int) ($stats['justificado']->total ?? 0),
+            'total' => (int) $stats->sum('total'),
+        ];
     }
 
     public function updatedCicloEscolarId(): void
