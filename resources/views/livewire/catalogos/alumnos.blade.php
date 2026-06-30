@@ -76,7 +76,7 @@
                                 <x-sort-indicator :field="'estatus'" :sort-field="$sortField" :sort-direction="$sortDirection" />
                             </div>
                         </th>
-                        <th class="px-4 py-3 text-right text-xs font-medium text-zinc-500 uppercase">ACCIONES</th>
+                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase">ACCIONES</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-borde bg-white">
@@ -109,7 +109,7 @@
                                     {{ ucfirst($alumno->estatus) }}
                                 </span>
                             </td>
-                            <td class="px-4 py-3 text-right whitespace-nowrap">
+                            <td class="px-4 py-3 text-center whitespace-nowrap">
                                 <flux:button href="{{ route('alumnos.show', $alumno) }}" size="sm" inset="top bottom">Ver</flux:button>
                                 <flux:button wire:click="editar({{ $alumno->id }})" size="sm" inset="top bottom">Editar</flux:button>
 
