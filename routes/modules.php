@@ -16,6 +16,7 @@ use App\Livewire\Catalogos\Reinscripciones;
 use App\Livewire\Catalogos\Reportes;
 use App\Livewire\Catalogos\TutorDashboard;
 use App\Livewire\Catalogos\Usuarios;
+use App\Livewire\Catalogos\VerAlumno;
 use Illuminate\Support\Facades\Route;
 
 // ─── Módulos del sistema (fuera del wrapper de Teams) ───
@@ -63,6 +64,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Alumnos
     Route::prefix('alumnos')->name('alumnos.')->group(function () {
         Route::get('/', Alumnos::class)->name('index');
+        Route::get('/{alumno}', VerAlumno::class)->name('show');
     });
 
     // Padres de Familia
