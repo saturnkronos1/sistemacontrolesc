@@ -32,7 +32,7 @@
             <flux:select wire:model.live="grupo_id" label="Grupo">
                 <option value="">-- Seleccionar grupo --</option>
                 @foreach($this->gruposLista as $grupo)
-                    <option value="{{ $grupo->id }}">{{ $grupo->nombre }}</option>
+                    <option value="{{ $grupo->id }}">{{ $grupo->grado->nombre }} {{ $grupo->nombre }}</option>
                 @endforeach
             </flux:select>
 
@@ -71,7 +71,7 @@
                     <flux:select wire:model.live="grupo_id" label="Grupo">
                         <option value="">-- Seleccionar grupo --</option>
                         @foreach($this->gruposLista as $grupo)
-                            <option value="{{ $grupo->id }}">{{ $grupo->nombre }}</option>
+                            <option value="{{ $grupo->id }}">{{ $grupo->grado->nombre }} {{ $grupo->nombre }}</option>
                         @endforeach
                     </flux:select>
 

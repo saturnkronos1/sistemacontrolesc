@@ -73,7 +73,7 @@ trait PadreFormTrait
     {
         $cicloId = app(CicloActivoService::class)->getId();
 
-        return Grupo::query()
+        return Grupo::with('grado')
             ->when($cicloId, fn ($q) => $q->where('ciclo_escolar_id', $cicloId))
             ->orderBy('grado_id')
             ->orderBy('nombre')
