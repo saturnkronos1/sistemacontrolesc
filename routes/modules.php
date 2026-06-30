@@ -17,6 +17,7 @@ use App\Livewire\Catalogos\Reportes;
 use App\Livewire\Catalogos\TutorDashboard;
 use App\Livewire\Catalogos\Usuarios;
 use App\Livewire\Catalogos\VerAlumno;
+use App\Livewire\Catalogos\VerPadreFamilia;
 use Illuminate\Support\Facades\Route;
 
 // ─── Módulos del sistema (fuera del wrapper de Teams) ───
@@ -70,6 +71,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Padres de Familia
     Route::prefix('padres-familia')->name('padres-familia.')->group(function () {
         Route::get('/', PadresFamilia::class)->name('index');
+        Route::get('/{padre}', VerPadreFamilia::class)->name('show');
     });
 
     // Calificaciones
