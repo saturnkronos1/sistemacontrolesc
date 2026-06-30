@@ -76,7 +76,7 @@
                                 <x-sort-indicator :field="'estatus'" :sort-field="$sortField" :sort-direction="$sortDirection" />
                             </div>
                         </th>
-                        <th class="px-4 py-3"></th>
+                        <th class="px-4 py-3 text-right text-xs font-medium text-zinc-500 uppercase">ACCIONES</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-borde bg-white">
