@@ -36,6 +36,7 @@
 
         {{-- Sección de tutor (toggle) --}}
         <div class="border-t border-borde pt-4">
+            <p class="text-xs text-zinc-400 mb-2">Registrar tutor opcional — también se puede registrar en Padres de Familia y hacer el vínculo con el alumno.</p>
             <button type="button" wire:click="$toggle('showFamilia')" class="flex items-center gap-2 text-sm font-medium text-zinc-600 hover:text-zinc-900">
                 <svg class="w-4 h-4 transition-transform {{ $showFamilia ? 'rotate-90' : '' }}" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
