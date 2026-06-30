@@ -32,7 +32,7 @@
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase whitespace-nowrap hidden sm:table-cell">
                             Teléfono
                         </th>
-                        <th class="px-4 py-3"></th>
+                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase">ACCIONES</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-borde bg-white">
