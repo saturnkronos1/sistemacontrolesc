@@ -3,6 +3,7 @@
 use App\Livewire\Catalogos\PadresFamilia;
 use App\Models\Alumno;
 use App\Models\AlumnoFamilia;
+use App\Models\Grupo;
 use App\Models\Persona;
 use App\Models\User;
 use Livewire\Livewire;
@@ -86,7 +87,11 @@ test('creates a parent linked to a student', function () {
     $user = User::factory()->create();
     $user->assignRole('Superadmin');
 
-    $alumno = Alumno::factory()->create();
+    $grupo = Grupo::factory()->create();
+    $alumno = Alumno::factory()->create([
+        'grupo_id' => $grupo->id,
+        'ciclo_escolar_id' => $grupo->ciclo_escolar_id,
+    ]);
 
     Livewire::actingAs($user)
         ->test(PadresFamilia::class)
@@ -94,6 +99,7 @@ test('creates a parent linked to a student', function () {
         ->set('nombre', 'Carlos')
         ->set('apellido_paterno', 'García')
         ->set('parentesco', 'Padre')
+        ->set('grupo_id', $alumno->grupo_id)
         ->set('alumno_id', $alumno->id)
         ->call('guardar')
         ->assertOk();

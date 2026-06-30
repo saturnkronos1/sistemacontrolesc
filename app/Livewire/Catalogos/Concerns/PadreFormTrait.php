@@ -4,8 +4,10 @@ namespace App\Livewire\Catalogos\Concerns;
 
 use App\Models\Alumno;
 use App\Models\AlumnoFamilia;
+use App\Models\Grupo;
 use App\Models\Persona;
 use App\Models\User;
+use App\Support\CicloActivoService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -43,6 +45,8 @@ trait PadreFormTrait
     public $parentesco = 'Padre';
 
     // Vincular a alumno
+    public $grupo_id = '';
+
     public $alumno_id = '';
 
     // Alumnos vinculados (para edición)
@@ -55,12 +59,36 @@ trait PadreFormTrait
 
     public $password_confirmation = '';
 
+    // ─── Reactive: cambiar grupo resetea alumno ───
+
+    public function updatedGrupoId($value): void
+    {
+        $this->alumno_id = '';
+    }
+
     // ─── Shared computed ───
 
     #[Computed]
-    public function alumnosLista(): Collection
+    public function gruposLista(): Collection
     {
+        $cicloId = app(CicloActivoService::class)->getId();
+
+        return Grupo::query()
+            ->when($cicloId, fn ($q) => $q->where('ciclo_escolar_id', $cicloId))
+            ->orderBy('grado_id')
+            ->orderBy('nombre')
+            ->get();
+    }
+
+    #[Computed]
+    public function alumnosPorGrupo(): Collection
+    {
+        if (! $this->grupo_id) {
+            return collect();
+        }
+
         return Alumno::with('persona')
+            ->where('grupo_id', $this->grupo_id)
             ->join('personas', 'alumnos.persona_id', '=', 'personas.id')
             ->orderBy('personas.apellido_paterno')
             ->orderBy('personas.nombre')
@@ -307,7 +335,7 @@ trait PadreFormTrait
         $this->reset([
             'nombre', 'apellido_paterno', 'apellido_materno', 'curp',
             'telefono', 'telefono_2', 'email', 'fecha_nacimiento', 'domicilio',
-            'parentesco', 'alumno_id', 'vinculos',
+            'parentesco', 'grupo_id', 'alumno_id', 'vinculos',
             'crear_cuenta', 'password', 'password_confirmation',
         ]);
         $this->parentesco = 'Padre';

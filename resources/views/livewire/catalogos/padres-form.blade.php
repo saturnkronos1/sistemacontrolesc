@@ -28,17 +28,27 @@
             </flux:select>
 
         @if(! $editId)
-            {{-- En creación: selector simple de alumno --}}
-            <flux:select wire:model="alumno_id" label="Vincular a alumno (opcional)">
-                <option value="">-- Seleccionar alumno --</option>
-                @foreach($this->alumnosLista as $alumno)
-                    <option value="{{ $alumno->id }}">{{ $alumno->persona->nombreCompleto() }} ({{ $alumno->matricula }})</option>
+            {{-- En creación: grupo → alumno --}}
+            <flux:select wire:model.live="grupo_id" label="Grupo">
+                <option value="">-- Seleccionar grupo --</option>
+                @foreach($this->gruposLista as $grupo)
+                    <option value="{{ $grupo->id }}">{{ $grupo->nombre }}</option>
                 @endforeach
             </flux:select>
 
-            <p class="text-xs text-zinc-500">
-                También puedes vincular padres a alumnos desde el módulo de Alumnos, o editar este registro después para agregar más vínculos.
-            </p>
+            @if($this->grupo_id)
+                <flux:select wire:model="alumno_id" label="Vincular a alumno">
+                    <option value="">-- Seleccionar alumno --</option>
+                    @foreach($this->alumnosPorGrupo as $alumno)
+                        <option value="{{ $alumno->id }}">{{ $alumno->persona->nombreCompleto() }} ({{ $alumno->matricula }})</option>
+                    @endforeach
+                </flux:select>
+                <p class="text-xs text-zinc-500">
+                    También puedes vincular padres adicionales desde el módulo de Alumnos, o editar este registro después.
+                </p>
+            @else
+                <p class="text-xs text-zinc-400">Selecciona un grupo para ver los alumnos disponibles.</p>
+            @endif
         @else
             {{-- En edición: lista de vínculos actuales --}}
             <div class="space-y-2">
@@ -57,16 +67,29 @@
                     <p class="text-sm text-zinc-400">Sin alumnos vinculados.</p>
                 @endif
 
-                <div class="flex gap-2 items-end">
-                    <div class="flex-1">
-                        <flux:select wire:model="alumno_id" label="Agregar alumno">
-                            <option value="">-- Seleccionar --</option>
-                            @foreach($this->alumnosLista as $alumno)
-                                <option value="{{ $alumno->id }}">{{ $alumno->persona->nombreCompleto() }} ({{ $alumno->matricula }})</option>
-                            @endforeach
-                        </flux:select>
-                    </div>
-                    <flux:button wire:click="agregarVinculo" size="sm" inset="top bottom">Agregar</flux:button>
+                <div class="space-y-3">
+                    <flux:select wire:model.live="grupo_id" label="Grupo">
+                        <option value="">-- Seleccionar grupo --</option>
+                        @foreach($this->gruposLista as $grupo)
+                            <option value="{{ $grupo->id }}">{{ $grupo->nombre }}</option>
+                        @endforeach
+                    </flux:select>
+
+                    @if($this->grupo_id)
+                        <div class="flex gap-2 items-end">
+                            <div class="flex-1">
+                                <flux:select wire:model="alumno_id" label="Agregar alumno">
+                                    <option value="">-- Seleccionar --</option>
+                                    @foreach($this->alumnosPorGrupo as $alumno)
+                                        <option value="{{ $alumno->id }}">{{ $alumno->persona->nombreCompleto() }} ({{ $alumno->matricula }})</option>
+                                    @endforeach
+                                </flux:select>
+                            </div>
+                            <flux:button wire:click="agregarVinculo" size="sm" inset="top bottom">Agregar</flux:button>
+                        </div>
+                    @else
+                        <p class="text-xs text-zinc-400">Selecciona un grupo para ver los alumnos disponibles.</p>
+                    @endif
                 </div>
 
                 @if(count($vinculos) > 0 && collect($vinculos)->some(fn($v) => ! isset($v['id'])))
@@ -74,17 +97,6 @@
                         <flux:button wire:click="guardarVinculos" size="sm" variant="primary">Guardar vínculos nuevos</flux:button>
                     </div>
                 @endif
-            </div>
-        @endif
-
-        <flux:separator text="Cuenta de usuario (tutor)" />
-
-        <flux:checkbox wire:model="crear_cuenta" label="Crear cuenta de tutor" />
-
-        @if($crear_cuenta)
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <flux:input wire:model="password" label="{{ $editId ? 'Nueva contraseña (dejar vacío para mantener)' : 'Contraseña *' }}" type="password" viewable />
-                <flux:input wire:model="password_confirmation" label="Confirmar contraseña" type="password" viewable />
             </div>
         @endif
 
