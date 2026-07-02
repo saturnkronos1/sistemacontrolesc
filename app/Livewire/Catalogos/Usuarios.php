@@ -136,14 +136,16 @@ class Usuarios extends Component
     {
         $this->validate();
 
-        // Prevenir crear otro Superadmin
-        if ($this->rol === 'Superadmin') {
-            $query = User::role('Superadmin');
+        // Prevenir duplicados de roles únicos (Superadmin, Director)
+        $rolesUnicos = ['Superadmin', 'Director'];
+        if (in_array($this->rol, $rolesUnicos)) {
+            $query = User::role($this->rol);
             if ($this->editId) {
                 $query->where('id', '!=', $this->editId);
             }
             if ($query->exists()) {
-                $this->dispatch('toast', message: 'Ya existe un usuario Administrador. No es posible crear otro.', type: 'error');
+                $etiqueta = $this->rol === 'Superadmin' ? 'Administrador' : 'Director';
+                $this->dispatch('toast', message: "Ya existe un usuario {$etiqueta}. No es posible crear otro.", type: 'error');
 
                 return;
             }
