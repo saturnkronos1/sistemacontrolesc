@@ -4,7 +4,6 @@
         <div class="flex items-center justify-between mb-6">
             <div>
                 <flux:heading size="xl">{{ $padre->nombre }} {{ $padre->apellido_paterno }} {{ $padre->apellido_materno }}</flux:heading>
-                <flux:text class="text-zinc-500">{{ $padre->email ?? 'Sin email' }}</flux:text>
             </div>
             <div class="flex gap-2">
                 <flux:button wire:click="irAEditar" variant="primary">
