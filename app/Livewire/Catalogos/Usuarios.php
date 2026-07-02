@@ -110,7 +110,7 @@ class Usuarios extends Component
 
         return view('livewire.catalogos.usuarios', [
             'usuarios' => $query->paginate(10),
-            'roles' => Role::all()->pluck('name'),
+            'roles' => Role::all()->pluck('name')->reject(fn ($name) => $name === 'Tutor'),
         ]);
     }
 
@@ -135,6 +135,19 @@ class Usuarios extends Component
     public function guardar()
     {
         $this->validate();
+
+        // Prevenir crear otro Superadmin
+        if ($this->rol === 'Superadmin') {
+            $query = User::role('Superadmin');
+            if ($this->editId) {
+                $query->where('id', '!=', $this->editId);
+            }
+            if ($query->exists()) {
+                $this->dispatch('toast', message: 'Ya existe un usuario Administrador. No es posible crear otro.', type: 'error');
+
+                return;
+            }
+        }
 
         $data = [
             'name' => $this->name,
