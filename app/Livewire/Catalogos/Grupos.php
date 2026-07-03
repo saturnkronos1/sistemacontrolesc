@@ -7,7 +7,6 @@ use App\Models\Grado;
 use App\Models\Grupo;
 use App\Models\User;
 use App\Support\CicloActivoService;
-use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -85,9 +84,9 @@ class Grupos extends Component
 
         return view('livewire.catalogos.grupos', [
             'grupos' => $query->orderBy($this->sortField, $this->sortDirection)->paginate(15),
-            'ciclos' => Cache::remember('grupos:ciclos', 86400, fn () => CicloEscolar::orderBy('fecha_inicio', 'desc')->get()),
-            'grados' => Cache::remember('grupos:grados', 86400, fn () => Grado::orderBy('nombre')->get()),
-            'docentes' => Cache::remember('grupos:docentes', 86400, fn () => User::role('Docente')->orderBy('name')->get()),
+            'ciclos' => CicloEscolar::orderBy('fecha_inicio', 'desc')->get(),
+            'grados' => Grado::orderBy('nombre')->get(),
+            'docentes' => User::role('Docente')->orderBy('name')->get(),
         ]);
     }
 
@@ -128,10 +127,6 @@ class Grupos extends Component
             ]
         );
 
-        Cache::forget('grupos:ciclos');
-        Cache::forget('grupos:grados');
-        Cache::forget('grupos:docentes');
-
         $this->dispatch('toast', message: 'Grupo guardado exitosamente.', type: 'success');
         $this->resetModal();
     }
@@ -139,10 +134,6 @@ class Grupos extends Component
     public function eliminar($id)
     {
         Grupo::findOrFail($id)->delete();
-
-        Cache::forget('grupos:ciclos');
-        Cache::forget('grupos:grados');
-        Cache::forget('grupos:docentes');
 
         $this->dispatch('toast', message: 'Grupo eliminado.', type: 'success');
     }
