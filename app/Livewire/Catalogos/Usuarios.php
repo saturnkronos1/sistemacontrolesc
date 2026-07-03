@@ -110,7 +110,9 @@ class Usuarios extends Component
 
         return view('livewire.catalogos.usuarios', [
             'usuarios' => $query->paginate(10),
-            'roles' => Role::all()->pluck('name')->reject(fn ($name) => $name === 'Tutor'),
+            'roles' => Role::all()->pluck('name')
+                ->reject(fn ($name) => $name === 'Tutor')
+                ->reject(fn ($name) => $name === 'Superadmin' && User::role('Superadmin')->exists()),
         ]);
     }
 
