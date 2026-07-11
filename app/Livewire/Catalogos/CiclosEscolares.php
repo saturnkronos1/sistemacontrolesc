@@ -5,6 +5,7 @@ namespace App\Livewire\Catalogos;
 use App\Events\CicloActivado;
 use App\Models\CicloEscolar;
 use App\Support\CicloActivoService;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -95,6 +96,15 @@ class CiclosEscolares extends Component
     {
         $this->validate();
 
+        // Ciclos de años anteriores (fecha_fin ya pasó) solo pueden quedar como finalizado
+        $fechaFin = Carbon::parse($this->fecha_fin);
+        if ($fechaFin->isPast() && $this->estatus !== 'finalizado') {
+            $this->addError('estatus', 'Un ciclo escolar con fecha final en el pasado solo puede guardarse como "Finalizado".');
+            $this->addError('fecha_fin', '');
+
+            return;
+        }
+
         if ($this->editId) {
             $cicloActual = CicloEscolar::findOrFail($this->editId);
             Gate::authorize('modifyStatus', $cicloActual);
@@ -143,6 +153,13 @@ class CiclosEscolares extends Component
         $ciclo = CicloEscolar::findOrFail($id);
 
         Gate::authorize('modifyStatus', $ciclo);
+
+        // No permitir activar un ciclo de años anteriores
+        if ($ciclo->fecha_fin->isPast()) {
+            $this->dispatch('toast', message: 'No se puede activar un ciclo escolar con fecha final en el pasado.', type: 'error');
+
+            return;
+        }
 
         // Finalizar el ciclo activo anterior
         $oldActive = CicloEscolar::where('estatus', 'activo')
