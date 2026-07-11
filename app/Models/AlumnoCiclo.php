@@ -14,6 +14,7 @@ class AlumnoCiclo extends Model
         'ciclo_escolar_id',
         'grado_id',
         'grupo_id',
+        'docente_id',
         'estatus',
     ];
 
@@ -35,5 +36,11 @@ class AlumnoCiclo extends Model
     public function grupo(): BelongsTo
     {
         return $this->belongsTo(Grupo::class);
+    }
+
+    /** @return BelongsTo<User, $this> */
+    public function docente(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'docente_id');
     }
 }

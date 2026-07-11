@@ -45,7 +45,8 @@ class PromoverAlumnos
     {
         $sextoGradoId = 6;
 
-        $alumnosSexto = Alumno::where('ciclo_escolar_id', $cicloAnterior->id)
+        $alumnosSexto = Alumno::with('grupo')
+            ->where('ciclo_escolar_id', $cicloAnterior->id)
             ->where('grado_id', $sextoGradoId)
             ->where('estatus', 'activo')
             ->get();
@@ -57,6 +58,7 @@ class PromoverAlumnos
                 'ciclo_escolar_id' => $alumno->ciclo_escolar_id,
                 'grado_id' => $alumno->grado_id,
                 'grupo_id' => $alumno->grupo_id,
+                'docente_id' => $alumno->grupo->docente_id,
                 'estatus' => 'egresado',
             ]);
 
@@ -71,7 +73,8 @@ class PromoverAlumnos
     ): void {
         $gradoDestino = $gradoOrigen + 1;
 
-        $alumnos = Alumno::where('ciclo_escolar_id', $cicloAnterior->id)
+        $alumnos = Alumno::with('grupo')
+            ->where('ciclo_escolar_id', $cicloAnterior->id)
             ->where('grado_id', $gradoOrigen)
             ->where('estatus', 'activo')
             ->get();
@@ -106,6 +109,7 @@ class PromoverAlumnos
                 'ciclo_escolar_id' => $cicloAnterior->id,
                 'grado_id' => $gradoOrigen,
                 'grupo_id' => $grupoOrigenId,
+                'docente_id' => $alumno->grupo->docente_id,
                 'estatus' => 'activo',
             ]);
 
