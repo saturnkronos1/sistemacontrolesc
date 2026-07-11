@@ -75,7 +75,6 @@
                                         </flux:button>
                                     @endif
                                     <flux:button wire:click="editar({{ $ciclo->id }})" size="sm" inset="top bottom">Editar</flux:button>
-                                    <flux:button wire:click="eliminar({{ $ciclo->id }})" size="sm" variant="danger" inset="top bottom" wire:confirm="¿Eliminar este ciclo escolar?">Eliminar</flux:button>
                                 </td>
                             </tr>
                         @empty
