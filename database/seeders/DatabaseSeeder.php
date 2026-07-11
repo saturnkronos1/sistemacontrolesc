@@ -16,6 +16,8 @@ class DatabaseSeeder extends Seeder
 
         Schema::disableForeignKeyConstraints();
 
+        DB::table('users')->truncate();
+        DB::table('personas')->truncate();
         DB::table('justificantes')->truncate();
         DB::table('asistencias')->truncate();
         DB::table('calificacion_logs')->truncate();
@@ -37,8 +39,7 @@ class DatabaseSeeder extends Seeder
             RolePermissionSeeder::class,
             GradoSeeder::class,
             CicloEscolarSeeder::class,
-            MateriasSeeder::class,
-            CamposFormativosSeeder::class,
+            CamposFormativos20242025Seeder::class,
             PeriodoEvaluacionSeeder::class,
 
             // 2. Usuarios
@@ -59,6 +60,9 @@ class DatabaseSeeder extends Seeder
 
             // 7. Asistencias (dependen de alumnos)
             AsistenciasSeeder::class,
+
+            // 8. Datos históricos del ciclo 2024-2025
+            Ciclo20242025Seeder::class,
         ]);
     }
 }

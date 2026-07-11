@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Catalogos;
 
+use App\Models\CicloEscolar;
 use App\Models\Grupo;
 use App\Models\Materia;
 use App\Models\PeriodoEvaluacion;
@@ -71,17 +72,9 @@ class Reportes extends Component
         $this->materias = collect();
         $this->periodos = collect();
 
-        $user = auth()->user();
-        if ($user->hasRole('Docente')) {
-            $grupo = Grupo::where('docente_id', $user->id)->with('cicloEscolar')->first();
-            if ($grupo) {
-                $this->ciclo_escolar_id = $grupo->ciclo_escolar_id;
-            }
-        } else {
-            $activo = app(CicloActivoService::class)->get();
-            if ($activo) {
-                $this->ciclo_escolar_id = $activo->id;
-            }
+        $activo = app(CicloActivoService::class)->get();
+        if ($activo) {
+            $this->ciclo_escolar_id = $activo->id;
         }
     }
 
@@ -89,7 +82,7 @@ class Reportes extends Component
     {
         $user = auth()->user();
 
-        $ciclosEscolares = app(CicloActivoService::class)->getAll();
+        $ciclosEscolares = CicloEscolar::orderBy('nombre')->get();
 
         $gruposQuery = $user->hasRole('Docente')
             ? Grupo::where('docente_id', $user->id)
