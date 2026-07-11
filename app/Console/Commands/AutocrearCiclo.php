@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Actions\Ciclos\ClonarGrupos;
 use App\Actions\Ciclos\ClonarPeriodosEvaluacion;
+use App\Events\CicloActivado;
 use App\Models\CicloEscolar;
 use App\Support\CicloActivoService;
 use Carbon\Carbon;
@@ -85,20 +86,26 @@ class AutocrearCiclo extends Command
             ->get();
 
         foreach ($pendientes as $ciclo) {
-            // Mark the previously active cycle as finalizado
-            CicloEscolar::where('estatus', 'activo')
+            // Find the previously active cycle before modifying
+            $oldActive = CicloEscolar::where('estatus', 'activo')
                 ->where('id', '!=', $ciclo->id)
-                ->update(['estatus' => 'finalizado']);
+                ->first();
+
+            // Mark the previously active cycle as finalizado
+            if ($oldActive) {
+                $oldActive->update(['estatus' => 'finalizado']);
+            }
 
             $ciclo->update(['estatus' => 'activo']);
+
+            app(CicloActivoService::class)->refresh();
+
+            // Emit event so listeners clone groups, periods, and promote students
+            CicloActivado::dispatch($ciclo, $oldActive);
 
             $this->info("Ciclo {$ciclo->nombre} auto-activado.");
 
             $count++;
-        }
-
-        if ($count > 0) {
-            app(CicloActivoService::class)->refresh();
         }
 
         return $count;

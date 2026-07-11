@@ -2,9 +2,17 @@
 
 namespace App\Providers;
 
+use App\Events\CicloActivado;
+use App\Listeners\ClonarGrupos;
+use App\Listeners\ClonarPeriodosEvaluacion;
+use App\Listeners\PromoverAlumnos;
+use App\Models\CicloEscolar;
+use App\Policies\CicloEscolarPolicy;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
@@ -24,6 +32,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        $this->registerEvents();
+        $this->registerPolicies();
     }
 
     /**
@@ -46,5 +56,34 @@ class AppServiceProvider extends ServiceProvider
                 ->uncompromised()
             : null,
         );
+    }
+
+    /**
+     * Register domain events.
+     */
+    protected function registerEvents(): void
+    {
+        Event::listen(
+            CicloActivado::class,
+            ClonarPeriodosEvaluacion::class,
+        );
+
+        Event::listen(
+            CicloActivado::class,
+            ClonarGrupos::class,
+        );
+
+        Event::listen(
+            CicloActivado::class,
+            PromoverAlumnos::class,
+        );
+    }
+
+    /**
+     * Register model policies.
+     */
+    protected function registerPolicies(): void
+    {
+        Gate::policy(CicloEscolar::class, CicloEscolarPolicy::class);
     }
 }

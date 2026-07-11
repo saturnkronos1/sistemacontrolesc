@@ -8,6 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, AlumnoCiclo> $alumnoCiclos
+ */
+
 class Alumno extends Model
 {
     /** @use HasFactory<AlumnoFactory> */
@@ -68,6 +72,12 @@ class Alumno extends Model
     public function boletaObservaciones(): HasMany
     {
         return $this->hasMany(BoletaObservacion::class);
+    }
+
+    /** @return HasMany<AlumnoCiclo, $this> */
+    public function alumnoCiclos(): HasMany
+    {
+        return $this->hasMany(AlumnoCiclo::class);
     }
 
     /**
