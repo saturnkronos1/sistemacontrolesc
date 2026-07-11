@@ -8,7 +8,9 @@ class ClonarGrupos
 {
     /**
      * Clone all groups from a source cycle to a target cycle.
-     * Groups are cloned without a docente assigned.
+     * Groups are cloned without a docente assigned, and the name
+     * is cleaned of leading digits (e.g. "1A" → "A") so groups
+     * become independent of grade prefixes in the new cycle.
      *
      * @return int Number of groups cloned.
      */
@@ -20,7 +22,7 @@ class ClonarGrupos
             Grupo::create([
                 'ciclo_escolar_id' => $targetCicloId,
                 'grado_id' => $grupo->grado_id,
-                'nombre' => $grupo->nombre,
+                'nombre' => preg_replace('/^\d+/', '', $grupo->nombre),
                 'docente_id' => null,
             ]);
         }

@@ -9,6 +9,7 @@ use App\Models\CicloEscolar;
 use App\Models\Grupo;
 use App\Models\PromocionLog;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PromoverAlumnos
 {
@@ -52,11 +53,11 @@ class PromoverAlumnos
         foreach ($alumnosSexto as $alumno) {
             // Save snapshot in alumno_ciclos before changing estatus
             AlumnoCiclo::create([
-                'alumno_id'        => $alumno->id,
+                'alumno_id' => $alumno->id,
                 'ciclo_escolar_id' => $alumno->ciclo_escolar_id,
-                'grado_id'         => $alumno->grado_id,
-                'grupo_id'         => $alumno->grupo_id,
-                'estatus'          => 'egresado',
+                'grado_id' => $alumno->grado_id,
+                'grupo_id' => $alumno->grupo_id,
+                'estatus' => 'egresado',
             ]);
 
             $alumno->update(['estatus' => 'egresado']);
@@ -85,9 +86,10 @@ class PromoverAlumnos
 
         if ($gruposDestino->isEmpty()) {
             // Log warning — director will need to assign manually via Reinscripciones
-            \Illuminate\Support\Facades\Log::warning(
+            Log::warning(
                 "Promoción grado {$gradoOrigen}→{$gradoDestino}: sin grupos destino en ciclo {$cicloNuevo->nombre}"
             );
+
             return;
         }
 
@@ -96,33 +98,34 @@ class PromoverAlumnos
 
         foreach ($alumnos as $alumno) {
             $grupoDestino = $gruposDestino->get($indice % $totalGrupos);
+            $grupoOrigenId = $alumno->grupo_id; // capture BEFORE update
 
             // 1. Save historical snapshot in alumno_ciclos
             AlumnoCiclo::create([
-                'alumno_id'        => $alumno->id,
+                'alumno_id' => $alumno->id,
                 'ciclo_escolar_id' => $cicloAnterior->id,
-                'grado_id'         => $gradoOrigen,
-                'grupo_id'         => $alumno->grupo_id,
-                'estatus'          => 'activo',
+                'grado_id' => $gradoOrigen,
+                'grupo_id' => $grupoOrigenId,
+                'estatus' => 'activo',
             ]);
 
             // 2. Update current record
             $alumno->update([
                 'ciclo_escolar_id' => $cicloNuevo->id,
-                'grado_id'         => $gradoDestino,
-                'grupo_id'         => $grupoDestino->id,
+                'grado_id' => $gradoDestino,
+                'grupo_id' => $grupoDestino->id,
             ]);
 
             // 3. Log promotion event
             PromocionLog::create([
-                'alumno_id'         => $alumno->id,
-                'ciclo_origen_id'   => $cicloAnterior->id,
-                'ciclo_destino_id'  => $cicloNuevo->id,
-                'grado_origen_id'   => $gradoOrigen,
-                'grado_destino_id'  => $gradoDestino,
-                'grupo_origen_id'   => $alumno->getOriginal('grupo_id'),
-                'grupo_destino_id'  => $grupoDestino->id,
-                'tipo'              => 'promocion_automatica',
+                'alumno_id' => $alumno->id,
+                'ciclo_origen_id' => $cicloAnterior->id,
+                'ciclo_destino_id' => $cicloNuevo->id,
+                'grado_origen_id' => $gradoOrigen,
+                'grado_destino_id' => $gradoDestino,
+                'grupo_origen_id' => $grupoOrigenId,
+                'grupo_destino_id' => $grupoDestino->id,
+                'tipo' => 'promocion_automatica',
             ]);
 
             $indice++;
