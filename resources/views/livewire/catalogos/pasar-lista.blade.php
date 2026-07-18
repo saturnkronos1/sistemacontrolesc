@@ -149,15 +149,25 @@
                                                     Completado
                                                 </span>
                                             @else
-                                                <input
-                                                    type="file"
-                                                    wire:model="justificanteArchivos.{{ $alumnoId }}"
-                                                    accept=".pdf,.jpg,.png"
-                                                    class="block w-full text-sm text-zinc-500 file:mr-3 file:rounded-lg file:border-0 file:bg-zinc-100 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-zinc-700 hover:file:bg-zinc-200"
-                                                />
-                                                @error("justificanteArchivos.{$alumnoId}")
-                                                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                                                @enderror
+                                                <div class="space-y-1">
+                                                    @php $tieneArchivo = isset($justificanteArchivos[$alumnoId]) && $justificanteArchivos[$alumnoId] !== null; @endphp
+                                                    <label class="inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-medium cursor-pointer transition-colors @if($tieneArchivo) border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:border-emerald-400 @else border-blue-300 bg-blue-50 text-blue-700 hover:bg-blue-100 hover:border-blue-400 @endif">
+                                                        @if($tieneArchivo)
+                                                            <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                                                            <span>Archivo seleccionado</span>
+                                                        @else
+                                                            <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32a.75.75 0 0 1-1.06-1.06L16.5 8.25" />
+                                                            </svg>
+                                                            <span>Seleccionar archivo</span>
+                                                        @endif
+                                                        <input type="file" wire:model="justificanteArchivos.{{ $alumnoId }}" accept=".pdf,.jpg,.png" class="hidden" />
+                                                    </label>
+                                                    <p class="text-xs text-zinc-400">PDF, JPG o PNG — opcional</p>
+                                                    @error("justificanteArchivos.{$alumnoId}")
+                                                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                                    @enderror
+                                                </div>
                                             @endif
                                         @else
                                             <span class="text-sm text-zinc-400">—</span>

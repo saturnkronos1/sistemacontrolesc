@@ -98,14 +98,17 @@ class Reportes extends Component
         $materias = collect();
         $alumnosSelect = [];
 
+        // Los periodos dependen del ciclo escolar, no del grupo — cargar siempre
+        // que haya un ciclo seleccionado para que el select se muestre poblado.
+        if ($this->ciclo_escolar_id && in_array($this->reporte, ['concentrado', 'kardex', 'inasistencias'])) {
+            $periodos = PeriodoEvaluacion::where('ciclo_escolar_id', $this->ciclo_escolar_id)
+                ->orderBy('orden')
+                ->get();
+        }
+
         if ($this->grupo_id) {
             $grupo = Grupo::with('grado', 'cicloEscolar')->find($this->grupo_id);
             if ($grupo) {
-                if (in_array($this->reporte, ['concentrado', 'kardex', 'inasistencias'])) {
-                    $periodos = PeriodoEvaluacion::where('ciclo_escolar_id', $grupo->ciclo_escolar_id)
-                        ->orderBy('orden')
-                        ->get();
-                }
                 if ($this->reporte === 'concentrado') {
                     $materias = Materia::where('grado_id', $grupo->grado_id)
                         ->orderBy('nombre')

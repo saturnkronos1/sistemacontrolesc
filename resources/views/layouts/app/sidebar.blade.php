@@ -151,10 +151,12 @@
                 </div>
             </header>
 
-            {{-- Page Content --}}
-            <main class="flex-1 p-6 mx-auto w-full max-w-7xl">
-                {{ $slot }}
-            </main>
+            {{-- Page Content (wrapper ensures footer stays at bottom) --}}
+            <div class="flex-1">
+                <main class="p-6 mx-auto w-full max-w-7xl">
+                    {{ $slot }}
+                </main>
+            </div>
 
             {{-- Footer --}}
             <x-footer />

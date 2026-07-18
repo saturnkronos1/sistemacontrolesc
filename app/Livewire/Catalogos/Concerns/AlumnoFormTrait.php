@@ -82,6 +82,26 @@ trait AlumnoFormTrait
             ->orderBy('grado_id')->orderBy('nombre')->get();
     }
 
+    /**
+     * Grupos filtrados por el grado seleccionado en el formulario.
+     * Se usa en el modal de alumno para cargar solo los grupos del grado elegido.
+     */
+    #[Computed]
+    public function gruposForm(): Collection
+    {
+        if (! $this->grado_id) {
+            return collect();
+        }
+
+        $cicloActivoId = app(CicloActivoService::class)->getId();
+
+        return Grupo::with('grado')
+            ->where('grado_id', $this->grado_id)
+            ->where('ciclo_escolar_id', $cicloActivoId)
+            ->orderBy('nombre')
+            ->get();
+    }
+
     // ─── Uppercase hook ───
 
     public function updated($propertyName): void
@@ -95,6 +115,15 @@ trait AlumnoFormTrait
         if (in_array($propertyName, $uppercase, true)) {
             $this->$propertyName = mb_strtoupper($this->$propertyName);
         }
+    }
+
+    /**
+     * Cuando cambia el grado en el formulario, se resetea el grupo
+     * para evitar que quede seleccionado un grupo de otro grado.
+     */
+    public function updatedGradoId(): void
+    {
+        $this->grupo_id = '';
     }
 
     // ─── Rules ───

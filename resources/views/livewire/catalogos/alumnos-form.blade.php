@@ -18,7 +18,7 @@
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <flux:select wire:model="grado_id" label="Grado">
+            <flux:select wire:model.live="grado_id" label="Grado">
                 <option value="">Seleccionar grado...</option>
                 @foreach($this->grados as $grado)
                     <option value="{{ $grado->id }}">{{ $grado->nombre }}</option>
@@ -26,7 +26,7 @@
             </flux:select>
             <flux:select wire:model="grupo_id" label="Grupo" placeholder="Sin grupo">
                 <option value="">Sin grupo</option>
-                @foreach($this->grupos as $grupo)
+                @foreach($this->gruposForm as $grupo)
                     <option value="{{ $grupo->id }}">{{ $grupo->grado?->nombre }} - {{ $grupo->nombre }}</option>
                 @endforeach
             </flux:select>
