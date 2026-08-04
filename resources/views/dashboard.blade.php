@@ -44,7 +44,7 @@
             </div>
 
             {{-- Carrusel de imágenes --}}
-            <div class="relative flex-1 overflow-hidden rounded-xl border border-borde">
+            <div class="relative h-64 overflow-hidden rounded-xl border border-borde md:h-80">
                 <x-carousel :images="['heroes/carrusel2/a1.png', 'heroes/carrusel2/a2.png', 'heroes/carrusel2/a3.png']" />
             </div>
         @else
@@ -116,7 +116,7 @@
             </div>
 
             {{-- Carrusel de imágenes --}}
-            <div class="relative flex-1 overflow-hidden rounded-xl border border-borde">
+            <div class="relative h-64 overflow-hidden rounded-xl border border-borde md:h-80">
                 <x-carousel :images="['heroes/carrusel2/a1.png', 'heroes/carrusel2/a2.png', 'heroes/carrusel2/a3.png']" />
             </div>
         @endif
